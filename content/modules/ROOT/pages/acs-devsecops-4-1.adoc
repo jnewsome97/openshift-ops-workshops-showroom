@@ -21,7 +21,7 @@ The roxctl command line interface has several options for resource and image ana
 
 The CI process in the example below takes advantage of the tasks, skeleton pipeline, and pipeline run resources that users can build into their own wider OpenShift Pipelines process. The resources and their interaction are shown in figure 1:
 
-image::images/acs-images/tekton-1.png[]
+image::images/acs-devsecops-4-1/tekton-1.png[]
 
 _Figure 1: OpenShift Pipeline process_ +
 
@@ -124,7 +124,7 @@ First, we will need to create a token to access ACS central.
 
 Access the RHACS web user interface, select "Platform Configuration" from the left-hand side menu, and then select integrations. Scroll down to the section for authentication tokens and select "StackRox API Token." 
 
-image::images/acs-images/ci-1.gif[]
+image::images/acs-devsecops-4-1/ci-1.gif[]
 
 Press the *Generate Token* button in the top right corner and select the token role of "Continuous Integration." Give the token a name and press the button titled "Generate".
 
@@ -169,13 +169,13 @@ To run a pipeline, you can click the three dots to the left of the pipeline and 
 
 * Click start and ensure that the pipeline is in its running phase.
 
-image::images/acs-images/pipeline-1.gif[]
+image::images/acs-devsecops-4-1/pipeline-1.gif[]
 
 Since this image is designed to fail, we should only have 1 of the tasks pass. Therefore the outcome will look like the following. 
 
-image::images/acs-images/pipeline-2.png[]
+image::images/acs-devsecops-4-1/pipeline-2.png[]
 
-image::images/acs-images/pipeline-3.png[]
+image::images/acs-devsecops-4-1/pipeline-3.png[]
 
 From the image above, the log snippet shows that 5 policies have been violated. 
 
@@ -183,7 +183,7 @@ From the image above, the log snippet shows that 5 policies have been violated.
 
 If you expand the log snippet, you will get an output like the following.
 
-image::images/acs-images/pipeline-9.png[]
+image::images/acs-devsecops-4-1/pipeline-9.png[]
 
 Congratulations! The log shows that the policy log4shell policy has been violated, breaking the pipeline.
 
