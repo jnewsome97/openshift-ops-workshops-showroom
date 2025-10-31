@@ -126,47 +126,56 @@
     if (terminalFrame && terminalFrame.contentWindow) {
       console.log('Showroom Execute: Terminal iframe found, sending command');
 
-      // Try multiple methods to execute the command
-      let executed = false;
-
-      // Method 1: Direct terminal paste with Enter key simulation
       try {
-        if (terminalFrame.contentWindow.term) {
-          console.log('Showroom Execute: Using term.paste() method');
-          // Paste command and add carriage return to execute
-          terminalFrame.contentWindow.term.paste(command + '\r');
-          executed = true;
+        const term = terminalFrame.contentWindow.term;
+
+        if (term) {
+          console.log('Showroom Execute: Terminal object found');
+
+          // Method 1: Try sendText if available (some terminals have this)
+          if (typeof term.sendText === 'function') {
+            console.log('Showroom Execute: Using term.sendText()');
+            term.sendText(command + '\n', true);
+          }
+          // Method 2: Paste the command, then simulate Enter key
+          else if (typeof term.paste === 'function') {
+            console.log('Showroom Execute: Using term.paste() + simulated Enter');
+            term.paste(command);
+            // Wait a tiny bit for paste to complete, then send Enter
+            setTimeout(function() {
+              // Send Enter key - xterm uses '\r' for carriage return
+              if (typeof term.write === 'function') {
+                term.write('\r');
+              }
+              // Also try sending to the underlying shell if available
+              if (term._core && term._core.coreService && term._core.coreService.triggerDataEvent) {
+                term._core.coreService.triggerDataEvent('\r');
+              }
+            }, 10);
+          }
+          // Method 3: Write command and Enter together
+          else if (typeof term.write === 'function') {
+            console.log('Showroom Execute: Using term.write() with newline');
+            term.write(command + '\r');
+          }
+
+          console.log('Showroom Execute: Command sent to terminal');
+        } else {
+          console.error('Showroom Execute: Terminal object not found in iframe');
         }
       } catch (e) {
-        console.log('Showroom Execute: term.paste() not available:', e);
+        console.error('Showroom Execute: Error sending to terminal:', e);
       }
 
-      // Method 2: Write directly to terminal stdin
-      if (!executed) {
-        try {
-          if (terminalFrame.contentWindow.term && terminalFrame.contentWindow.term.write) {
-            console.log('Showroom Execute: Using term.write() method');
-            terminalFrame.contentWindow.term.write(command + '\r');
-            executed = true;
-          }
-        } catch (e) {
-          console.log('Showroom Execute: term.write() not available:', e);
-        }
-      }
-
-      // Method 3: Send via postMessage with carriage return
+      // Also try postMessage as fallback
       try {
         terminalFrame.contentWindow.postMessage({
           type: 'execute',
-          command: command + '\r'
+          command: command + '\n'
         }, '*');
-        console.log('Showroom Execute: Command sent via postMessage');
+        console.log('Showroom Execute: Command also sent via postMessage');
       } catch (e) {
         console.log('Showroom Execute: postMessage failed:', e);
-      }
-
-      if (!executed) {
-        console.warn('Showroom Execute: Could not directly execute, sent via postMessage only');
       }
     } else {
       console.error('Showroom Execute: Terminal iframe not found');
