@@ -11,9 +11,8 @@ content:
 
 ui:
   bundle:
-    url: https://github.com/rhpds/rhdp_showroom_theme/releases/download/rh-summit-connect-2025/ui-bundle.zip
+    url: https://github.com/jnewsome97/rhdp_showroom_theme/releases/download/v1.0.0-execute/ui-bundle.zip
     snapshot: true
-  supplemental_files: ./content/supplemental-ui
 
 output:
   dir: ./public
