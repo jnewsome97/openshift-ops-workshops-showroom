@@ -33,7 +33,7 @@ enable scheduling of Windows workloads.
 The following diagram is a high level illustration on how the WMCO works.
 
 .Windows MachineConfig Operator Design
-image::windows-containers/wmcodiagram.png[wmco diagram]
+image::windows-containers/wmcodiagram.png[wmco diagram,width=650]
 
 The Windows Machine Config Operator is a Linux-based operator that runs on
 Linux-based nodes on OpenShift. It watches for Machine Objects that are
@@ -154,19 +154,19 @@ Use the `kubeadmin` username as the following password:
 Once you are logged in, navigate to *Operators* ~> *OperatorHub* menu.
 
 .OperatorHub
-image::windows-containers/operatorhub-menu.png[OperatorHub Menu]
+image::windows-containers/operatorhub-menu.png[OperatorHub Menu,width=600]
 
 Now type *Windows Machine Config Operator* in the *Filter by _keyword..._*
 box. Click on the *Windows Machine Config Operator* card, taking care that
 you don't use the community version.
 
 .WMCO Operator
-image::windows-containers/wmco-card.png[WMCO Install Card]
+image::windows-containers/wmco-card.png[WMCO Install Card,width=500]
 
 On the overview page, select *Install*.
 
 .WMCO Operator Overview
-image::windows-containers/install-overview-updated-2025.png[WMCO Overview]
+image::windows-containers/install-overview-updated-2025.png[WMCO Overview,width=500]
 
 On the *Install Operator* overview page, make sure you have *stable*
 selected in the "Update channel" section. Also, in the "Installation mode"
@@ -176,17 +176,17 @@ on *Enable Cluster Monitoring*. Finally, leave the "Approval strategy"
 as *Automatic*. Then click *Install*. Use the below graphic to guide you.
 
 .WMCO Install Operator Overview
-image::windows-containers/wmco-install-operator-overivew-page-updated-2025.png[WMCO Install Overview]
+image::windows-containers/wmco-install-operator-overivew-page-updated-2025.png[WMCO Install Overview,width=800]
 
 The "Installing Operator" status page will come up.
 
 .WMCO Install Operator status page
-image::windows-containers/installing-the-wmco-status-operator-updated-2025.png[WMCO Installing]
+image::windows-containers/installing-the-wmco-status-operator-updated-2025.png[WMCO Installing,width=500]
 
 When the screen says "ready for use", the WMCO Operator is successfully installed.
 
 .WMCO Install Operator status page
-image::windows-containers/wmco-ready-for-use-updated-2025.png[WMCO Installing]
+image::windows-containers/wmco-ready-for-use-updated-2025.png[WMCO Installing,width=500]
 
 Back on the cli, you should now see the WMCO pod running.
 
@@ -958,7 +958,7 @@ You can see the application by visiting the link:http://netcandystore-netcandyst
 
 The frontpage should look like this, feel free to play around with the application!
 
-image::windows-containers/ncs.png[netcandy store page]
+image::windows-containers/ncs.png[netcandy store page,width=700]
 
 #### Conclusion
 
