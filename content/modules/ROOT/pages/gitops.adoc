@@ -2,7 +2,7 @@
 
 GitOps is a modern approach for managing cloud-based infrastructure and applications through Git. With GitOps, you define the desired system state in Git and utilize tools like ArgoCD to automatically sync it with your cluster or application. As an OpenShift administrator, you can simplify provisioning, configuration, and application delivery to Kubernetes using GitOps. Treating infrastructure and application definitions as code streamlines configuration changes across multiple clusters, allowing easy tracking and management of updates in Git.
 
-image::gitops/argocd-sync-flow.png[width=50%]
+image::gitops/argocd-sync-flow.png[width=75%]
 
 ### Installing OpenShift GitOps
 To get started with OpenShift GitOps, this guide will walk you through the step-by-step process of installing the Red Hat OpenShift GitOps Operator to your OpenShift Container Platform cluster and logging in to the Argo CD instance. 
@@ -29,7 +29,7 @@ before you install the Red Hat OpenShift GitOps Operator.
 
 5. Select the `Update channel` as `gitops-1.13`. Leave all defaults selected and click `Install`.
    
-image::gitops/gitops-tile-new.png[width=60%]
+image::gitops/gitops-tile-new.png[width=75%]
 
 
 After the Red Hat OpenShift GitOps Operator is installed, it 
@@ -42,12 +42,12 @@ Argo CD instances for your applications under your projects.
    
 1. Navigate to the nine tiles at the top of your OpenShift Console. Once you click that you should see the `OpenShift GitOps Cluster Argo CD`. Select that.
 + 
-image::gitops/9-tiles.png[width=55%]
+image::gitops/9-tiles.png[width=70%]
 +
 2. Ignore the certificate warning as shown below. `Proceed` to the website using the `advanced options` when you see that the connection is not private.
 Currently, we're performing a basic installation of Argo that doesn't involve setting up the certificate or kubeadmin for regular users. However, these configurations can be implemented later as needed.
 +
-image::gitops/connection-private-argo.png[width=60%]
+image::gitops/connection-private-argo.png[width=75%]
 [start=3]
 3. You can now `login` into the Argo CD UI by selecting `Log in Via OpenShift`.
 +
@@ -65,7 +65,7 @@ and the password is:
 [start=4]
 4. You will enter the Argo CD UI. (Please authorize access)
 
-image::gitops/authorize-access-argo.png[width=55%]
+image::gitops/authorize-access-argo.png[width=70%]
 
 ### Deploy a Sample Application
 
@@ -89,7 +89,7 @@ Cluster URL: https://kubernetes.default.svc
 Namespace: openshift-operators
 ----
 
-image::gitops/argoaddapp2.png[width=55%]
+image::gitops/argoaddapp2.png[width=70%]
 
 image::gitops/editasyaml.png[]
 
@@ -123,7 +123,7 @@ your brand new app pop up on the ArgoCD dashboard. If it says “Out of Sync,”
 please go ahead and click on the tile, then click the `Sync` button, and finally 
 click `Synchronize`. This should make both turn green.
 
-image::gitops/pipelines-gitops2new.png[width=65%]
+image::gitops/pipelines-gitops2new.png[width=75%]
 
 Let's examine each of the descriptions of the recently deployed application to gain a better understanding of ArgoCD and the application we just added. The `pipelines` app has several descriptions that we will review:
 
@@ -151,7 +151,7 @@ link:https://argo-cd.readthedocs.io/en/stable/user-guide/auto_sync/[Auto sync] i
 
 By navigating to your `OpenShift Console` and accessing the `Operators` tab, you can verify the successful installation of the `Pipelines Operator` under the `Installed Operators` tab.
 
-image::gitops/pipelines-openshift-new.png[width=40%]
+image::gitops/pipelines-openshift-new.png[width=70%]
 
 ===  Adding a Banner to ArgoCD
 
@@ -198,17 +198,17 @@ spec:
       selfHeal: false
 ----
 
-image::gitops/banner_yamlfile.png[width=40%]
+image::gitops/banner_yamlfile.png[width=70%]
 
 [start=3]
 3. Click `Create`
 
-image::gitops/argo_appsdeployednew.png[width=40%]
+image::gitops/argo_appsdeployednew.png[width=70%]
 
 [start=4]
 4. If you look back at your OpenShift Console you should now see your new banner on the top of the screen!
 
-image::gitops/banner.png[width=55%]
+image::gitops/banner.png[width=70%]
 
 As an OpenShift admin using GitOps, you can use the Banners feature in ArgoCD and OpenShift to show crucial information to users. Banners help you provide alerts, warnings, or other information about the cluster, applications, or other resources. For instance, you can use banners to let users know about scheduled maintenance or downtime, security alerts, or other essential announcements.
 
@@ -217,7 +217,7 @@ As an OpenShift admin using GitOps, you can use the Banners feature in ArgoCD an
 [start=1]
 1. To examine the `banner`, click on the `banner` on Argo CD.
 
-image::gitops/argo_appsdeployednew.png[width=40%]
+image::gitops/argo_appsdeployednew.png[width=70%]
 
 In the box to the right, look for `home-banner`.
 
@@ -226,7 +226,7 @@ image::gitops/home-bannerbox.png[]
 [start=2]
 2. Click on `home-banner` for more information. You should see that its `kind` is a `ConsoleNotification`.
 
-image::gitops/consolenotification2.png[width=45%]
+image::gitops/consolenotification2.png[width=75%]
 
 [start=3]
 3. To see the `home-banner`, switch back to the `terminal` and click on the following command:
@@ -250,7 +250,7 @@ home-banner Congratulations, you have successfully created a banner using ArgoCD
 oc patch consolenotification home-banner -p '{"spec":{"text":"oops somebody changed this!"}}' --type=merge
 ----
 
-image::gitops/patch.png[width=50%]
+image::gitops/patch.png[width=75%]
 
 This patch will `change` the line where the text is being deployed to the following:
 
@@ -265,7 +265,7 @@ text: oops, somebody changed this!
 
 This is what the file looks after the patch:
 
-image::gitops/changedtext.png[width=50%]
+image::gitops/changedtext.png[width=75%]
 
 you can also see the change by using this command again:
 
@@ -277,21 +277,21 @@ oc get consolenotification
 [start=6]
 6. Check back on the `console` and see that the `banner` has been updated.
 
-image::gitops/oops.png[width=40%]
+image::gitops/oops.png[width=70%]
 
 [start=7]
 7. Go back to Argo CD and notice that the resource named `home-banner` is now `Out of Sync`. Argo CD considers the application out of sync because the desired state as expressed in Git no longer matches the target state in the cluster after the direct edit was performed.
 
-image::gitops/selectfordiffnew.png[width=40%]
+image::gitops/selectfordiffnew.png[width=70%]
 
-image::gitops/outofsync.png[width=40%]
+image::gitops/outofsync.png[width=70%]
 
 [start=8]
 8. Select the `home-banner` box and select `DIFF`. Scroll down until you see the changes made earlier. Since `self-heal` is turned off, the changes won't be reverted automatically.
 
-image::gitops/diff.png[width=60%]
+image::gitops/diff.png[width=75%]
 
-image::gitops/diff2.png[width=40%]
+image::gitops/diff2.png[width=70%]
 
 In the diff output, the text from the GitHub repository is displayed in green, indicating that it is the original content. The red text represents the changes you made, highlighting the modified portions.
 
@@ -305,11 +305,11 @@ image::gitops/sync.png[]
 [start=10]
 10. Go back to OpenShift and observe that the text in the banner has returned to it's previous state "Congratulations, you have successfully created a banner using ArgoCD!" .
 
-image::gitops/banner.png[width=55%]
+image::gitops/banner.png[width=70%]
 
 The banner has been restored to its desired state specified in Git by Argo CD.
 
-image::gitops/argo_appsdeployednew.png[width=40%]
+image::gitops/argo_appsdeployednew.png[width=70%]
 
 Note: Keep in mind that OpenShift GitOps can automatically revert these changes by enabling self-heal. If you are interested in enabling self-heal, you can find the option under 'app details'. Self-heal is a feature of OpenShift GitOps that allows you to automatically restore your cluster or application to a desired state if it deviates from the configuration stored in a Git repository. This way, you can ensure consistency and reliability across different environments and avoid manual intervention or errors. 
 
