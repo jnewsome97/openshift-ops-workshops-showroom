@@ -42,7 +42,7 @@
   }
 
   function addExecuteButton(block) {
-    console.log('Showroom Execute: Adding button to block');
+    console.log('Showroom Execute: Making block clickable');
 
     // Find the code element - it's nested: div.content > pre > code
     const codeElement = block.querySelector('code');
@@ -54,54 +54,79 @@
     const command = codeElement.textContent.trim();
     console.log('Showroom Execute: Command:', command.substring(0, 50) + '...');
 
-    // Create execute button and add to the content div
+    // Get the content div
     const contentDiv = block.querySelector('.content');
     if (!contentDiv) {
       console.warn('Showroom Execute: No content div found');
       return;
     }
 
-    // Create execute button
-    const executeBtn = document.createElement('button');
-    executeBtn.className = 'execute-button';
-    executeBtn.title = 'Execute in terminal';
-    executeBtn.innerHTML = '▶ Execute'; // Play icon with text
-    executeBtn.style.cssText = `
-      position: absolute;
-      top: 5px;
-      right: 5px;
-      background: #0066cc;
-      color: white;
-      border: none;
-      padding: 6px 12px;
+    // Style the entire block to be clickable with warm color
+    block.style.cssText = `
       cursor: pointer;
+      transition: all 0.2s ease;
       border-radius: 4px;
-      font-size: 11px;
-      font-weight: bold;
-      z-index: 10;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      position: relative;
     `;
 
-    executeBtn.addEventListener('click', function(e) {
+    // Add warm peachy/coral background color
+    contentDiv.style.cssText = `
+      background: #ffe8dc;
+      border-left: 4px solid #ff9966;
+      transition: all 0.2s ease;
+      position: relative;
+    `;
+
+    // Add click indicator icon in top-right
+    const indicator = document.createElement('div');
+    indicator.innerHTML = '▶';
+    indicator.style.cssText = `
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      color: #cc6633;
+      font-size: 14px;
+      opacity: 0.7;
+      pointer-events: none;
+    `;
+    contentDiv.appendChild(indicator);
+
+    // Hover effect
+    block.addEventListener('mouseenter', function() {
+      contentDiv.style.background = '#ffd4c0';
+      contentDiv.style.borderLeftColor = '#ff7733';
+      indicator.style.opacity = '1';
+      indicator.style.color = '#ff7733';
+    });
+
+    block.addEventListener('mouseleave', function() {
+      contentDiv.style.background = '#ffe8dc';
+      contentDiv.style.borderLeftColor = '#ff9966';
+      indicator.style.opacity = '0.7';
+      indicator.style.color = '#cc6633';
+    });
+
+    // Click handler
+    block.addEventListener('click', function(e) {
       e.preventDefault();
-      console.log('Showroom Execute: Button clicked!');
+      console.log('Showroom Execute: Block clicked!');
       executeCommand(command);
 
       // Visual feedback
-      executeBtn.style.background = '#00aa00';
-      executeBtn.innerHTML = '✓ Executed';
+      contentDiv.style.background = '#d4edda';
+      contentDiv.style.borderLeftColor = '#28a745';
+      indicator.innerHTML = '✓';
+      indicator.style.color = '#28a745';
+
       setTimeout(function() {
-        executeBtn.style.background = '#0066cc';
-        executeBtn.innerHTML = '▶ Execute';
+        contentDiv.style.background = '#ffe8dc';
+        contentDiv.style.borderLeftColor = '#ff9966';
+        indicator.innerHTML = '▶';
+        indicator.style.color = '#cc6633';
       }, 1000);
     });
 
-    // Make the content div position relative so absolute positioning works
-    contentDiv.style.position = 'relative';
-
-    // Add button to content div
-    contentDiv.appendChild(executeBtn);
-    console.log('Showroom Execute: Button added successfully');
+    console.log('Showroom Execute: Block made clickable successfully');
   }
 
   function executeCommand(command) {
