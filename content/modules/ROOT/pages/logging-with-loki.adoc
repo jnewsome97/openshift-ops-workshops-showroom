@@ -474,18 +474,18 @@ You should now see all the `logs` for `Infrastructure`. The logs are split
 into 3 sections: `application`, `infrastructure` and `audits`. Lets have a 
 look through the different parts of this.
 
-image::logging-with-loki/appinfraaudit.png[]
+image::logging-with-loki/appinfraaudit.png[width=40%]
 
 As we can see in the graphic below, you can filter by `Content`, `Namespaces`, `Pods`, and `Containers`. 
 This can be useful to narrow down searches when looking for something more specific.
 
-image::logging-with-loki/filterlogs.png[]
+image::logging-with-loki/filterlogs.png[width=40%]
 
 You can further specify the logs you are looking for by using the other 
 drop down menu for `Severity`. This menu breaks the logs down into `critical`, 
 `error`, `warning`, `debug`, `info`, `trace`, and `unknown` logging categories.
 
-image::logging-with-loki/severity.png[]
+image::logging-with-loki/severity.png[width=40%]
 
 The final piece of this is the `histogram`. This gives the user a more visual look into the logs. (This may take a little bit of time to populate)
 
