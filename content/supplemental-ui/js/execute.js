@@ -61,6 +61,18 @@
       return;
     }
 
+    // Hide any existing copy buttons
+    const copyButtons = block.querySelectorAll('.copy-button, button[title*="Copy"], .toolbar button');
+    copyButtons.forEach(function(btn) {
+      btn.style.display = 'none';
+    });
+
+    // Also hide toolbar if it exists
+    const toolbar = block.querySelector('.toolbar');
+    if (toolbar) {
+      toolbar.style.display = 'none';
+    }
+
     // Style the entire block to be clickable with warm color
     block.style.cssText = `
       cursor: pointer;
