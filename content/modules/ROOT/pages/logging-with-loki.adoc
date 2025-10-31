@@ -56,7 +56,7 @@ console for these steps)
 You may need to switch from `All-Clusters` to `local-cluster`.
 
 
-image::images/local-cluster.png[]
+image::local-cluster.png[]
 
 1. Install the `Cluster Logging Operator`:
 +
@@ -114,7 +114,7 @@ If either operator does not appear as installed, follow these steps to troublesh
 * Switch to the `Workloads` → `Pods` page and check the logs in any Pods in the
   `openshift-logging` and `openshift-operators` projects that are reporting issues.
 
-image::images/installedloggingoperators2.png[]
+image::installedloggingoperators2.png[]
   
 #### Configuring a bucket with AWS
   
@@ -259,7 +259,7 @@ deployer-dockercfg-d9565                   kubernetes.io/dockercfg   1      11m
 lokistack-dev-s3                           Opaque                    5      6s
 ```
 
-image::images/lokistack-s3.png[]
+image::lokistack-s3.png[]
 
 #### Creating the LokiStack custom resource (CR)
 
@@ -294,7 +294,7 @@ spec:
 [start=2]
 2. Click `Create`
 
-image::images/creatinglokistackcr.png[]
+image::creatinglokistackcr.png[]
 
 [NOTE]
 ====
@@ -315,7 +315,7 @@ Ensure that the `lokistack-dev-s3` secret is created beforehand. The contents of
 
 It may take up to a minute to be up and running but it should eventually look like this:
 
-image::images/LokiStack.png[]
+image::LokiStack.png[]
 
 We haven't set a ruler so you should see `No members`
 
@@ -363,7 +363,7 @@ spec:
 [start=3]
   3. Click `Create`.
 
-image::images/settingcollector.png[]
+image::settingcollector.png[]
 
 #### Verify that the UIPlugin CR is enabled
 
@@ -401,7 +401,7 @@ logging-loki-query-frontend-8587b5c8f9-fsgjx    1/1     Running   0          11m
 logging-loki-query-frontend-8587b5c8f9-wmfzr    1/1     Running   0          11m
 ----
 
-image::images/uipluginenabled.png[]
+image::uipluginenabled.png[]
 
 You should see a box pop up in the top right corner after about 
 30 seconds to a minute. It will say `"Web console update is available"` 
@@ -411,7 +411,7 @@ this change will now allow you to access logs.
 If you come across any references to Fluentd status, 
 kindly disregard them, as they are not relevant to our current task.
 
-image::images/Loki_refresh.png[]
+image::Loki_refresh.png[]
 
 #### ClusterLogForwarder Setup
 
@@ -474,22 +474,22 @@ You should now see all the `logs` for `Infrastructure`. The logs are split
 into 3 sections: `application`, `infrastructure` and `audits`. Lets have a 
 look through the different parts of this.
 
-image::images/appinfraaudit.png[]
+image::appinfraaudit.png[]
 
 As we can see in the graphic below, you can filter by `Content`, `Namespaces`, `Pods`, and `Containers`. 
 This can be useful to narrow down searches when looking for something more specific.
 
-image::images/filterlogs.png[]
+image::filterlogs.png[]
 
 You can further specify the logs you are looking for by using the other 
 drop down menu for `Severity`. This menu breaks the logs down into `critical`, 
 `error`, `warning`, `debug`, `info`, `trace`, and `unknown` logging categories.
 
-image::images/severity.png[]
+image::severity.png[]
 
 The final piece of this is the `histogram`. This gives the user a more visual look into the logs. (This may take a little bit of time to populate)
 
-image::images/histogram.png[]
+image::histogram.png[]
 
 #### Congratulations, you have now completed the logging section!
 
