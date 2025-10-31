@@ -1,5 +1,5 @@
 site:
-  title: OpenShift Workshop
+  title: OpenShift for Admins
   url: http://localhost:8080
   start_page: ocp-admin-storage::index.adoc
 
