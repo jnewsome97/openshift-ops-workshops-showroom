@@ -16,61 +16,92 @@
 
   function init() {
     console.log('Showroom Execute: Initializing...');
+    console.log('Showroom Execute: DOM ready state:', document.readyState);
 
-    // Find all code blocks with role="execute"
-    const executeBlocks = document.querySelectorAll('pre.highlight[class*="execute"], div.listingblock[class*="execute"]');
+    // Find all code blocks with execute class
+    // Antora renders role="execute" as <div class="listingblock execute">
+    const executeBlocks = document.querySelectorAll('div.listingblock.execute');
 
     console.log(`Showroom Execute: Found ${executeBlocks.length} execute blocks`);
 
-    executeBlocks.forEach(function(block) {
+    if (executeBlocks.length === 0) {
+      console.warn('Showroom Execute: No execute blocks found! Checking for alternative selectors...');
+      const allListingBlocks = document.querySelectorAll('div.listingblock');
+      console.log(`Showroom Execute: Total listingblock divs: ${allListingBlocks.length}`);
+      allListingBlocks.forEach(function(block, index) {
+        if (index < 5) {
+          console.log(`Showroom Execute: Block ${index} classes:`, block.className);
+        }
+      });
+    }
+
+    executeBlocks.forEach(function(block, index) {
+      console.log(`Showroom Execute: Processing block ${index}`);
       addExecuteButton(block);
     });
   }
 
   function addExecuteButton(block) {
-    // Find the code element
+    console.log('Showroom Execute: Adding button to block');
+
+    // Find the code element - it's nested: div.content > pre > code
     const codeElement = block.querySelector('code');
-    if (!codeElement) return;
+    if (!codeElement) {
+      console.warn('Showroom Execute: No code element found in block');
+      return;
+    }
 
     const command = codeElement.textContent.trim();
+    console.log('Showroom Execute: Command:', command.substring(0, 50) + '...');
 
-    // Find or create the toolbar
-    let toolbar = block.querySelector('.toolbar');
-    if (!toolbar) {
-      toolbar = document.createElement('div');
-      toolbar.className = 'toolbar';
-      block.appendChild(toolbar);
+    // Create execute button and add to the content div
+    const contentDiv = block.querySelector('.content');
+    if (!contentDiv) {
+      console.warn('Showroom Execute: No content div found');
+      return;
     }
 
     // Create execute button
     const executeBtn = document.createElement('button');
     executeBtn.className = 'execute-button';
     executeBtn.title = 'Execute in terminal';
-    executeBtn.innerHTML = '▶'; // Play icon
+    executeBtn.innerHTML = '▶ Execute'; // Play icon with text
     executeBtn.style.cssText = `
+      position: absolute;
+      top: 5px;
+      right: 5px;
       background: #0066cc;
       color: white;
       border: none;
-      padding: 4px 8px;
-      margin-left: 4px;
+      padding: 6px 12px;
       cursor: pointer;
-      border-radius: 3px;
-      font-size: 12px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: bold;
+      z-index: 10;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     `;
 
     executeBtn.addEventListener('click', function(e) {
       e.preventDefault();
+      console.log('Showroom Execute: Button clicked!');
       executeCommand(command);
 
       // Visual feedback
       executeBtn.style.background = '#00aa00';
+      executeBtn.innerHTML = '✓ Executed';
       setTimeout(function() {
         executeBtn.style.background = '#0066cc';
-      }, 500);
+        executeBtn.innerHTML = '▶ Execute';
+      }, 1000);
     });
 
-    // Add to toolbar
-    toolbar.insertBefore(executeBtn, toolbar.firstChild);
+    // Make the content div position relative so absolute positioning works
+    contentDiv.style.position = 'relative';
+
+    // Add button to content div
+    contentDiv.appendChild(executeBtn);
+    console.log('Showroom Execute: Button added successfully');
   }
 
   function executeCommand(command) {
