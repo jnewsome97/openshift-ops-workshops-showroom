@@ -124,19 +124,49 @@
     }
 
     if (terminalFrame && terminalFrame.contentWindow) {
-      // Send command to terminal using postMessage
-      terminalFrame.contentWindow.postMessage({
-        type: 'execute',
-        command: command + '\n'
-      }, '*');
+      console.log('Showroom Execute: Terminal iframe found, sending command');
 
-      // Also try direct method if terminal supports it
+      // Try multiple methods to execute the command
+      let executed = false;
+
+      // Method 1: Direct terminal paste with Enter key simulation
       try {
         if (terminalFrame.contentWindow.term) {
-          terminalFrame.contentWindow.term.paste(command + '\n');
+          console.log('Showroom Execute: Using term.paste() method');
+          // Paste command and add carriage return to execute
+          terminalFrame.contentWindow.term.paste(command + '\r');
+          executed = true;
         }
       } catch (e) {
-        console.log('Direct terminal access not available, using postMessage');
+        console.log('Showroom Execute: term.paste() not available:', e);
+      }
+
+      // Method 2: Write directly to terminal stdin
+      if (!executed) {
+        try {
+          if (terminalFrame.contentWindow.term && terminalFrame.contentWindow.term.write) {
+            console.log('Showroom Execute: Using term.write() method');
+            terminalFrame.contentWindow.term.write(command + '\r');
+            executed = true;
+          }
+        } catch (e) {
+          console.log('Showroom Execute: term.write() not available:', e);
+        }
+      }
+
+      // Method 3: Send via postMessage with carriage return
+      try {
+        terminalFrame.contentWindow.postMessage({
+          type: 'execute',
+          command: command + '\r'
+        }, '*');
+        console.log('Showroom Execute: Command sent via postMessage');
+      } catch (e) {
+        console.log('Showroom Execute: postMessage failed:', e);
+      }
+
+      if (!executed) {
+        console.warn('Showroom Execute: Could not directly execute, sent via postMessage only');
       }
     } else {
       console.error('Showroom Execute: Terminal iframe not found');
