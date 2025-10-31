@@ -1,5 +1,5 @@
 site:
-  title: OpenShift for Admins
+  title: OpenShift for Ops - Storage Administration
   url: http://localhost:8080
   start_page: ocp-admin-storage::index.adoc
 
