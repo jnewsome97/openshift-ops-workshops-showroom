@@ -56,7 +56,7 @@ console for these steps)
 You may need to switch from `All-Clusters` to `local-cluster`.
 
 
-image::logging-with-loki/local-cluster.png[width=600]
+image::logging-with-loki/local-cluster.png[width=55%]
 
 1. Install the `Cluster Logging Operator`:
 +
@@ -114,7 +114,7 @@ If either operator does not appear as installed, follow these steps to troublesh
 * Switch to the `Workloads` → `Pods` page and check the logs in any Pods in the
   `openshift-logging` and `openshift-operators` projects that are reporting issues.
 
-image::logging-with-loki/installedloggingoperators2.png[width=700]
+image::logging-with-loki/installedloggingoperators2.png[width=45%]
   
 #### Configuring a bucket with AWS
   
@@ -259,7 +259,7 @@ deployer-dockercfg-d9565                   kubernetes.io/dockercfg   1      11m
 lokistack-dev-s3                           Opaque                    5      6s
 ```
 
-image::logging-with-loki/lokistack-s3.png[width=650]
+image::logging-with-loki/lokistack-s3.png[width=50%]
 
 #### Creating the LokiStack custom resource (CR)
 
@@ -294,7 +294,7 @@ spec:
 [start=2]
 2. Click `Create`
 
-image::logging-with-loki/creatinglokistackcr.png[width=700]
+image::logging-with-loki/creatinglokistackcr.png[width=45%]
 
 [NOTE]
 ====
@@ -315,7 +315,7 @@ Ensure that the `lokistack-dev-s3` secret is created beforehand. The contents of
 
 It may take up to a minute to be up and running but it should eventually look like this:
 
-image::logging-with-loki/LokiStack.png[width=800]
+image::logging-with-loki/LokiStack.png[width=40%]
 
 We haven't set a ruler so you should see `No members`
 
@@ -363,7 +363,7 @@ spec:
 [start=3]
   3. Click `Create`.
 
-image::logging-with-loki/settingcollector.png[width=700]
+image::logging-with-loki/settingcollector.png[width=45%]
 
 #### Verify that the UIPlugin CR is enabled
 
@@ -401,7 +401,7 @@ logging-loki-query-frontend-8587b5c8f9-fsgjx    1/1     Running   0          11m
 logging-loki-query-frontend-8587b5c8f9-wmfzr    1/1     Running   0          11m
 ----
 
-image::logging-with-loki/uipluginenabled.png[width=700]
+image::logging-with-loki/uipluginenabled.png[width=45%]
 
 You should see a box pop up in the top right corner after about 
 30 seconds to a minute. It will say `"Web console update is available"` 
@@ -411,7 +411,7 @@ this change will now allow you to access logs.
 If you come across any references to Fluentd status, 
 kindly disregard them, as they are not relevant to our current task.
 
-image::logging-with-loki/Loki_refresh.png[width=500]
+image::logging-with-loki/Loki_refresh.png[width=60%]
 
 #### ClusterLogForwarder Setup
 
@@ -489,7 +489,7 @@ image::logging-with-loki/severity.png[]
 
 The final piece of this is the `histogram`. This gives the user a more visual look into the logs. (This may take a little bit of time to populate)
 
-image::logging-with-loki/histogram.png[width=600]
+image::logging-with-loki/histogram.png[width=55%]
 
 #### Congratulations, you have now completed the logging section!
 
