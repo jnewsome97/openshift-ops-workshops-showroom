@@ -13,21 +13,7 @@ ui:
   bundle:
     url: https://github.com/rhpds/rhdp_showroom_theme/releases/download/rh-summit-connect-2025/ui-bundle.zip
     snapshot: true
-  supplemental_files:
-  - path: ./content/supplemental-ui
-  - path: ui.yml
-    contents: |
-      static_files:
-      - .nojekyll
-  - path: css/custom.css
-    contents: |
-      /* Hide version selector since we only have one version */
-      .navbar-end .navbar-item.version-menu-toggle {
-        display: none;
-      }
-      .page-versions {
-        display: none;
-      }
+  supplemental_files: ./content/supplemental-ui
 
 output:
   dir: ./public
