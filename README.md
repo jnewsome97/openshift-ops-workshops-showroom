@@ -138,6 +138,14 @@ This workshop is deployed using the `ocp4_workload_showroom` AgnosticD workload 
 
 All workshop content and CLI tools are compatible with OpenShift 4.20.1.
 
+---
+
+## Credits
+
+This workshop content is based on the original [OpenShift Operations Workshops](https://github.com/OpenShiftDemos/openshift-ops-workshops/tree/ocp4-prod) by Red Hat, adapted for the modern Showroom framework with Antora.
+
+---
+
 ## Theme
 
 Uses RHDP Showroom theme v0.0.1 with modern Red Hat branding.
