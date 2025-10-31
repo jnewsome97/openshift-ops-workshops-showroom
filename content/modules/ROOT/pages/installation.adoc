@@ -67,7 +67,7 @@ export GUID=`hostname | cut -d. -f2`
 ### Master Components
 
 .OpenShift Master's 4 main responsibilities.
-image::openshift_master_4_responsibilities_new.png[]
+image::installation/openshift_master_4_responsibilities_new.png[]
 
 
 #### API/Authentication
@@ -360,7 +360,7 @@ about the router in a subsequent exercise.
 
 This lab comes with an integrated webconsole but we recommend you use the external one.
 
-image::consoletab.png[]
+image::installation/consoletab.png[]
 
 If you find that something isn't working (or simply not there); 
 please feel free to open the web console in another tab. 
@@ -370,7 +370,7 @@ You can do this by simply control+click the following link:
 
 When accessing the console for the first time, you may need to switch from `All Clusters` to `local-cluster`. We will be using the local-cluster for the majority of the exercises. If you don’t have this option, please continue.
 
-image::cluster-switch.png[]
+image::installation/cluster-switch.png[]
 
 #### You will now exit the ssh session
 [source,role="execute"]

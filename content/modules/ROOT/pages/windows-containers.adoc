@@ -33,7 +33,7 @@ enable scheduling of Windows workloads.
 The following diagram is a high level illustration on how the WMCO works.
 
 .Windows MachineConfig Operator Design
-image::wmcodiagram.png[wmco diagram]
+image::windows-containers/wmcodiagram.png[wmco diagram]
 
 The Windows Machine Config Operator is a Linux-based operator that runs on
 Linux-based nodes on OpenShift. It watches for Machine Objects that are
@@ -154,14 +154,14 @@ Use the `kubeadmin` username as the following password:
 Once you are logged in, navigate to *Operators* ~> *OperatorHub* menu.
 
 .OperatorHub
-image::operatorhub-menu.png[OperatorHub Menu]
+image::windows-containers/operatorhub-menu.png[OperatorHub Menu]
 
 Now type *Windows Machine Config Operator* in the *Filter by _keyword..._*
 box. Click on the *Windows Machine Config Operator* card, taking care that
 you don't use the community version.
 
 .WMCO Operator
-image::wmco-card.png[WMCO Install Card]
+image::windows-containers/wmco-card.png[WMCO Install Card]
 
 On the overview page, select *Install*.
 
@@ -787,7 +787,7 @@ You will be deploying a sample application stack that delivers an
 eCommerce site, The NetCandy Store. This application is built using
 Windows Containers working together with Linux Containers.
 
-image::mixed-windows-and-linux-workloads.png[netcandystore diagram]
+image::windows-containers/mixed-windows-and-linux-workloads.png[netcandystore diagram]
 
 This application consists of:
 
@@ -958,7 +958,7 @@ You can see the application by visiting the link:http://netcandystore-netcandyst
 
 The frontpage should look like this, feel free to play around with the application!
 
-image::ncs.png[netcandy store page]
+image::windows-containers/ncs.png[netcandy store page]
 
 #### Conclusion
 
