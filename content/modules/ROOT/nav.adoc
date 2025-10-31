@@ -1,4 +1,4 @@
-// OpenShift for Admins - Standard Workshop
+// Modern App Dev Roadshow - Ops Track
 * xref:index.adoc[Environment Setup]
 * xref:installation.adoc[Installation]
 * xref:app-mgmt-basics.adoc[Application Management Basics]
@@ -13,5 +13,6 @@
 * xref:disabling-project-self-provisioning.adoc[Disabling Project Self-Provisioning]
 * xref:clusterresourcequota.adoc[Cluster Resource Quota]
 * xref:taints-and-tolerations.adoc[Taints and Tolerations]
-* xref:gitops.adoc[GitOps]
-* xref:windows-containers.adoc[Windows Containers]
+* xref:acs-vulnerability-4-1.adoc[Vulnerability Scanning with ACS]
+* xref:acs-devsecops-4-1.adoc[DevSecOps with ACS]
+* xref:acm-multicluster-2-7.adoc[Multicluster Management with ACM]
