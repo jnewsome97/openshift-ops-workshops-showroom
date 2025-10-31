@@ -1,5 +1,5 @@
 site:
-  title: OpenShift for Ops - Storage Administration
+  title: Modern App Dev Roadshow - Ops Track
   url: http://localhost:8080
   start_page: ocp-admin-storage::index.adoc
 
