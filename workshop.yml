@@ -1,0 +1,18 @@
+name: OpenShift for Admins Workshop
+logo: ""
+description: |
+  Comprehensive OpenShift administration workshop covering infrastructure,
+  workload management, monitoring, logging, and advanced features.
+
+vars:
+  # These will be populated from user data
+  MASTER_URL: "{{ openshift_api_url | default('https://api.cluster.example.com:6443') }}"
+  ROUTE_SUBDOMAIN: "{{ openshift_cluster_ingress_domain | default('apps.cluster.example.com') }}"
+  KUBEADMIN_PASSWORD: "{{ kubeadmin_password | default('changeme') }}"
+  SSH_USERNAME: "{{ bastion_ssh_user_name | default('lab-user') }}"
+  SSH_PASSWORD: "{{ bastion_ssh_password | default('changeme') }}"
+  BASTION_FQDN: "{{ bastion_public_hostname | default('bastion.example.com') }}"
+
+modules:
+  activate:
+  - ocp-admin-storage
