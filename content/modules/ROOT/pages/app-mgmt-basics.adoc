@@ -195,7 +195,7 @@ and other information about what is going on.
 
 ### Services
 .OpenShift Service
-image::app-mgmt-basics/openshift_service_new.png[]
+image::app-mgmt-basics/openshift_service_new.png[width=600]
 
 *Services* provide a convenient abstraction layer inside OpenShift to find a
 group of like *Pods*. They also act as an internal proxy/load balancer between
@@ -612,7 +612,7 @@ fixed it by scheduling the *Pods*.
 
 ### Background: Routes
 .OpenShift Route
-image::app-mgmt-basics/openshift_route_new.png[]
+image::app-mgmt-basics/openshift_route_new.png[width=600]
 
 While *Services* provide internal abstraction and load balancing within an
 OpenShift environment, sometimes clients (users, systems, devices, etc.)
@@ -859,4 +859,4 @@ oc get route mapit -o jsonpath='{.spec.host}' | sed 's/^/http:\/\//'
 
 It should look something like this:
 
-image::app-mgmt-basics/mapit-app-route.png[]
+image::app-mgmt-basics/mapit-app-route.png[width=800]

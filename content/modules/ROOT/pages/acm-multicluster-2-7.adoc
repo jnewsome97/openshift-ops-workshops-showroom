@@ -14,7 +14,7 @@ If you navigate to `Local-cluster` then you should see the new ACM console when 
 
 Once there you can proceed with the module.
 
-image::acm-multicluster-2-7/RHACM_all_cluster.png[]
+image::acm-multicluster-2-7/RHACM_all_cluster.png[width=650]
 
 
 
@@ -25,17 +25,17 @@ image::acm-multicluster-2-7/RHACM_all_cluster.png[]
 1. Once you have logged in to ACM, Navigate to *Credentials menu* and then select *Add Credentials*
 
 
-image::acm-multicluster-2-7/credentials.png[]
+image::acm-multicluster-2-7/credentials.png[width=600]
 
-image::acm-multicluster-2-7/add_cred.png[]
+image::acm-multicluster-2-7/add_cred.png[width=700]
 
 === You will need to provide connection details:
 
 * Cloud Provider Credentials: Choose *Amazon Web Services* +
 
-image::acm-multicluster-2-7/aws_cred.png[]
+image::acm-multicluster-2-7/aws_cred.png[width=800]
 
-image::acm-multicluster-2-7/aws_cred2.png[]
+image::acm-multicluster-2-7/aws_cred2.png[width=800]
 
 ### Screen 1: Basic Info
 
@@ -45,7 +45,7 @@ image::acm-multicluster-2-7/aws_cred2.png[]
 
 When copy and pasting this information, make sure you omit the dot on the url, for example it should read `sandbox1536.opentlc.com` not `.sandbox1536.opentlc.com`
 
-image::acm-multicluster-2-7/cred_basicinfo.png[]
+image::acm-multicluster-2-7/cred_basicinfo.png[width=800]
 
 [start=2]
 2. Click NEXT
@@ -58,7 +58,7 @@ demo console under the field *AWS_ACCESS_KEY_ID*
 * Secret Access Key ID: This information is located on the creds page 
 for the demo console under the field *AWS_SECRET_ACCESS_KEY*
 
-image::acm-multicluster-2-7/screen2.png[]
+image::acm-multicluster-2-7/screen2.png[width=800]
 
 [start=3]
 3. Click NEXT - We don't need to configure a Proxy so we can skip this screen
@@ -71,7 +71,7 @@ image::acm-multicluster-2-7/screen2.png[]
 
 * Red Hat OpenShift pull secret:  https://cloud.redhat.com/openshift/install/pull-secret[Get the pull secret from cloud.redhat.com - RH login Required]
 
-image::acm-multicluster-2-7/pull_secret.png[]
+image::acm-multicluster-2-7/pull_secret.png[width=650]
 
 * SSH private and public keys:  Use an existing key pair or https://docs.openshift.com/container-platform/4.14/installing/installing_aws/installing-aws-default.html#ssh-agent-using_installing-aws-default[generate a new ssh key]
 
@@ -80,7 +80,7 @@ image::acm-multicluster-2-7/pull_secret.png[]
 [start=4]
 4. Click NEXT
 
-image::acm-multicluster-2-7/screen4.png[]
+image::acm-multicluster-2-7/screen4.png[width=700]
 
 [start=5]
 5. Verify the information and click *ADD*
@@ -91,18 +91,18 @@ image::acm-multicluster-2-7/screen4.png[]
 1. From the menu select *Infrastructure → Clusters*
 2. Click *Create Cluster*
 
-image::acm-multicluster-2-7/create_cluster.png[]
+image::acm-multicluster-2-7/create_cluster.png[width=800]
 
 
 [start=3]
 3. Select *Amazon Web services*
 
-image::acm-multicluster-2-7/aws_cluster.png[]
+image::acm-multicluster-2-7/aws_cluster.png[width=800]
 
 [start=4]
 4. Select *Standalone*
 
-image::acm-multicluster-2-7/standalone.png[]
+image::acm-multicluster-2-7/standalone.png[width=800]
 
 [start=5]
 5. Select the *Infrastructure provider credential* we just created called *AWS*
@@ -161,7 +161,7 @@ While we wait for the main cluster to provision, lets go ahead and provision a S
 [start=6]
 6. Expand the *Worker Pools*, and change the worker node count to 0
 
-image::acm-multicluster-2-7/node_0.png[]
+image::acm-multicluster-2-7/node_0.png[width=700]
 
 [start=7]
 7. Click on step 7 to Review *before* proceeding, turn *YAML: ON at the top of the screen.*
@@ -169,7 +169,7 @@ image::acm-multicluster-2-7/node_0.png[]
 [start=8]
 8. Click on the *install-config* tab in the YAML window pane and *change the master replica number to 1* (will likely be 3).  Double check that the worker replica is 0.
 
-image::acm-multicluster-2-7/install-config.png[]
+image::acm-multicluster-2-7/install-config.png[width=500]
 
 [start=9]
 9. Click back on the *cluster* tab in the YAML window pane and locate the section that defines an object of type: *kind: MachinePool*. Add the following line at the end of the *MachinePool* section.
@@ -245,13 +245,13 @@ Prerequisites:
 ** *AWS 1st Cluster* - `environment=prod`
 ** *AWS 2nd Cluster* - `environment=qa`
 
-image::acm-multicluster-2-7/env_labels.png[]
+image::acm-multicluster-2-7/env_labels.png[width=800]
 
 [start=1]
 1. Navigate to *Applications*
 2. Click *Create application, select Subscription*. 
 
-image::acm-multicluster-2-7/create_sub_app.png[]
+image::acm-multicluster-2-7/create_sub_app.png[width=800]
 
 [start=3]
 3. Enter the following information:
@@ -267,20 +267,20 @@ image::acm-multicluster-2-7/create_sub_app.png[]
 4. Verify that *Deploy application resources only on clusters matching specified labels* is selected and enter the following information
 ** *environment*: `dev`. It may ask you to select a 'Cluster set' if it does please choose `default`.
 
-image::acm-multicluster-2-7/label_sub.png[]
+image::acm-multicluster-2-7/label_sub.png[width=650]
 
 [start=5]
 5. Verify all the information is correct. Click *Create*
 
 It will take a few minutes to deploy the application, *Click* on the *Topology* view and verify that *all of the check marks are green*.
 
-image::acm-multicluster-2-7/book_topology.png[]
+image::acm-multicluster-2-7/book_topology.png[width=800]
 
 [start=6]
 6. Under the topology view, Select the *Route* and click on the *Launch Route* *URL*, this will take you to the Book Import application with several books available.
 (Please note that the URL should be http instead of https)
 
-image::acm-multicluster-2-7/book_website.png[]
+image::acm-multicluster-2-7/book_website.png[width=700]
 
 Feel free to experiment with the application.  Edit it and change the label to `environment=prod`.  What happens to the application?
 
@@ -424,7 +424,7 @@ spec:
 [start=7]
 7. Navigate to the Results screen, allow the scan to complete.
 
-image::acm-multicluster-2-7/inform_results.png[]
+image::acm-multicluster-2-7/inform_results.png[width=700]
 
 Once complete notice the violations you have, since we created this policy as a Inform only it will not fix any of the violations, lets go ahead and fix them
 
@@ -437,7 +437,7 @@ Once complete notice the violations you have, since we created this policy as a 
 [start=12]
 12. Navigate to the Results screen, allow the remediation to complete, _it may take longer (20-30 mins) to enforce the policy._
 
-image::acm-multicluster-2-7/enforce_results.png[]
+image::acm-multicluster-2-7/enforce_results.png[width=800]
 
 
 
