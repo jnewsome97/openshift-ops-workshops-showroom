@@ -1,47 +1,113 @@
-# OpenShift for Admins - Showroom Workshop
+# OpenShift Operations Workshops
 
-Modern Showroom-based workshop for OpenShift administrators, compatible with OCP 4.20+.
+This repository contains **two separate workshops** for OpenShift administrators, both compatible with OCP 4.20+. Each workshop is maintained in its own git branch with different content and focus areas.
 
-## Workshop Variants
+## What's Inside
 
-This repository supports multiple workshop variants via git branches:
+This is a **multi-workshop repository** using branch-based variants:
+- Each branch represents a complete, standalone workshop
+- Same core admin topics, different advanced modules
+- Both use modern Showroom framework with integrated terminal
 
-### Standard Workshop (16 modules)
-- **Branch**: `main`
-- **Title**: "OpenShift for Admins"
-- **Modules**: Core admin topics + GitOps + Windows Containers
-- **Use in AgnosticV**:
-  ```yaml
-  ocp4_workload_showroom_content_git_repo: https://github.com/jnewsome97/openshift-ops-workshops.git
-  ocp4_workload_showroom_content_git_repo_ref: main
-  ocp4_workload_showroom_content_antora_playbook: default-site.yml
-  ```
+---
 
-### AppMod Workshop (17 modules)
-- **Branch**: `appmod`
-- **Title**: "Modern App Dev Roadshow - Ops Track"
-- **Modules**: Core admin topics + ACS 4.1 + ACM 2.7
-- **Use in AgnosticV**:
-  ```yaml
-  ocp4_workload_showroom_content_git_repo: https://github.com/jnewsome97/openshift-ops-workshops.git
-  ocp4_workload_showroom_content_git_repo_ref: appmod
-  ocp4_workload_showroom_content_antora_playbook: default-site.yml
-  ```
+## Workshop 1: OpenShift for Admins (Standard)
+
+**Git Branch**: `main`
+**Focus**: Core administration + GitOps + Windows Containers
+**Modules**: 16 total
+
+### Content Overview
+Core topics (14 modules):
+- Environment Setup & Installation
+- Application & Storage Management
+- MachineSets & Infrastructure Nodes
+- Logging with Loki
+- LDAP Group Synchronization
+- Monitoring Basics
+- Templates, Quotas & Limits
+- Networking
+- Project Self-Provisioning
+- Cluster Resource Quota
+- Taints & Tolerations
+
+Advanced topics (2 modules):
+- **GitOps** - Argo CD deployment and management
+- **Windows Containers** - Windows node integration
+
+### Deploy in AgnosticV
+```yaml
+ocp4_workload_showroom_content_git_repo: https://github.com/jnewsome97/openshift-ops-workshops-showroom.git
+ocp4_workload_showroom_content_git_repo_ref: main
+ocp4_workload_showroom_content_antora_playbook: default-site.yml
+```
+
+---
+
+## Workshop 2: Modern App Dev Roadshow - Ops Track (AppMod)
+
+**Git Branch**: `appmod`
+**Focus**: Core administration + ACS 4.1 + ACM 2.7
+**Modules**: 17 total
+
+### Content Overview
+Core topics (14 modules):
+- Environment Setup & Installation
+- Application & Storage Management
+- MachineSets & Infrastructure Nodes
+- Logging with Loki
+- LDAP Group Synchronization
+- Monitoring Basics
+- Templates, Quotas & Limits
+- Networking
+- Project Self-Provisioning
+- Cluster Resource Quota
+- Taints & Tolerations
+
+Advanced topics (3 modules):
+- **ACS 4.1 Vulnerability Scanning** - Container security scanning
+- **ACS 4.1 DevSecOps** - Pipeline integration with Tekton
+- **ACM 2.7 Multicluster Management** - Cluster fleet management
+
+### Deploy in AgnosticV
+```yaml
+ocp4_workload_showroom_content_git_repo: https://github.com/jnewsome97/openshift-ops-workshops-showroom.git
+ocp4_workload_showroom_content_git_repo_ref: appmod
+ocp4_workload_showroom_content_antora_playbook: default-site.yml
+```
+
+---
 
 ## Repository Structure
 
 ```
-openshift-ops-workshops/
-├── default-site.yml          # Antora playbook
+openshift-ops-workshops-showroom/
+├── default-site.yml          # Antora playbook (same for both workshops)
 ├── content/
-│   ├── antora.yml           # Antora component config
+│   ├── antora.yml           # Component config (title differs per branch)
 │   └── modules/
 │       └── ROOT/
-│           ├── nav.adoc     # Navigation (differs per branch)
-│           ├── pages/       # Workshop content
-│           └── images/      # Images
+│           ├── nav.adoc     # Navigation (differs per branch - determines modules)
+│           ├── pages/       # Workshop content (.adoc files)
+│           └── images/      # Images (organized by module)
+│               ├── gitops/
+│               ├── acs-vulnerability-4-1/
+│               ├── acs-devsecops-4-1/
+│               ├── acm-multicluster-2-7/
+│               └── ...
 └── README.md
 ```
+
+### Key Files Per Branch
+
+**Branch-specific differences:**
+- `content/antora.yml` - Workshop title
+- `content/modules/ROOT/nav.adoc` - Module list and order
+
+**Shared across branches:**
+- `default-site.yml` - Antora build configuration
+- `content/modules/ROOT/pages/*.adoc` - All module content files
+- `content/modules/ROOT/images/` - All workshop images
 
 ## Local Development
 
