@@ -1,7 +1,6 @@
 ## Environment Overview
 
-You will be interacting with an OpenShift 4 cluster that is running on {{
-ENVIRONMENT }}.
+You will be interacting with an OpenShift 4 cluster that is running on {ENVIRONMENT}.
 
 The basics of the OpenShift 4 installation have been completed in advance.
 The OpenShift cluster is essentially set to all defaults and looks like the
