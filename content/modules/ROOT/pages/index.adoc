@@ -4,7 +4,7 @@ You will be interacting with an OpenShift 4 cluster. To check the exact version,
 
 [source,bash,role="execute"]
 ----
-oc version | grep "Server Version"
+oc version
 ----
 
 The basics of the OpenShift 4 installation have been completed in advance.
