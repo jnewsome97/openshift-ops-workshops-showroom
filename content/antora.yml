@@ -8,4 +8,3 @@ nav:
 asciidoc:
   attributes:
     page-pagination: ''
-    ENVIRONMENT: 'OpenShift 4.20'
