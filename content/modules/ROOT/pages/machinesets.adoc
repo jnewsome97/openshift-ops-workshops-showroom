@@ -1,0 +1,182 @@
+## MachineSets, Machines, and Nodes
+
+Kubernetes `Nodes` are where containers are orchestrated and run in `Pods`.
+OpenShift 4 is fundamentally different than OpenShift 3 with respect to its
+focus on automated operations through the use of `Operators`. With respect
+to `Nodes`, there is a set of `Operators` and controllers that are focused on
+maintaining the state of the cluster size -- including creating and
+destroying `Nodes`!
+
+### MachineSets and Machines
+As you saw in the application management exercises, there is a basic
+fundamental relationship between a `ReplicaSet`/`ReplicationController` and
+the `Pods` it creates. Similarly, there is a relationship between a
+`MachineSet` and a `Machine`.
+
+The `MachineSet` defines a desired state for a set of `Machine` objects. When
+using IPI installations, then, there is an `Operator` whose job it is to make
+sure that there is actually an underlying instance for each `Machine` and,
+finally, that every `Machine` becomes a `Node`.
+
+Execute the following:
+
+[source,bash,role="execute"]
+----
+oc get machineset.machine.openshift.io -n openshift-machine-api
+----
+
+You will see something like:
+
+----
+NAME                                    DESIRED   CURRENT   READY   AVAILABLE   AGE
+cluster-6ljsd-9b8vz-worker-us-east-2a   1         1         1       1           167m
+cluster-6ljsd-9b8vz-worker-us-east-2b   1         1         1       1           167m
+cluster-6ljsd-9b8vz-worker-us-east-2c   0         0                             167m
+----
+
+When OpenShift was installed, the installer interrogated the cloud provider
+to learn about the available AZs (since this is on AWS). It then ultimately
+created a `MachineSet` for each AZ and then scaled those sets, in order,
+until it reached the desired number of `Machines`. Since the default
+installation has 2 workers, the first 2 AZs got one worker each. The rest got
+zero.
+
+[source,bash,role="execute"]
+----
+oc get machine.machine.openshift.io -n openshift-machine-api
+----
+
+You will see something like:
+
+----
+NAME                                          PHASE     TYPE          REGION      ZONE         AGE
+cluster-pn5pp-g5lb8-master-0                  Running   m5a.2xlarge   us-east-2   us-east-2a   6h34m
+cluster-pn5pp-g5lb8-master-1                  Running   m5a.2xlarge   us-east-2   us-east-2b   6h34m
+cluster-pn5pp-g5lb8-master-2                  Running   m5a.2xlarge   us-east-2   us-east-2c   6h34m
+cluster-pn5pp-g5lb8-worker-us-east-2a-ljf99   Running   m6a.8xlarge   us-east-2   us-east-2a   6h29m
+cluster-pn5pp-g5lb8-worker-us-east-2b-j2w27   Running   m6a.8xlarge   us-east-2   us-east-2b   6h29m
+----
+
+Each `Machine` has a corresponding `INSTANCE`. Do those IDs look familiar?
+They are AWS EC2 instance IDs. You also see `Machines` for the OpenShift
+masters. They are not part of a `MachineSet` because they are somewhat
+stateful and their management is handled by different operators and through a
+different process. If you have a different number of worker machines, 
+it doesn't matter as we will be adding more later.
+
+[Warning]
+====
+There is currently no protection for the master `Machines`. Do not
+accidentally or intentionally delete them, as this will potentially break
+your cluster. It is repairable, but it is not fun.
+====
+
+Lastly, execute:
+
+[source,bash,role="execute"]
+----
+oc get nodes
+----
+
+You will see something like:
+
+----
+NAME                                        STATUS   ROLES                  AGE     VERSION
+ip-10-0-22-105.us-east-2.compute.internal   Ready    control-plane,master   6h33m   v1.28.10+a2c84a5
+ip-10-0-44-60.us-east-2.compute.internal    Ready    worker                 6h27m   v1.28.10+a2c84a5
+ip-10-0-49-34.us-east-2.compute.internal    Ready    control-plane,master   6h34m   v1.28.10+a2c84a5
+ip-10-0-5-241.us-east-2.compute.internal    Ready    worker                 6h27m   v1.28.10+a2c84a5
+ip-10-0-75-11.us-east-2.compute.internal    Ready    control-plane,master   6h34m   v1.28.10+a2c84a5
+----
+
+Each `Machine` ends up corresponding to a `Node`. With IPI, there is a
+bootstrap process where the machine operator will create an EC2 instance and
+then Ignition inside the RHEL CoreOS operating system will receive initial
+instructions from the operator. This results in the EC2 instance being
+configured as an OpenShift node and joining the cluster.
+
+If you spend some time using `oc describe` and the various `Machine` and
+`Node` objects, you will figure out which ones correlate with which.
+
+### Cluster Scaling
+Because of the magic of `Operators` and the way in which OpenShift uses them
+to manage `Machines` and `Nodes`, scaling your cluster in OpenShift 4 is
+extremely trivial.
+
+Look at the list of `MachineSets` again:
+
+[source,bash,role="execute"]
+----
+oc get machineset.machine.openshift.io -n openshift-machine-api
+----
+
+Within that list, we will scale one of the `MachineSet` objects with the
+`oc scale` command. Run:
+
+[source,bash,role="execute"]
+----
+CLUSTERNAME=$(oc get infrastructure cluster -o=jsonpath='{.status.infrastructureName}')
+ZONENAME=$(oc get nodes --sort-by='.metadata.creationTimestamp' -o=jsonpath='{.items[-1:].metadata.labels.topology\.kubernetes\.io/zone}')
+oc scale machineset.machine.openshift.io ${CLUSTERNAME}-worker-${ZONENAME} -n openshift-machine-api --replicas=3
+----
+
+Take special note the `MachineSet` scaled is likely different from
+the one that is shown in the lab guide. You should see a note that the
+`MachineSet` was successfully scaled. Now, look at the list of `Machines`:
+
+[source,bash,role="execute"]
+----
+oc get machine.machine.openshift.io -n openshift-machine-api
+----
+
+You probably already have new entries for 2 new `Machine` with a `STATE` of
+`Pending`. After a few moments, both will have a corresponding EC2 instance ID
+and will look something like:
+
+----
+cluster-f4a3-lpxbs-worker-us-east-2c-h7gdt   i-0b9208ec47f0e206b   running   m6a.8xlarge     us-east-2   us-east-2c   47s
+----
+
+At this point, in the background, the bootstrap process is happening
+automatically. After several minutes (up to five or so), take a look at the
+output of:
+
+[source,bash,role="execute"]
+----
+oc get nodes
+----
+
+You should see your fresh and happy new nodes. They are the ones with a very young age:
+
+----
+ip-10-0-34-107.us-east-2.compute.internal   Ready   worker   44s    v1.28.10+a2c84a5
+----
+
+[NOTE]
+====
+It can take several minutes for a `Machine` to be prepared and added
+as a `Node`. You can follow the process by running a `watch` against
+`oc get nodes` if you wish.
+====
+
+Scale the `MachineSet` from two back down to one before continuing.
+
+[Warning]
+====
+Make sure you've set the ${CLUSTERNAME} and ${ZONENAME} varaible from
+when you scaled up, a few steps ago.
+====
+
+First we will patch the deletePolicy of the machineset to delete only the newest machines:
+
+[source,bash,role="execute"]
+----
+oc patch machineset.machine.openshift.io ${CLUSTERNAME}-worker-${ZONENAME} -n openshift-machine-api --type='merge' -p '{"spec":{"deletePolicy":"Newest"}}'
+----
+
+Then we will scale down the machineset
+
+[source,bash,role="execute"]
+----
+oc scale machineset.machine.openshift.io ${CLUSTERNAME}-worker-${ZONENAME} -n openshift-machine-api --replicas=1
+----

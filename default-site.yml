@@ -1,0 +1,18 @@
+site:
+  title: Modern App Dev Roadshow - Ops Track
+  url: http://localhost:8080
+  start_page: ocp-admin-storage::index.adoc
+
+content:
+  sources:
+  - url: ./
+    start_path: content
+    branches: HEAD
+
+ui:
+  bundle:
+    url: https://github.com/jnewsome97/rhdp_showroom_theme/releases/download/v1.0.0-execute/ui-bundle.zip
+    snapshot: true
+
+output:
+  dir: ./public

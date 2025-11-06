@@ -1,0 +1,55 @@
+#!/bin/bash
+# Workshop CLI Tools Setup Script
+# Automatically installs required tools when terminal starts
+
+set -e
+
+echo "🔧 Installing workshop CLI tools..."
+
+# Ensure ~/.local/bin exists and is in PATH
+mkdir -p ~/.local/bin
+export PATH="$HOME/.local/bin:$PATH"
+
+# Install NooBaa CLI
+if ! command -v noobaa &> /dev/null; then
+    echo "  📦 Installing NooBaa CLI v5.11.0..."
+    curl -sL https://github.com/noobaa/noobaa-operator/releases/download/v5.11.0/noobaa-linux-v5.11.0 -o ~/.local/bin/noobaa
+    chmod +x ~/.local/bin/noobaa
+    echo "  ✅ NooBaa CLI installed"
+else
+    echo "  ✅ NooBaa CLI already installed"
+fi
+
+# Install yq (YAML processor)
+if ! command -v yq &> /dev/null; then
+    echo "  📦 Installing yq v4.48.1..."
+    curl -sL https://github.com/mikefarah/yq/releases/download/v4.48.1/yq_linux_amd64 -o ~/.local/bin/yq
+    chmod +x ~/.local/bin/yq
+    echo "  ✅ yq installed"
+else
+    echo "  ✅ yq already installed"
+fi
+
+# Install AWS CLI
+if ! command -v aws &> /dev/null; then
+    echo "  📦 Installing AWS CLI v2..."
+    curl -sL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o /tmp/awscliv2.zip
+    unzip -q /tmp/awscliv2.zip -d /tmp
+    /tmp/aws/install -i ~/.local/aws-cli -b ~/.local/bin
+    rm -rf /tmp/aws*
+    echo "  ✅ AWS CLI installed"
+else
+    echo "  ✅ AWS CLI already installed"
+fi
+
+echo ""
+echo "✅ All workshop tools installed successfully!"
+echo ""
+echo "Available commands:"
+echo "  - oc (OpenShift CLI)"
+echo "  - kubectl (Kubernetes CLI)"
+echo "  - helm (Helm package manager)"
+echo "  - noobaa (NooBaa object storage CLI)"
+echo "  - yq (YAML processor)"
+echo "  - aws (AWS CLI)"
+echo ""

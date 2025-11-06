@@ -1,0 +1,18 @@
+# Antora build output
+public/
+
+# Antora cache
+.antora-cache/
+
+# macOS
+.DS_Store
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Node modules (if npm used locally)
+node_modules/
