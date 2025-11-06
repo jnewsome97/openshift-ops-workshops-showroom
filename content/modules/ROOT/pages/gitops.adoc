@@ -18,7 +18,7 @@ before you install the Red Hat OpenShift GitOps Operator.
 ----
 1. Now switch over to your *Openshift Web Console*:
 
-{{ MASTER_URL }}
+{MASTER_URL}
 
 2. Open the `Administrator` perspective of the web console.
 
@@ -59,7 +59,7 @@ and the password is:
 
 [source,role="copypaste"]
 ----
-{{ KUBEADMIN_PASSWORD }}
+{KUBEADMIN_PASSWORD}
 ----
 
 [start=4]

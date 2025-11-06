@@ -173,7 +173,7 @@ As the `kubeadmin` user apply the OAuth configuration with `oc`.
 
 [source,bash,role="execute"]
 ----
-oc login -u kubeadmin -p {{ KUBEADMIN_PASSWORD }}
+oc login -u kubeadmin -p {KUBEADMIN_PASSWORD}
 ----
 
 This command will create a Kubernetes secret named "ldap-secret" in the "openshift-config" namespace with a single data item. The data item is named "bindPassword" and its value is set to "b1ndP^ssword"
@@ -187,19 +187,19 @@ Download the certificate and save it to the file 'ca.crt' with this command:
 
 [source,bash,role="execute"]
 ----
-wget https://certs.godaddy.com/repository/gd-class2-root.crt -O {{ HOME_PATH }}/support/ca.crt
+wget https://certs.godaddy.com/repository/gd-class2-root.crt -O {HOME_PATH}/support/ca.crt
 ----
 
 ----
 If you see `Unable to establish SSL connection.` please click the above command again before proceeding.
 ----
 
-Click this command to create a new ConfigMap named ca-config-map in the openshift-config namespace. The ConfigMap is populated with the contents of the file {{ HOME_PATH }}/support/ca.crt. It then applys the file.
+Click this command to create a new ConfigMap named ca-config-map in the openshift-config namespace. The ConfigMap is populated with the contents of the file {HOME_PATH}/support/ca.crt. It then applys the file.
 
 [source,bash,role="execute"]
 ----
-oc create configmap ca-config-map --from-file={{ HOME_PATH }}/support/ca.crt -n openshift-config
-oc apply -f {{ HOME_PATH }}/support/oauth-cluster.yaml
+oc create configmap ca-config-map --from-file={HOME_PATH}/support/ca.crt -n openshift-config
+oc apply -f {HOME_PATH}/support/oauth-cluster.yaml
 ----
 
 [NOTE]
@@ -231,7 +231,7 @@ We have provided a `groupsync` configuration file for you:
 View configuration file
 [source,bash,role="execute"]
 ----
-cat {{ HOME_PATH }}/support/groupsync.yaml
+cat {HOME_PATH}/support/groupsync.yaml
 ----
 
 Without going into too much detail (you can look at the documentation), the
@@ -249,7 +249,7 @@ Execute the `groupsync`:
 
 [source,bash,role="execute"]
 ----
-oc adm groups sync --sync-config={{ HOME_PATH }}/support/groupsync.yaml --confirm
+oc adm groups sync --sync-config={HOME_PATH}/support/groupsync.yaml --confirm
 ----
 
 You will see output like the following:
@@ -416,7 +416,7 @@ Make sure you login as the cluster administrator:
 
 [source,bash,role="execute"]
 ----
-oc login -u kubeadmin -p {{ KUBEADMIN_PASSWORD }}
+oc login -u kubeadmin -p {KUBEADMIN_PASSWORD}
 ----
 
 Then, create several *Projects* for people to collaborate:
@@ -550,7 +550,7 @@ After you are done, make sure to login again as the admin user:
 
 [source,bash,role="execute"]
 ----
-oc login -u kubeadmin -p {{ KUBEADMIN_PASSWORD }}
+oc login -u kubeadmin -p {KUBEADMIN_PASSWORD}
 ----
 
 That concludes the LDAP module. Thanks for working through it!

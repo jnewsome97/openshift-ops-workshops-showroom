@@ -8,7 +8,7 @@ In the demo console you will find that ACM from 4.7 onwards is now intergrated w
 
 Please find your console located below: 
 
-{{ MASTER_URL }}
+{MASTER_URL}
 
 If you navigate to `Local-cluster` then you should see the new ACM console when you select `All Clusters`.
 
