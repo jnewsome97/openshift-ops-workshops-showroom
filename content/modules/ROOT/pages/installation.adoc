@@ -16,7 +16,7 @@ To inspect the cluster installation, you can simply SSH to the bastion host wher
 
 [source,bash,role="execute"]
 ----
-ssh -l {{ SSH_USERNAME }} {{ BASTION_FQDN }} -o ServerAliveInterval=120
+ssh -l {SSH_USERNAME} {BASTION_FQDN} -o ServerAliveInterval=120
 ----
 
 You'll also find this command on the workshop credential page you used to log in with. It'll look something like this:
@@ -45,7 +45,7 @@ yes
 Here is your ssh password (please copy/paste):
 
 ----
-{{ SSH_PASSWORD }}
+{SSH_PASSWORD}
 ----
 
 Once you've SSH-ed into the bastion host, become the `ec2-user`:
@@ -366,7 +366,7 @@ If you find that something isn't working (or simply not there);
 please feel free to open the web console in another tab. 
 You can do this by simply control+click the following link:
 
-{{ MASTER_URL }}
+{MASTER_URL}
 
 When accessing the console for the first time, you may need to switch from `All Clusters` to `local-cluster`. We will be using the local-cluster for the majority of the exercises. If you don’t have this option, please continue.
 
