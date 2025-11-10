@@ -8,3 +8,13 @@ nav:
 asciidoc:
   attributes:
     page-pagination: ''
+    API_URL: {env-API_URL}
+    MASTER_URL: {env-MASTER_URL}
+    KUBEADMIN_PASSWORD: {env-KUBEADMIN_PASSWORD}
+    SSH_USERNAME: {env-SSH_USERNAME}
+    SSH_PASSWORD: {env-SSH_PASSWORD}
+    BASTION_FQDN: {env-BASTION_FQDN}
+    GUID: {env-GUID}
+    ROUTE_SUBDOMAIN: {env-ROUTE_SUBDOMAIN}
+    HOME_PATH: {env-HOME_PATH}
+    ENVIRONMENT: AWS
