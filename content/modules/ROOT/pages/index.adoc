@@ -15,7 +15,7 @@ following:
 * 2 worker nodes
 * 1 bastion host
 
-link:https://github.com/openshift-labs/workshop-dashboard[Homeroom] is a
+link:https://github.com/rhpds/showroom[Showroom] is a
 solution that provides this integrated lab guide, terminal, and web console
 pane. It is actually running inside the cluster that you will be interacting
 with.
@@ -130,12 +130,12 @@ We will now run `oc whoami` to see what account you will be using today:
 oc whoami
 ----
 
-Let's inspect _dashboard-cluster-admin_ `ClusterRoleBinding` that gave our
+Let's inspect the `ClusterRoleBinding` that gave our
 `ServiceAccount` _cluster-admin_ `ClusterRole`:
 
 [source,bash,role="execute"]
 ----
-oc get clusterrolebinding dashboard-cluster-admin -o yaml
+oc get clusterrolebinding -l app=showroom -o yaml
 ----
 
 Notice that our `ServiceAccount` is a subject in this `ClusterRoleBinding`
