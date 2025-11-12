@@ -145,8 +145,8 @@ As a cluster-admin throughout the exercises, you will be able to do anything
 with the cluster as you have noted earlier, so follow instructions carefully.
 
 ----
-Please note that if you experience any issues with the workshop dashboard 
-throughout this workshop (application is not avaliable), you should try reopening it 
+Please note that if you experience any issues with Showroom
+throughout this workshop (application is not available), you should try reopening it
 in an incognito window after a few minutes.
 ----
 
@@ -164,7 +164,7 @@ git clone -b ocp4-prod https://github.com/OpenShiftDemos/openshift-ops-workshops
 
 bash openshift-ops-workshops/support/clone_support_folder.sh
 
-ls /opt/app-root/src/support/
+ls {HOME_PATH}/support/
 ----
 
 
