@@ -17,7 +17,7 @@ Container Platform clusters.
 
 #### Examine Alerting Configuration
 
-1. Login to the link:{{ MASTER_URL }}[OpenShift Web Console] with the kubeadmin credentials. (Please do not use built-in console)
+1. Login to the link:{{ MASTER_URL }}[OpenShift Web Console] with the kubeadmin credentials.
 +
 [source,role="copypaste"]
 ----
