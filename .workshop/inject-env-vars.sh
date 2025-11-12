@@ -20,8 +20,8 @@ if [ -f "$ANTORA_FILE" ]; then
     BASTION_FQDN: ${BASTION_FQDN:-}
     GUID: ${GUID:-}
     ROUTE_SUBDOMAIN: ${ROUTE_SUBDOMAIN:-}
-    HOME_PATH: ${HOME_PATH:-}
-    ENVIRONMENT: AWS
+    HOME_PATH: ${HOME_PATH:-/home/lab-user}
+    ENVIRONMENT: ${ENVIRONMENT:-Amazon Web Services}
 EOF
 
   echo "Environment variables injected into antora.yml"
