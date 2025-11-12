@@ -150,21 +150,23 @@ throughout this workshop (application is not available), you should try reopenin
 in an incognito window after a few minutes.
 ----
 
-Please also check that you can see the support directory
+Please set up the workshop support files by running the following commands:
 
 [source,bash,role="execute"]
 ----
-ls
+git clone -b ocp4-prod https://github.com/OpenShiftDemos/openshift-ops-workshops.git ~/openshift-ops-workshops
 ----
 
-If you see the support directory please skip the next commands and move to the next module:
-
+[source,bash,role="execute"]
 ----
-git clone -b ocp4-prod https://github.com/OpenShiftDemos/openshift-ops-workshops.git
+cp -r ~/openshift-ops-workshops/support ~/support
+----
 
-bash openshift-ops-workshops/support/clone_support_folder.sh
+Verify the support directory is in place:
 
-ls {HOME_PATH}/support/
+[source,bash,role="execute"]
+----
+ls ~/support/
 ----
 
 
