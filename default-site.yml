@@ -9,6 +9,19 @@ content:
     start_path: content
     branches: HEAD
 
+asciidoc:
+  attributes:
+    API_URL: ${API_URL}
+    MASTER_URL: ${MASTER_URL}
+    KUBEADMIN_PASSWORD: ${KUBEADMIN_PASSWORD}
+    SSH_USERNAME: ${SSH_USERNAME}
+    SSH_PASSWORD: ${SSH_PASSWORD}
+    BASTION_FQDN: ${BASTION_FQDN}
+    GUID: ${GUID}
+    ROUTE_SUBDOMAIN: ${ROUTE_SUBDOMAIN}
+    HOME_PATH: ${HOME_PATH}
+    ENVIRONMENT: ${ENVIRONMENT}
+
 ui:
   bundle:
     url: https://github.com/jnewsome97/rhdp_showroom_theme/releases/download/v1.0.0-execute/ui-bundle.zip

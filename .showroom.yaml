@@ -1,6 +1,0 @@
-# Showroom Configuration
-# Hooks to run before building content
-
-hooks:
-  pre-build:
-    - .workshop/inject-env-vars.sh
