@@ -2,7 +2,7 @@
 # Inject environment variables into antora.yml as attributes
 # This script should be called by the Showroom deployment process
 
-ANTORA_FILE="/opt/app-root/src/content/antora.yml"
+ANTORA_FILE="/showroom/repo/content/antora.yml"
 
 echo "=== Workshop Variable Injection ==="
 echo "Looking for antora.yml at: $ANTORA_FILE"
