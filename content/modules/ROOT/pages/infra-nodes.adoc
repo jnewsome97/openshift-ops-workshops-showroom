@@ -39,7 +39,8 @@ In order to understand how `MachineSets` work, run the following.
 
 This will allow you to follow along with some of the following discussion.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 CLUSTERNAME=$(oc get infrastructure cluster -o=jsonpath='{.status.infrastructureName}')
 ZONENAME=$(oc get nodes --sort-by='.metadata.creationTimestamp' -o=jsonpath='{.items[-1:].metadata.labels.topology\.kubernetes\.io/zone}')
@@ -142,7 +143,8 @@ rules for creating one, at least for a simple change like we're making:
 This sounds complicated, but we have a little script and some steps that
 will do the hard work for you:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 bash {HOME_PATH}/support/machineset-generator.sh 1 infra 0 | oc create -f -
 bash {HOME_PATH}/support/machineset-patch.sh
@@ -151,7 +153,7 @@ oc scale machineset.machine.openshift.io/$MACHINESET -n openshift-machine-api --
 ----
 
 Then go ahead and run:
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get machineset.machine.openshift.io -n openshift-machine-api
 ----
@@ -175,7 +177,7 @@ see when the actual node is joined and ready.
 It can take several minutes for a `Machine` to be prepared and added as a `Node`.
 ====
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get nodes
 ----
@@ -199,7 +201,7 @@ one, take a look at the `AGE` column. It will be the youngest! Also, in the
 `infra` role.
 
 Alternatively you can list the node by role.
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get nodes -l node-role.kubernetes.io/infra
 ----
@@ -209,7 +211,8 @@ In our case, the youngest node was named
 `ip-10-0-128-138.us-east-1.compute.internal`, so we can ask what its labels
 are:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 YOUNG_INFRA_NODE=$(oc get nodes -l node-role.kubernetes.io/infra  --sort-by=.metadata.creationTimestamp -o jsonpath='{.items[0].metadata.name}')
 oc get nodes ${YOUNG_INFRA_NODE} --show-labels | grep --color node-role
@@ -273,14 +276,14 @@ The OpenShift router is managed by an `Operator` called
 `openshift-ingress-operator`. Its `Pod` lives in the
 `openshift-ingress-operator` project:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get pod -n openshift-ingress-operator
 ----
 
 The actual default router instance lives in the `openshift-ingress` project.  Take a look at the `Pods`.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get pods -n openshift-ingress -o wide
 ----
@@ -295,7 +298,8 @@ router-default-7bc4c9c5cd-fq7m2   1/1     Running   0          9h    10.131.0.7 
 
 Review a `Node` on which a router is running:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 ROUTER_POD_NODE=$(oc get pods -n openshift-ingress -o jsonpath='{.items[0].spec.nodeName}')
 oc get node ${ROUTER_POD_NODE}
@@ -317,7 +321,7 @@ The OpenShift router operator uses a custom resource definition (`CRD`)
 called `ingresses.config/cluster` to define the default routing
 subdomain for the cluster:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get ingresses.config/cluster -o yaml
 ----
@@ -349,7 +353,7 @@ Individual router deployments are managed via
 `ingresscontrollers/default` (the default IngressController). There is a default one
 created in the `openshift-ingress-operator` namespace:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc --namespace openshift-ingress-operator get ingresscontrollers/default -o yaml
 ----
@@ -401,7 +405,8 @@ status:
 To specify a `nodeSelector` that tells the router pods to hit the
 infrastructure nodes, we can apply the following configuration:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 oc apply -f {HOME_PATH}/support/ingresscontroller.yaml
 ----
@@ -419,7 +424,7 @@ it. If you run that command again, you shouldn't see that warning.
 
 Run:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get pod -n openshift-ingress -o wide
 ----
@@ -442,7 +447,7 @@ deploys the actual registry pods. That CRD is
 `configs.imageregistry.operator.openshift.io`. You will edit the `cluster` CR
 object in order to add the `nodeSelector`. First, take a look at it:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get configs.imageregistry.operator.openshift.io/cluster -o yaml
 ----
@@ -491,7 +496,7 @@ status:
 
 If you run the following command:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc patch configs.imageregistry.operator.openshift.io/cluster -p '{"spec":{"nodeSelector":{"node-role.kubernetes.io/infra": ""}}}' --type=merge
 ----
@@ -509,7 +514,7 @@ After you run the patch command you should see the registry pod being moved to t
 infra node. The registry is in the `openshift-image-registry` project. If you
 execute the following quickly enough:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get pod -n openshift-image-registry
 ----
@@ -574,7 +579,7 @@ data:
 There is no `ConfigMap` created as part of the installation. Without one, the operator will assume
 default settings. Verify the `ConfigMap` is not defined in your cluster:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get configmap cluster-monitoring-config -n openshift-monitoring
 ----
@@ -588,7 +593,7 @@ Error from server (NotFound): configmaps "cluster-monitoring-config" not found
 NOTE: If you have a cluster-monitoring-config, it is recommended that 
 you delete the configuration using the following command
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc delete configmap cluster-monitoring-config -n openshift-monitoring
 ----
@@ -597,28 +602,29 @@ oc delete configmap cluster-monitoring-config -n openshift-monitoring
 The operator will, in turn, create several `ConfigMap` objects for the
 various monitoring stack components, and you can see them, too:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get configmap -n openshift-monitoring
 ----
 
 You can create the new monitoring config with the following command:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 oc create -f {HOME_PATH}/support/cluster-monitoring-configmap.yaml
 ----
 
 Watch the monitoring pods move from `worker` to `infra` `Nodes` with:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 watch 'oc get pod -n openshift-monitoring'
 ----
 
 or:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get pod -w -n openshift-monitoring
 ----

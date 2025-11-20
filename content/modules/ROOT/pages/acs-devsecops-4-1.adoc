@@ -55,12 +55,12 @@ The assets described below are available in a public GitHub repository https://g
 NOTE: Skip the *git clone* command if you have the existing folder ready, But you will need to the commands after to ensure all of the resources are available. 
 |===
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 git clone https://github.com/openshiftdemos/openshift-ops-workshops acs-workshop
 ----
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 export TUTORIAL_HOME="$(pwd)/acs-workshop"
 kubectl apply -f $TUTORIAL_HOME/workshop/demo-apps/configuration --recursive
@@ -73,7 +73,7 @@ kubectl apply -f $TUTORIAL_HOME/workshop/demo-apps/ --recursive
 Run the following command and ensure that the applications are up and running
 |===
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 kubectl get deployments -l demo=acs -A
 ----
@@ -96,7 +96,7 @@ The first of two tasks in the pipeline is the *image scan test* task. The task s
 
 To see the *image scan* task, run the following on the command line;
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 cat $TUTORIAL_HOME/workshop/demo-apps/pipelines/tasks/rox-image-scan-task.yml 
 ----
@@ -109,7 +109,7 @@ The *image check test* will tell ACS central to check the scanned image against 
 
 To see the *image check* task, run the following on the command line;
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 cat $TUTORIAL_HOME/workshop/demo-apps/pipelines/tasks/rox-image-check-task.yml 
 ----
@@ -144,7 +144,7 @@ NOTE: make sure to only alter the line that says *rox_api_token: "YOUR_API_TOKEN
 
 Then apply the changes.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 kubectl apply -f $TUTORIAL_HOME/workshop/demo-apps/pipelines/pipeline/rox-secrets.yml 
 ----

@@ -21,14 +21,15 @@ In this lab, we will be exploring both use cases.
 
 In order to set a `clusterresourcequota` to a user you need to be `kubeadmin`
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 oc login -u kubeadmin -p {KUBEADMIN_PASSWORD}
 ----
 
 Now, set a quota for the `normaluser1`. We will be using the `annotation` key of `openshift.io/requester=` to identify the projects that will have these quotas assigned to. For this exercise, we will set a hard quota against creating more than 10 pods. Please ignore any deprecation warnings.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc create clusterquota for-user-normaluser1 \
     --project-annotation-selector openshift.io/requester=normaluser1 \
@@ -42,7 +43,7 @@ The syntax is `openshift.io/requester=<username>`.
 
 View the configuration.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get clusterresourcequotas for-user-normaluser1 -o yaml
 ----
@@ -73,14 +74,14 @@ This user, `normaluser1`, can create no more than 10 pods accross all the projec
 
 Now, login as `normaluser1`
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc login -u normaluser1 -p Op#nSh1ft
 ----
 
 List all your current projects
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get projects
 ----
@@ -93,7 +94,7 @@ No resources found.
 
 Create two projects `welcome1` and `welcome2`.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc new-project welcome1
 oc new-project welcome2
@@ -101,7 +102,7 @@ oc new-project welcome2
 
 You'll be creating two applications. One in the `welcome1` project and the other in the `welcome2` project.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc new-app -n welcome1 --name=php1 quay.io/redhatworkshops/welcome-php:latest
 oc new-app -n welcome2 --name=php2 quay.io/redhatworkshops/welcome-php:latest
@@ -109,7 +110,7 @@ oc new-app -n welcome2 --name=php2 quay.io/redhatworkshops/welcome-php:latest
 
 After the deployment, you should have two running pods. One in each namespace. Check it with the `oc get pods` command (You may have to run this a few times before you see any output):
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get pods -n welcome1 -l deployment=php1
 oc get pods -n welcome2 -l deployment=php2
@@ -128,14 +129,15 @@ php2-1-ljw9w   1/1     Running   0          4m20s
 
 Now we can check the quota by first becoming `kubeadmin`:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 oc login -u kubeadmin -p {KUBEADMIN_PASSWORD}
 ----
 
 Now run `oc describe clusterresourcequotas for-user-normaluser1` to see the status of the quota:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc describe clusterresourcequotas for-user-normaluser1
 ----
@@ -157,7 +159,7 @@ pods		2	10
 
 You see that not only that 2 out of 10 pods are being used, but that the namespaces the quota is being applied to. Check the namespace manifest for `welcome1` to see the annotation the quota is looking for:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get namespace welcome1 -o yaml
 ----
@@ -197,7 +199,7 @@ status:
 Now as `normaluser1`, try to scale your apps beyond 10 pods:
 
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc login -u normaluser1 -p Op#nSh1ft
 oc scale deploy/php1 -n welcome1 --replicas=5
@@ -206,7 +208,7 @@ oc scale deploy/php2 -n welcome2 --replicas=6
 
 Take a note of how many pods are running:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get pods --no-headers -n welcome1 -l deployment=php1 | wc -l
 oc get pods --no-headers -n welcome2 -l deployment=php2 | wc -l
@@ -214,7 +216,7 @@ oc get pods --no-headers -n welcome2 -l deployment=php2 | wc -l
 
 Both of these commands should return no more than 10 added up together. Check the events to see the quota in action!
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get events -n welcome1 | grep "quota" | head -1
 oc get events -n welcome2 | grep "quota" | head -1
@@ -229,7 +231,8 @@ den: exceeded quota: for-user-normaluser1, requested: pods=1, used: pods=10, lim
 
 To see the status, switch to the `kubeadmin` account and run the `describe` command from before:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 oc login -u kubeadmin -p {KUBEADMIN_PASSWORD}
 oc describe clusterresourcequotas for-user-normaluser1
@@ -254,14 +257,15 @@ pods            10      10
 
 In order to set a quota by application stacks that may span multiple projects, you'll have to use labels to identify the project. First, make sure you're `kubeadmin`
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 oc login -u kubeadmin -p {KUBEADMIN_PASSWORD}
 ----
 
 Now set a quota based on a label. For this lab we will use `appstack=pricelist` key/value based label to identify projects.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc create clusterresourcequota for-pricelist \
     --project-label-selector=appstack=pricelist \
@@ -270,7 +274,7 @@ oc create clusterresourcequota for-pricelist \
 
 Now create two projects:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc adm new-project pricelist-frontend
 oc adm new-project pricelist-backend
@@ -278,7 +282,7 @@ oc adm new-project pricelist-backend
 
 Assign the `edit` role to the user `normaluser1` for these two projects:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc adm policy add-role-to-user edit normaluser1 -n pricelist-frontend
 oc adm policy add-role-to-user edit normaluser1 -n pricelist-backend
@@ -286,7 +290,7 @@ oc adm policy add-role-to-user edit normaluser1 -n pricelist-backend
 
 To identify these two projects to belonging to the `pricelist` application stack, you will need to label the corresponding namespace:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc label namespace pricelist-frontend appstack=pricelist
 oc label namespace pricelist-backend appstack=pricelist
@@ -294,7 +298,7 @@ oc label namespace pricelist-backend appstack=pricelist
 
 Run the `oc describe` command for the `for-pricelist` cluster resource quota:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc describe clusterresourcequotas for-pricelist
 ----
@@ -316,7 +320,7 @@ pods            0       5
 
 Login as `normaluser1` and create the applications in their respective projects:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc login -u normaluser1 -p Op#nSh1ft
 oc new-app -n pricelist-frontend --name frontend quay.io/redhatworkshops/pricelist:frontend
@@ -325,7 +329,8 @@ oc new-app -n pricelist-backend --name backend quay.io/redhatworkshops/pricelist
 
 Check the status of the quota by logging in as `kubeadmin` and running the `describe` command:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 oc login -u kubeadmin -p {KUBEADMIN_PASSWORD}
 oc describe clusterresourcequotas for-pricelist
@@ -353,7 +358,7 @@ The user `normaluser1` can create more pods because `pricelist-frontend` and `pr
 
 Test this by logging back in as `normaluser1` and try to scale the applications beyond 5 pods total.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc login -u normaluser1 -p Op#nSh1ft
 oc scale -n pricelist-frontend deploy/frontend --replicas=3
@@ -362,7 +367,7 @@ oc scale -n pricelist-backend deploy/backend --replicas=3
 
 Just like before, you should see an error about not being able to scale:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get events -n pricelist-frontend | grep "quota" | head -1
 oc get events -n pricelist-backend | grep "quota" | head -1
@@ -379,21 +384,22 @@ The output should be like the other exercise:
 
 Clean up the work you did by first becoming `kubeadmin`:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 oc login -u kubeadmin -p {KUBEADMIN_PASSWORD}
 ----
 
 These quotas may interfere with other labs; so delete both of the `clusterresourcequota` we created in this lab:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc delete clusterresourcequotas for-pricelist for-user-normaluser1
 ----
 
 Also delete the projects we created for this lab:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc delete projects pricelist-backend pricelist-frontend welcome1 welcome2
 ----
@@ -401,7 +407,8 @@ oc delete projects pricelist-backend pricelist-frontend welcome1 welcome2
 Make sure you login as `kubeadmin` in an existing project for the
 next lab.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 oc login -u kubeadmin -p {KUBEADMIN_PASSWORD}
 oc project default

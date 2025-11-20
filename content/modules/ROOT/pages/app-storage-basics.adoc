@@ -30,7 +30,7 @@ can happen regularly in a dynamic container orchestration environment.
 You should be in the `app-management` project from the previous lab. To
 make sure, run the following command:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc project app-management
 ----
@@ -40,7 +40,7 @@ Here's how you would instruct OpenShift to create a `PersistentVolume`
 object, which represents external, persistent storage, and have it *mounted*
 inside the container's filesystem:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc set volume deploy/mapit --add --name=mapit-storage -t pvc --claim-mode=ReadWriteOnce --claim-size=1Gi --claim-name=mapit-storage --mount-path=/app-storage
 ----
@@ -60,7 +60,7 @@ and make it available under the `/app-storage` directory inside the pod.
 
 You can see the new `Deployment` like this:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get deployment mapit
 ----
@@ -76,7 +76,7 @@ mapit   1/1     1            1           14m
 Likely, depending when you ran the command, you may or may not see that the new pod is still being spawned. 
 You will see pod age here, the smallest AGE is the new pod attached to the storage:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get pod
 ----
@@ -90,7 +90,7 @@ mapit-4-deploy   1/1       Running             0          10s
 
 Take a look at the `Deployment` now:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc describe deployment mapit
 ----
@@ -115,7 +115,7 @@ But what is happening under the covers?
 When OpenShift 4 was first installed, a dynamic storage provider for AWS EBS
 was configured. You can see this `StorageClass` with the following:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get storageclass
 ----
@@ -152,7 +152,7 @@ created.
 
 Execute the following:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get persistentvolume
 ----
@@ -169,7 +169,7 @@ project.
 
 Now, execute:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get persistentvolumeclaim -n app-management
 ----
@@ -184,7 +184,7 @@ mapit-storage   Bound    pvc-8bdb3642-ce3b-41a9-95e1-7febacb8b15e   1Gi        R
 A rollout is taking place, since the `pod` needs to mount the created
 storage.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc rollout status deployment mapit -n app-management
 ----
@@ -193,7 +193,7 @@ oc rollout status deployment mapit -n app-management
 
 Log on to the pod using the remote-shell capability of the `oc` client:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc rsh $(oc get pods -l deployment=mapit -o name)
 ----
@@ -201,7 +201,7 @@ oc rsh $(oc get pods -l deployment=mapit -o name)
 *Being in the container's shell session*, list the content of the root
 directory from the perspective of the container's namespace:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 ls -ahl /
 ----
@@ -244,7 +244,7 @@ time. In other words: read-write-once.
 
 Execute the following inside the remote shell session:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 echo "Hello World from OpenShift" > /app-storage/hello.txt
 exit
@@ -252,28 +252,28 @@ exit
 
 Then, make sure your file is present:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc rsh $(oc get pods -l deployment=mapit -o name) cat /app-storage/hello.txt
 ----
 
 Now, to verify that persistent storage really works, delete your pod:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc delete pods -l deployment=mapit && oc rollout status deployment/mapit
 ----
 
 The `deployment` automatically rollsout a new `pod`:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get pods
 ----
 
 Your new pod is ready and running. Now that it's running, check the file:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc rsh $(oc get pods -l deployment=mapit -o name) cat /app-storage/hello.txt
 ----

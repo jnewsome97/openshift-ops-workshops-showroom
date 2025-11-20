@@ -37,14 +37,15 @@ workloads ALWAYS land on a specific node.
 
 In order to examine the nodes, make sure you're running as `kubeadmin`
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 oc login -u kubeadmin -p {KUBEADMIN_PASSWORD}
 ----
 
 List the current worker nodes, ignoring infra nodes and storage nodes.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get nodes -l 'node-role.kubernetes.io/worker,!node-role.kubernetes.io/infra,!cluster.ocs.openshift.io/openshift-storage'
 ----
@@ -54,7 +55,7 @@ worker label set.
 
 Now, let's look to see if there are any taints added to these workers.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc describe nodes -l 'node-role.kubernetes.io/worker,!node-role.kubernetes.io/infra,!cluster.ocs.openshift.io/openshift-storage' | grep Taint
 ----
@@ -68,7 +69,7 @@ For this exercise we will be deploying an app to test with.
 Before you deploy this app, you'll need to label your nodes for the duration of
 this exercise. The application deploys on nodes labeled `appnode=welcome-php`.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get nodes -l 'node-role.kubernetes.io/worker,!node-role.kubernetes.io/infra,!cluster.ocs.openshift.io/openshift-storage' -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}' | xargs -I{} oc label node {} appnode=welcome-php
 ----
@@ -80,7 +81,7 @@ To label a node, you pass the node name with a `key=value` pair. Example: `oc la
 
 Verify that the nodes were labeled, taking note of the name of the node(s).
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get nodes -l appnode=welcome-php
 ----
@@ -88,7 +89,7 @@ oc get nodes -l appnode=welcome-php
 You can now deploy the application using the YAML manifest that is provided in
 the home directory.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc create -f ~/support/welcome-php.yaml
 ----
@@ -102,7 +103,7 @@ This creates the following objects
 
 We will be working on the `tt-lab` project, so switch to it now.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc project tt-lab
 ----
@@ -111,7 +112,8 @@ Now scale the pods to equal to the number of nodes we have. The default
 scheduler will attempt to evenly distribute the app. Also we'll wait for the
 rollout to complete.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 NODE_NUMBER=$(oc get nodes --no-headers -l appnode=welcome-php | wc -l) 
 oc scale deploy welcome-php --replicas=${NODE_NUMBER}
@@ -127,7 +129,7 @@ If the pods are not evenly distributed between nodes, you may have to run
 Verify that the pods are spread evenly accross workers. There should be one pod
 for each node.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 clear
 oc get pods -o=custom-columns=NAME:.metadata.name,NODE:.spec.nodeName
@@ -164,7 +166,8 @@ For this lab we will taint the first node that's not an infra or storage node
 with `welcome-php=run:NoSchedule`.  This ensures all new pods
 (without a proper toleration) will NOT schedule to this node.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 TTNODE=$(oc get nodes -l 'node-role.kubernetes.io/worker,!node-role.kubernetes.io/infra,!cluster.ocs.openshift.io/openshift-storage' -o jsonpath='{range .items[0]}{.metadata.name}')
 oc adm taint node ${TTNODE} welcome-php=run:NoSchedule
@@ -178,7 +181,7 @@ The syntax is: `oc adm taint node ${nodename} key=value:Effect`
 Examine the nodes we deployed on and see that the taint is applied to one of
 the nodes.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc describe nodes -l appnode=welcome-php | grep Taint
 ----
@@ -187,14 +190,15 @@ We used `NoSchedule` for the effect, so a pod should still be there. Remember
 that `NoSchedule` only stops new pods from spawning on the node (the command
 should return a `1`)
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 oc get pods -o wide | grep -c ${TTNODE}
 ----
 
 Let's delete the pods and wait for the `replicaSet` to redeploy them.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc delete pods --all
 oc rollout status deploy welcome-php
@@ -203,14 +207,15 @@ oc rollout status deploy welcome-php
 Since our deployment doesn't have a toleration, the scheduler will deploy the
 pods on all nodes except the one with a taint. This command should return a `0`
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 oc get pods -o wide | grep -c ${TTNODE}
 ----
 
 Examine where the pods are running.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 clear
 oc get pods -o=custom-columns=NAME:.metadata.name,NODE:.spec.nodeName
@@ -247,7 +252,7 @@ want.
 We'll apply this toleration in the `spec.template.spec` section of the
 deployment.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc patch deployment welcome-php --patch '{"spec":{"template":{"spec":{"tolerations":[{"key":"welcome-php","operator":"Equal","value":"run","effect":"NoSchedule"}]}}}}'
 ----
@@ -255,7 +260,7 @@ oc patch deployment welcome-php --patch '{"spec":{"template":{"spec":{"toleratio
 Patching triggers another deployment so we'll wait for it to finish rolling
 out.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc rollout status deploy welcome-php
 ----
@@ -263,7 +268,7 @@ oc rollout status deploy welcome-php
 You can see the toleration config under `.spec.template.spec.tolerations`
 in the deployment YAML
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get deployment welcome-php -o yaml
 ----
@@ -271,14 +276,15 @@ oc get deployment welcome-php -o yaml
 Now, since we have the toleration in place, we should be running on the node
 with the taint (this should return `1`)
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 oc get pods -o wide | grep -c ${TTNODE}
 ----
 
 Now when you list all pods, they should be now spread evenly.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 clear
 oc get pods -o=custom-columns=NAME:.metadata.name,NODE:.spec.nodeName
@@ -291,14 +297,16 @@ To read more about taints and tolerations, you can take a look at the https://do
 
 Make sure you login as `kubeadmin` for the next lab.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 oc login -u kubeadmin -p {KUBEADMIN_PASSWORD}
 ----
 
 Other labs may be affected by taints, so let's undo what we did:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 oc delete project tt-lab
 oc adm taint node ${TTNODE} welcome-php-
@@ -307,7 +315,7 @@ oc get nodes -l 'node-role.kubernetes.io/worker,!node-role.kubernetes.io/infra,!
 
 Make sure the nodes have that taint removed
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc describe nodes -l 'node-role.kubernetes.io/worker,!node-role.kubernetes.io/infra,!cluster.ocs.openshift.io/openshift-storage' | grep Taint
 ----
@@ -315,7 +323,7 @@ oc describe nodes -l 'node-role.kubernetes.io/worker,!node-role.kubernetes.io/in
 Also, verify that the label does not exist on the nodes we were working on.
 This command shouldn't return any nodes.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get nodes -l appnode=welcome-php
 ----

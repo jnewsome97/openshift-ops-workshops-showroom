@@ -14,7 +14,8 @@ in its basic, default state.
 ### Logging in
 To inspect the cluster installation, you can simply SSH to the bastion host where it was installed on like so:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 ssh -l {SSH_USERNAME} {BASTION_FQDN} -o ServerAliveInterval=120
 ----
@@ -37,20 +38,22 @@ Are you sure you want to continue connecting (yes/no)?
 
 If so, type `yes`:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 yes
 ----
 
 Here is your ssh password (please copy/paste):
 
+[subs="attributes+"]
+[subs="attributes+"]
 ----
 {SSH_PASSWORD}
 ----
 
 Once you've SSH-ed into the bastion host, become the `ec2-user`:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 sudo su - ec2-user
 ----
@@ -59,7 +62,7 @@ You'll notice that there is a 5-digit alphanumeric string (eg: b866q) in the hos
 string is your `GUID`. Since you will often use `GUID`, it makes sense to
 export it as an environment variable:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 export GUID=`hostname | cut -d. -f2`
 ----
@@ -142,7 +145,7 @@ When the installation completed, the installer left some artifacts that
 contain the various URLs and passwords required to access the environment.
 The installation program was run under the `ec2-user` account.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 ls -al ~/cluster-$GUID
 ----
@@ -171,7 +174,7 @@ important file right now is the `.openshift_install.log`. Its last few lines
 contain the relevant output to figure out how to access your environment
 (sometimes you need to increase the -n10 to e.g. -n15):
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 tail -n10 ~/cluster-$GUID/.openshift_install.log
 ----
@@ -200,7 +203,7 @@ write to the `KUBECONFIG` file, which it can't, so you'll get errors later if yo
 Our installation process has actually already copied the config you need to
 `~/.kube/config`, so you are already logged in. Try the following:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc whoami
 ----
@@ -211,7 +214,7 @@ The `oc` tool should already be in your path and be executable.
 First, you can check the current version of your OpenShift cluster by
 executing the following:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get clusterversion
 ----
@@ -225,7 +228,7 @@ version   4.16.0    True        False         76m     Cluster version is 4.16.0
 
 For more details, you can execute the following command:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc describe clusterversion
 ----
@@ -319,7 +322,7 @@ Events:                 <none>
 Execute the following command to see a list of the *Nodes* that OpenShift knows
 about:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get nodes
 ----
@@ -343,7 +346,7 @@ create nodes to run OpenShift infrastructure components (registry, router,
 etc.) in a subsequent exercise.
 
 Exit out of the `ec2-user` user shell.
-[source,role="execute"]
+[source,role="execute",subs="attributes+"]
 ----
 exit
 ----
@@ -367,7 +370,7 @@ When accessing the console for the first time, you may need to switch from `All 
 image::installation/cluster-switch.png[width=65%]
 
 #### You will now exit the ssh session
-[source,role="execute"]
+[source,role="execute",subs="attributes+"]
 ----
 exit
 ----

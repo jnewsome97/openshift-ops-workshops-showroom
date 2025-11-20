@@ -32,7 +32,7 @@ group
 #### Examine the OAuth configuration
 Since this is a pure, vanilla OpenShift 4 installation, it has the default OAuth resource. You can examine that OAuth configuration with the following:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get oauth cluster -o yaml
 ----
@@ -66,7 +66,7 @@ How does the `kubeadmin` user work, then? The OpenShift OAuth system knows to
 look for a `kubeadmin` *Secret* in the `kube-system` *Namespace*. You can
 examine it with the following:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get secret -n kube-system kubeadmin -o yaml
 ----
@@ -171,21 +171,23 @@ To setup the LDAP identity provider we must:
 
 As the `kubeadmin` user apply the OAuth configuration with `oc`.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 oc login -u kubeadmin -p {KUBEADMIN_PASSWORD}
 ----
 
 This command will create a Kubernetes secret named "ldap-secret" in the "openshift-config" namespace with a single data item. The data item is named "bindPassword" and its value is set to "b1ndP^ssword"
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc create secret generic ldap-secret --from-literal=bindPassword=b1ndP^ssword -n openshift-config
 ----
 
 Download the certificate and save it to the file 'ca.crt' with this command:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 wget https://certs.godaddy.com/repository/gd-class2-root.crt -O {HOME_PATH}/support/ca.crt
 ----
@@ -196,7 +198,8 @@ If you see `Unable to establish SSL connection.` please click the above command 
 
 Click this command to create a new ConfigMap named ca-config-map in the openshift-config namespace. The ConfigMap is populated with the contents of the file {HOME_PATH}/support/ca.crt. It then applys the file.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 oc create configmap ca-config-map --from-file={HOME_PATH}/support/ca.crt -n openshift-config
 oc apply -f {HOME_PATH}/support/oauth-cluster.yaml
@@ -212,7 +215,7 @@ still get a warning, but that's OK.
 This will trigger a redployment of the oAuth Operator. You can monitor the rollout with the following command.
 
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc rollout status deployment/oauth-openshift -n openshift-authentication
 ----
@@ -229,7 +232,8 @@ the various groups.
 We have provided a `groupsync` configuration file for you:
 
 View configuration file
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 cat {HOME_PATH}/support/groupsync.yaml
 ----
@@ -247,7 +251,8 @@ Without going into too much detail (you can look at the documentation), the
 
 Execute the `groupsync`:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 oc adm groups sync --sync-config={HOME_PATH}/support/groupsync.yaml --confirm
 ----
@@ -267,7 +272,7 @@ output of the help with `oc adm groups sync -h`.
 
 If you want to see the *Groups* that were created, execute the following:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get groups
 ----
@@ -284,7 +289,7 @@ ose-user         fancyuser1, fancyuser2, normaluser1, teamuser1, teamuser2
 
 Take a look at a specific group in YAML:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get group ose-fancy-dev -o yaml
 ----
@@ -316,7 +321,7 @@ has listed the users who are in the group.
 
 What happens if you list the *Users*?
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get user
 ----
@@ -343,7 +348,7 @@ For example, they can see the list of all *Projects* in the cluster.
 
 Change the policy for the `ose-fancy-dev` *Group*:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc adm policy add-cluster-role-to-group cluster-reader ose-fancy-dev
 ----
@@ -358,14 +363,14 @@ link:https://docs.openshift.com/container-platform/4.16/authentication/using-rba
 #### Examine `cluster-reader` policy
 Go ahead and login as a regular user: (if you get an error, wait a few minutes and try again) 
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc login -u normaluser1 -p Op#nSh1ft
 ----
 
 Then, try to list *Projects*:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get projects
 ----
@@ -378,14 +383,14 @@ No resources found.
 
 Now, login as a member of `ose-fancy-dev`:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc login -u fancyuser1 -p Op#nSh1ft
 ----
 
 And then perform the same `oc get projects` command: 
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get projects
 ----
@@ -414,14 +419,15 @@ Platform can work.
 #### Create Projects for Collaboration
 Make sure you login as the cluster administrator:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 oc login -u kubeadmin -p {KUBEADMIN_PASSWORD}
 ----
 
 Then, create several *Projects* for people to collaborate:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc adm new-project app-dev --display-name="Application Development"
 oc adm new-project app-test --display-name="Application Testing"
@@ -457,7 +463,7 @@ preconfigured. When it comes to *Projects*, you similarly can grant view, edit,
 or administrative access. Let's give our `ose-teamed-app` users access to edit the
 development and testing projects:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc adm policy add-role-to-group edit ose-teamed-app -n app-dev
 oc adm policy add-role-to-group edit ose-teamed-app -n app-test
@@ -465,14 +471,14 @@ oc adm policy add-role-to-group edit ose-teamed-app -n app-test
 
 And then give them access to view production:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc adm policy add-role-to-group view ose-teamed-app -n app-prod
 ----
 
 Now, give the `ose-fancy-dev` group edit access to the production project:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc adm policy add-role-to-group edit ose-fancy-dev -n app-prod
 ----
@@ -480,7 +486,7 @@ oc adm policy add-role-to-group edit ose-fancy-dev -n app-prod
 #### Examine Group Access
 Log in as `normaluser1` and see what *Projects* you can see:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc login -u normaluser1 -p Op#nSh1ft
 oc get projects
@@ -494,7 +500,7 @@ No resources found.
 
 Then, try `teamuser1` from the `ose-teamed-app` group:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc login -u teamuser1 -p Op#nSh1ft
 oc get projects
@@ -512,7 +518,7 @@ app-test   Application Testing       Active
 You did not grant the team users edit access to the production project. Go ahead
 and try to create something in the production project as `teamuser1`:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc project app-prod
 oc new-app docker.io/siamaksade/mapit
@@ -548,7 +554,8 @@ Users can utilize Prometheus with LDAP integration to enhance authentication and
 
 After you are done, make sure to login again as the admin user:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 oc login -u kubeadmin -p {KUBEADMIN_PASSWORD}
 ----

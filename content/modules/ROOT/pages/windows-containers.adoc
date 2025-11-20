@@ -57,7 +57,8 @@ prerequisites by looking at the current configuration of this cluster.
 
 Before proceeding, make sure you're `kubeadmin`
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 oc login -u kubeadmin -p {KUBEADMIN_PASSWORD}
 ----
@@ -65,7 +66,7 @@ oc login -u kubeadmin -p {KUBEADMIN_PASSWORD}
 The first requisite is that you must be running OpenShift version 4.6
 or newer. This cluster should have been installed at a supported version.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc version
 ----
@@ -75,7 +76,7 @@ The next requisite is that the cluster must be installed with
 install time in the `install-config.yaml` file. This file is stored on
 the cluster after install. Take a look at the setting.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc extract cm/cluster-config-v1 -n kube-system --to=- | yq e '.networking.networkType' -
 ----
@@ -89,7 +90,7 @@ networking. This is another step that can only be done at install
 time. You can verify that the configuration has been done by running
 the following:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get network.operator cluster -o yaml | yq e '.spec.defaultNetwork' -
 ----
@@ -147,6 +148,7 @@ Console. Use the "Console" tab, or open the console in another tab if it isn't o
 Use the `kubeadmin` username as the following password:
 
 [source,role="copypaste"]
+[subs="attributes+"]
 ----
 {KUBEADMIN_PASSWORD}
 ----
@@ -190,7 +192,7 @@ image::windows-containers/wmco-ready-for-use-updated-2025.png[WMCO Installing,wi
 
 Back on the cli, you should now see the WMCO pod running.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get pods -n openshift-windows-machine-config-operator
 ----
@@ -214,7 +216,8 @@ login to the Windows Node and set it up as an OpenShift Node.
 
 Generate an ssh key for the WMCO to use:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 ssh-keygen -t rsa -f ${HOME}/.ssh/winkey -q -N ''
 ----
@@ -222,7 +225,8 @@ ssh-keygen -t rsa -f ${HOME}/.ssh/winkey -q -N ''
 Once you've generated the key, add it as a secret to the
 `openshift-windows-machine-config-operator` namespace.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 oc create secret generic cloud-private-key --from-file=private-key.pem=${HOME}/.ssh/winkey -n openshift-windows-machine-config-operator 
 ----
@@ -230,7 +234,7 @@ oc create secret generic cloud-private-key --from-file=private-key.pem=${HOME}/.
 This secret is used by the WMCO Operator to setup the Windows Node. Verify
 that it was created before you proceed.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get secret -n openshift-windows-machine-config-operator cloud-private-key
 ----
@@ -245,7 +249,8 @@ NOTE: If you're unfamiliar with the MachineAPI, you can do the xref:machinesets.
 First, we will be creating a MachineSet for Windows Nodes. We will then
 explore important sections of the YAML.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 ${HOME}/support/generate-windows-ms.sh
 ----
@@ -254,7 +259,7 @@ NOTE: For more information on how to create a Windows MachineSet YAML see the li
 
 This should create the `windows-ms.yaml` file in your home directory.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 ls -l ~/windows-ms.yaml
 ----
@@ -263,7 +268,7 @@ NOTE: Feel free to take a look at the file if you wish. You'll see that it doesn
 
 The Windows MachineSet is labeled with an Operating System ID of `Windows`. The following command will show the label of `machine.openshift.io/os-id: Windows` for the MachineSet.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 yq e '.metadata.labels' ~/windows-ms.yaml
 ----
@@ -271,14 +276,14 @@ yq e '.metadata.labels' ~/windows-ms.yaml
 All the Windows Machines will have the `worker` label. The Windows Node
 will be treated like any other node in the cluster.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 yq e '.spec.template.spec.metadata.labels' ~/windows-ms.yaml
 ----
 
 The AMI ID is of a Windows Server 2019 AMI.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 yq e '.spec.template.spec.providerSpec.value.ami.id' ~/windows-ms.yaml
 ----
@@ -287,28 +292,28 @@ NOTE: You will need to use an AMI of a supported version of Windows Server. For 
 
 One last thing to note, is the user data secret.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 yq e '.spec.template.spec.providerSpec.value.userDataSecret.name' ~/windows-ms.yaml
 ----
 
 This secret is generated by the WMCO when it was installed.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get secret windows-user-data -n openshift-machine-api
 ----
 
 Apply the YAML to create the Windows MachineSet on the cluster.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc apply -f ~/windows-ms.yaml
 ----
 
 You can now see the status of the MachineSet.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get machinesets  -n openshift-machine-api -l machine.openshift.io/os-id=Windows
 ----
@@ -323,14 +328,14 @@ cluster-w2tlt-7rwdh-windows-worker-us-east-2a     1         1                   
 
 The MachineSet has the replica set to 1. The MachineAPI will see that desired state and, in turn, create a Windows Machine. This machine will eventually turn into a node. See the status of the machine with the following command.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get machines  -n openshift-machine-api -l machine.openshift.io/os-id=Windows
 ----
 
 Once the Machine is up and running, the WMCO will configure it. You can follow that status by looking at the WMCO pod log.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc logs -l name=windows-machine-config-operator -n openshift-windows-machine-config-operator   -f
 ----
@@ -342,7 +347,7 @@ NOTE: If you wish, you can wait until you see "Windows VM has been configured as
 This Machine will create a Windows Node and the WMCO will add it to the cluster. You
 can see the node with the following command.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get nodes -l kubernetes.io/os=windows
 ----
@@ -367,7 +372,7 @@ WARNING: Windows Machine Config Operator is not responsible for Windows operatin
 
 Currently, you have one Windows node.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get nodes -l kubernetes.io/os=windows
 ----
@@ -375,7 +380,7 @@ oc get nodes -l kubernetes.io/os=windows
 In order to add another node, you will just scale the corespoinding
 MachineSet. Currently, you should have one
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get machineset -l machine.openshift.io/os-id=Windows -n openshift-machine-api
 ----
@@ -393,7 +398,7 @@ To add another Windows Node, scale the Windows MachineSet to two
 replicas. This will create a new Windows Machine, and then the WMCO will
 add it as an OpenShift Node.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc scale machineset -l machine.openshift.io/os-id=Windows -n openshift-machine-api --replicas=2
 ----
@@ -402,7 +407,7 @@ NOTE: Just like when you created the inital Windows Node, this can take upwards 
 
 After some time, another Windows Node will have joined the cluster.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get nodes -l kubernetes.io/os=windows
 ----
@@ -423,7 +428,7 @@ link:https://docs.openshift.com/container-platform/4.16/machine_management/apply
 
 Remove this node by scaling the Windows MachineSet back down to 1.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc scale machineset -l machine.openshift.io/os-id=Windows -n openshift-machine-api --replicas=1
 ----
@@ -432,7 +437,7 @@ WARNING: Please scale your Windows MachineSet to 1 before starting the next exer
 
 After some time, you should be back at 1 Windows node.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get nodes -l kubernetes.io/os=windows
 ----
@@ -450,28 +455,28 @@ NOTE: For information on how to enable RDP on an AWS instance, please see the li
 
 The ssh bastion pod can be deployed using the Deployment YAML provided to you in this lab.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc apply -n openshift-windows-machine-config-operator -f ~/support/win-node-ssh.yaml
 ----
 
 You can wait for the rollout of this ssh bastion pod.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc rollout status deploy/winc-ssh -n openshift-windows-machine-config-operator
 ----
 
 Once rolled out, you should have the ssh bastion pod running.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get pods -n openshift-windows-machine-config-operator -l app=winc-ssh
 ----
 
 The ssh bastion pod mounts the ssh key needed to login to the Windows Node.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 yq e '.spec.template.spec.volumes' ~/support/win-node-ssh.yaml
 ----
@@ -479,14 +484,14 @@ yq e '.spec.template.spec.volumes' ~/support/win-node-ssh.yaml
 In order to be able to ssh into this node you will need the hostname. Get
 this hostname with the following command and make note of it.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get nodes -l kubernetes.io/os=windows
 ----
 
 Now open a bash session into the ssh bastion pod using the `oc exec` command.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc exec -it deploy/winc-ssh -n openshift-windows-machine-config-operator -- bash
 ----
@@ -512,7 +517,7 @@ PS C:\Users\Administrator>
 Once on the Windows Node, you can see the `containerd`, `hybrid-overlay-node`, `kubelet`, `kube-proxy`,
 `windows_exporter` and `windows-instance-config-daemon` processes are running.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 Get-Process | ?{ $_.ProcessName -match "daemon|exporter|kube|overlay|containerd" }
 ----
@@ -539,14 +544,14 @@ so you won't have to do much with this Windows Node.
 
 You can now exit out of the PowerShell session.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 exit
 ----
 
 You can also exit out of the bash container session as well.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 exit
 ----
@@ -561,7 +566,7 @@ a taint.
 
 NOTE: Please see the xref:taints-and-tolerations.adoc[Taints and Tolerations lab] to get more familiar about how they work.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc describe nodes -l kubernetes.io/os=windows | grep Taint
 ----
@@ -581,7 +586,7 @@ In this lab, there is a sample workload saved under
 `~/support/winc-sample-workload.yaml`. Let's explore this file a bit
 before we apply it.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 yq e '.items[2].spec.template.spec.tolerations' ~/support/winc-sample-workload.yaml
 ----
@@ -599,7 +604,7 @@ This sample workload has the toleration in place to be able to run on
 the Windows Node. However, that's not enough. A `nodeSelector` will need
 to be present as well.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 yq e '.items[2].spec.template.spec.nodeSelector' ~/support/winc-sample-workload.yaml
 ----
@@ -617,7 +622,7 @@ Node won't repel the container.
 
 One last thing to look at. Take a look at the container that is being deployed.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 yq e '.items[2].spec.template.spec.containers[0].image' ~/support/winc-sample-workload.yaml
 ----
@@ -626,14 +631,14 @@ WARNING: Note that this container has to be prepulled onto the Windows Node. Ple
 
 Apply this YAML file to deploy the sample workload.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc apply -f ~/support/winc-sample-workload.yaml
 ----
 
 Wait for the deployment to finish rolling out. This can take 5-10 minutes as Windows images are large in size.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc rollout status deploy/win-webserver -n winc-sample
 ----
@@ -642,7 +647,7 @@ If you check the pod, you can see that it's running on the Windows
 Node. Look at the wide output of the Pod and select the Windows Node
 to verify.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get pods -n winc-sample  -o wide
 oc get nodes -l kubernetes.io/os=windows
@@ -651,7 +656,7 @@ oc get nodes -l kubernetes.io/os=windows
 Make a note of the Windows Node name, we will log into the node using
 the bastion ssh container.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc exec -it deploy/winc-ssh -n openshift-windows-machine-config-operator -- bash
 ----
@@ -666,20 +671,20 @@ bash-4.4$ sshcmd.sh ip-10-0-20-199.us-east-2.compute.internal
 To view Windows containers running on the node, you need to install the `crictl` tool
 to interact with the containerd runtime.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 $ProgressPreference = "SilentlyContinue"; wget https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.27.0/crictl-v1.27.0-windows-amd64.tar.gz -o crictl-v1.27.0-windows-amd64.tar.gz; tar -xvf crictl-v1.27.0-windows-amd64.tar.gz -C C:\Windows\
 ----
 
 Now lets configure `crictl`.
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 crictl config --set runtime-endpoint="npipe:\\\\.\\pipe\\containerd-containerd"
 ----
 
 Here, you can see the Windows container running on the node.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 crictl ps
 ----
@@ -694,7 +699,7 @@ c06eb847b6313       b51a50ce03f12       2 minutes ago       Running             
 
 You can also see the images downloaded on the host.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 crictl images
 ----
@@ -710,14 +715,14 @@ mcr.microsoft.com/windows/servercore     ltsc2019            b51a50ce03f12      
 
 Go ahead an logout of the Windows Node
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 exit
 ----
 
 You can also exit out of the bash container session as well.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 exit
 ----
@@ -726,7 +731,7 @@ You can interact with the Windows Container workload as you would any
 other pod. For instance you can remote shell into the container itself
 by calling the `Powershell` command.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc -n winc-sample exec -it $(oc get pods -l app=win-webserver -n winc-sample -o name ) -- powershell
 ----
@@ -746,14 +751,14 @@ Here, you can query for the running HTTP process.
 
 NOTE: You may have to press `ENTER` to execute the following commands while in the Windows Container for them to run.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 Get-WmiObject Win32_Process -Filter "name = 'powershell.exe'" | Select-Object CommandLine | Select-String -Pattern http
 ----
 
 Go ahead an logout of the Windows Container.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 exit
 ----
@@ -761,14 +766,14 @@ exit
 You can interact with the Windows Container `Deployment` the same as you
 would for a Linux one. Scale the `Deployment` of the Windows Container:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc scale deploy/win-webserver -n winc-sample --replicas=2
 ----
 
 You should now have two Pods running.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get pods -n winc-sample
 ----
@@ -803,7 +808,7 @@ NOTE: For more information about `helm` and how it can be used as a package mana
 
 Next add the Red Hat Developer Demos Helm repository.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 helm repo add redhat-demos https://redhat-developer-demos.github.io/helm-repo
 helm repo update
@@ -811,21 +816,22 @@ helm repo update
 
 Create the namespace for `netcandystore`.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc create namespace netcandystore
 ----
 
 Next we will use this command below to create a Kubernetes resource with specific security restrictions and context constraints within the OpenShift cluster.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 oc create -f ${HOME}/support/restrictedfsgroupscc.yaml
 ----
 
 Next, we'll allow a specific group of service accounts (in this case, those related to Microsoft SQL Server) to follow the strict security rules defined by the "restrictedfsgroup" Security Context Constraints in the OpenShift system.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc adm policy add-scc-to-group restrictedfsgroup system:serviceaccounts:mssql
 ----
@@ -833,7 +839,7 @@ oc adm policy add-scc-to-group restrictedfsgroup system:serviceaccounts:mssql
 With the two variables exported, and the helm repo added, you can install
 the application stack using the `helm` cli.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 helm install ncs --namespace netcandystore \
 --timeout=1200s \
@@ -879,7 +885,7 @@ If the helm installation finishes quickly, please examine the pods. It might be 
 
 Verify that the helm chart was installed successfully.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 helm ls -n netcandystore
 ----
@@ -896,7 +902,7 @@ There should be 3 pods running for this application. One for the frondend
 called netcandystore, one for the categories service called getcategories
 and a DB called mysql.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get pods -n netcandystore
 ----
@@ -909,7 +915,7 @@ netcandystore-78d78677c8-j7k62        0/1     ContainerCreating   0          104
 
 You can easily look into more details about what's happening with your pod by using the oc describe command. Just replace the pod name with your own.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc describe pod <netcandystore-78d78677c8-j7k62> -n netcandystore
 ----
@@ -933,7 +939,7 @@ Looking at the frontend application, you can list where the pod is
 running. Comparing it to the nodes output, you can see it's running on
 a Windows Node.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get pods -n netcandystore -l app=netcandystore -o wide
 oc get nodes -l kubernetes.io/os=windows
@@ -941,7 +947,7 @@ oc get nodes -l kubernetes.io/os=windows
 
 Now, looking at the backend, you can see it's running on a Linux node.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get pods -n netcandystore -l app=getcategories -o wide
 oc get nodes -l kubernetes.io/os=linux
@@ -949,7 +955,7 @@ oc get nodes -l kubernetes.io/os=linux
 
 The MSSQL Database is also running on the Linux node.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get pods -n netcandystore -l deploymentconfig=mssql -o wide
 ----

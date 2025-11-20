@@ -54,14 +54,15 @@ Since `kubeadmin` and the service account user both have the `cluster-admin`
 role, it really doesn't matter.
 ====
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 oc login -u kubeadmin -p {KUBEADMIN_PASSWORD}
 ----
 
 View the `self-provisioners` cluster role binding usage by running the `oc describe` command:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc describe clusterrolebinding.rbac self-provisioners
 ----
@@ -96,7 +97,7 @@ access control (RBAC)^] documentation.
 
 To view the configuration itself, inspect the yaml by running the following:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get clusterrolebinding.rbac self-provisioners -o yaml
 ----
@@ -130,7 +131,7 @@ To remove the `self-provisioner` cluster role from the group
 `system:authenticated:oauth` you need to remove that group from the role
 binding.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc patch clusterrolebinding.rbac self-provisioners -p '{"subjects": null}'
 ----
@@ -139,14 +140,14 @@ Automatic updates reset the cluster roles to a default state. In order to
 disable this, you need to set the annotation
 `rbac.authorization.kubernetes.io/autoupdate` to `false` by running:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc patch clusterrolebinding.rbac self-provisioners -p '{ "metadata": { "annotations": { "rbac.authorization.kubernetes.io/autoupdate": "false" } } }'
 ----
 
 View the new configuration:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get clusterrolebinding.rbac self-provisioners -o yaml
 ----
@@ -172,7 +173,7 @@ roleRef:
 
 Test this by logging in as `fancyuser1` and try to create a project.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc login -u fancyuser1 -p Op#nSh1ft
 oc new-project fancyuserproject
@@ -186,7 +187,8 @@ Error from server (Forbidden): You may not request a new project via this API.
 
 Login as the `kubeadmin` user for the next exercise.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 oc login -u kubeadmin -p {KUBEADMIN_PASSWORD}
 ----
@@ -199,7 +201,7 @@ customize this message to give a more meaningful call to action.
 For example, you can have the users submit a ticket requesting a project. We
 can do this by changing the text given, to include instructions:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc patch --type=merge project.config.openshift.io cluster -p '{"spec":{"projectRequestMessage":"Please visit https://ticket.example.com to request a project"}}'
 ----
@@ -211,7 +213,7 @@ Before you can see this new message, you'll need to wait for the `apiserver`
 application to rollout the changes. This can take some time to rollout,
 especially on a busy cluster.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 sleep 30
 oc rollout status -n  openshift-apiserver deploy/apiserver
@@ -220,14 +222,14 @@ oc rollout status -n  openshift-apiserver deploy/apiserver
 Now, the user will get this message when trying to create a project. Test
 this by becoming the `fancyuser1` user.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc login -u fancyuser1 -p Op#nSh1ft
 ----
 
 And try to create a project.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc new-project fancyuserproject
 ----
@@ -242,14 +244,15 @@ Error from server (Forbidden): Please visit https://ticket.example.com to reques
 
 Make sure you login as `kubeadmin` for the next lab.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 oc login -u kubeadmin -p {KUBEADMIN_PASSWORD}
 ----
 
 Other labs may require the `self-provisioners` role, so let's undo what we did:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc patch clusterrolebinding.rbac self-provisioners -p '{"subjects":[{"apiGroup":"rbac.authorization.k8s.io","kind":"Group","name":"system:authenticated:oauth"}]}'
 oc patch clusterrolebinding.rbac self-provisioners -p '{"metadata":{"annotations":{"rbac.authorization.kubernetes.io/autoupdate":"true"}}}'

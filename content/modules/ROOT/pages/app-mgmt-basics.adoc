@@ -19,7 +19,7 @@ user doesn't affect any of the created resources.
 
 For this exercise, first create a *Project* to hold some resources:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc new-project app-management
 ----
@@ -33,7 +33,7 @@ instantiate templates, and so on.
 
 You will now launch a specific image that exists on Quay
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc new-app quay.io/openshiftroadshow/mapit
 ----
@@ -78,7 +78,7 @@ pod definition while running.
 
 You can get a list of pods:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get pods
 ----
@@ -97,7 +97,7 @@ which you will learn about shortly. Your name will be slightly different.
 The `describe` command will give you more information on the details of a pod.
 In the case of the pod name above:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc describe pod -l deployment=mapit
 ----
@@ -222,7 +222,7 @@ including the YAML format to make one by hand, in the official documentation.
 
 You can see the current list of services in a project with:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get services
 ----
@@ -241,7 +241,7 @@ the service is deleted. Your service IP will likely be different.
 Just like with pods, you can `describe` services, too. In fact, you can
 `describe` most objects in OpenShift:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc describe service mapit
 ----
@@ -280,7 +280,7 @@ this data can be represented as serializable data objects (JSON, YAML).
 
 Take a look at the YAML output for the service:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get service mapit -o yaml
 ----
@@ -337,7 +337,7 @@ It is also of interest to view the YAML of the *Pod* to understand how OpenShift
 wires components together. Go back and find the name of your `mapit` *Pod*, and
 then execute the following:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get pod -l deployment=mapit -o jsonpath='{.items[*].metadata.labels}' | jq -r
 ----
@@ -409,7 +409,7 @@ Now that we know the background of what a *ReplicaSet* and
 look at the *Deployment* (deploy) that was created for you when you told
 OpenShift to stand up the `mapit` image:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get deployment
 ----
@@ -428,7 +428,7 @@ To get more details, we can look into the *ReplicaSet* (*RS*).
 Take a look at the *ReplicaSet* (RS) that was created for you when
 you told OpenShift to stand up the `mapit` image:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get replicaset
 ----
@@ -452,14 +452,14 @@ the desired number, we can tell OpenShift that we want more or less *Pods*.
 Let's scale our mapit "application" up to 2 instances. We can do this with
 the `scale` command.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc scale --replicas=2 deploy/mapit
 ----
 
 To verify that we changed the number of replicas, issue the following command:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get replicaset
 ----
@@ -478,7 +478,7 @@ version of the application.
 You can see that we now have 2 replicas. Let's verify the number of pods with
 the `oc get pods` command:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get pods
 ----
@@ -494,7 +494,7 @@ mapit-764c5bf8b8-l49z7   1/1     Running   0          81m
 And lastly, let's verify that the *Service* that we learned about in the
 previous lab accurately reflects two endpoints:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc describe service mapit
 ----
@@ -531,7 +531,7 @@ Events:            <none>
 
 Another way to look at a *Service*'s endpoints is with the following:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get endpoints mapit
 ----
@@ -576,7 +576,7 @@ Now that we have two *Pods* running right now, let's see what happens when we
 delete them. Frist, run the `oc get pods` command, and make note of the *Pod*
 names:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get pods
 ----
@@ -591,14 +591,14 @@ mapit-764c5bf8b8-rscss   1/1     Running   0          2m54s
 
 Now, delete the pods that belong to the *Deployment* `mapit`:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc delete pods -l deployment=mapit --wait=false
 ----
 
 Run the `oc get pods` command once again:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get pods
 ----
@@ -631,7 +631,7 @@ installation deployed an Operator for the router, and the operator created a
 router for you! The router lives in the `openshift-ingress`
 *Project*, and you can see information about it with the following command:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc describe deployment router-default -n openshift-ingress
 ----
@@ -644,7 +644,7 @@ the *Service* via the command line. If you remember from earlier, your *Service*
 name is `mapit`. With the *Service* name, creating a *Route* is a simple
 one-command task:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc expose service mapit
 ----
@@ -657,13 +657,14 @@ route/mapit exposed
 
 Verify the *Route* was created with the following command:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get route
 ----
 
 You will see something like:
 
+[subs="attributes+"]
 ----
 NAME    HOST/PORT                                             PATH   SERVICES   PORT       TERMINATION   WILDCARD
 mapit   mapit-app-management.{ROUTE_SUBDOMAIN}                   mapit      8080-tcp                 None
@@ -706,7 +707,7 @@ oc expose service mapit
 Before we continue, go ahead and scale your application down to a single
 instance:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc scale --replicas=1 deploy/mapit
 ----
@@ -751,7 +752,8 @@ which is creating and/or modifying probes. The `mapit` application exposes an
 endpoint which we can check to see if it is alive and ready to respond. You can
 test it using `curl`:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 curl mapit-app-management.{ROUTE_SUBDOMAIN}/health
 ----
@@ -766,14 +768,14 @@ You will get some JSON as a response:
 We can ask OpenShift to probe this endpoint for liveness with the following
 command:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc set probe deploy/mapit --liveness --get-url=http://:8080/health --initial-delay-seconds=30
 ----
 
 You can then see that this probe is defined in the `oc describe` output:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc describe deployment mapit
 ----
@@ -797,7 +799,7 @@ fd1de9d
 
 Similarly, you can set a readiness probe in the same manner:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc set probe deploy/mapit --readiness --get-url=http://:8080/health --initial-delay-seconds=30
 ----
@@ -810,7 +812,7 @@ _triggers_ a new _deployment_. The *Deployment* is in charge of which
 
 Execute the following:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get deployments
 ----
@@ -827,7 +829,7 @@ thus you are now on the fourth revision of the *Deployment*.
 
 Execute the following:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get replicasets
 ----
@@ -852,7 +854,7 @@ no probes, and the latest running RS has the new probes.
 
 Feel free to try out the mapit application:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get route mapit -o jsonpath='{.spec.host}' | sed 's/^/http:\/\//'
 ----

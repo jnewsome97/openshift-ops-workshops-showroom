@@ -25,6 +25,7 @@ kubeadmin
 ----
 +
 [source,role="copypaste"]
+[subs="attributes+"]
 ----
 {KUBEADMIN_PASSWORD}
 ----

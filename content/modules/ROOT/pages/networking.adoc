@@ -23,7 +23,7 @@ Before continuing, make sure you are using a project that actually exists. If
 the last thing you did in the previous lab was delete a project, this will
 cause errors in the scripts in this lab.
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc project default
 ----
@@ -38,7 +38,8 @@ network policies.
 Execute a script that we have prepared for you. It will create two
 *Projects* and then deploy a *Deployment* with a *Pod* for you:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 bash {HOME_PATH}/support/create-net-projects.sh
 ----
@@ -47,7 +48,7 @@ bash {HOME_PATH}/support/create-net-projects.sh
 Two *Projects* were created for you, `netproj-a` and `netproj-b`. Execute the
 following command to see the created resources:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get pods -n netproj-a
 ----
@@ -61,7 +62,7 @@ ose-5895b8687d-sp4dz    0/1     ContainerCreating   0          7s
 
 Similarly:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get pods -n netproj-b
 ----
@@ -82,7 +83,8 @@ the pod in the `netproj-a` *Project* and the pod in the `netproj-b` *Project*.
 
 To test connectivity between the two pods, run:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 bash {HOME_PATH}/support/test-connectivity.sh
 ----
@@ -130,7 +132,8 @@ means that there are no allowed `ingress` rules defined by this
 To restrict access to the pod in the `netproj-b` *Project* simply apply the
 above NetworkPolicy CR with:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 oc create -n netproj-b -f {HOME_PATH}/support/network-policy-block-all.yaml
 ----
@@ -142,7 +145,8 @@ connectivity between the pod in the `netproj-a` *Project* and the pod in the
 
 Test by running:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 bash {HOME_PATH}/support/test-connectivity.sh
 ----
@@ -162,7 +166,7 @@ Note the last line that says `FAILED!`. This means that the pod in the
 
 To list all the `NetworkPolicy` objects, run the following:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get networkpolicy -n netproj-b
 ----
@@ -218,14 +222,15 @@ all" policy is combined with the "allow TCP 5000" policy.
 To allow access to the pod in the `netproj-b` *Project* from all pods in the
 `netproj-a` *Project*, apply the above NetworkPolicy CR with:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 oc create -n netproj-b -f {HOME_PATH}/support/network-policy-allow-all-from-netproj-a.yaml
 ----
 
 Listing the *NetworkPolicies*:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get networkpolicy -n netproj-b
 ----
@@ -246,7 +251,8 @@ connectivity between the pod in the `netproj-a` *Project* and the pod in the
 
 Test by running:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 bash {HOME_PATH}/support/test-connectivity.sh
 ----

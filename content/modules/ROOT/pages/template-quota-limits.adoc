@@ -17,7 +17,7 @@ processed to create the newly requested project.
 To view the built-in default *Project Request Template*, execute the
 following command:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc adm create-bootstrap-project-template -o yaml
 ----
@@ -39,7 +39,7 @@ parameters:
 
 Next, let's take a look at the help output for the `oc new-project` command:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc new-project -h
 ----
@@ -72,7 +72,8 @@ You won't actually have to make template changes in this lab -- we've made them
 for you already. Use `cat`, `less`, or your favorite editor to view the modified
 *Project Request Template*:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 cat {HOME_PATH}/support/project_request_template.yaml
 ----
@@ -98,6 +99,7 @@ volume claims, and *Pods*. Take a look at the `ResourceQuota` section from the
 `project_request_template.yaml` file:
 
 [source,yaml]
+[subs="attributes+"]
 ----
 - apiVersion: v1
   kind: ResourceQuota
@@ -148,6 +150,7 @@ Take a look at the sample `LimitRange` definition that we have provided in the
 `project_request_template.yaml` file:
 
 [source,yaml]
+[subs="attributes+"]
 ----
 - apiVersion: v1
   kind: LimitRange
@@ -237,7 +240,8 @@ and simply instantiate the objects provided.
 
 Go ahead and execute the following:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 oc create -f {HOME_PATH}/support/project_request_template.yaml -n openshift-config
 ----
@@ -246,7 +250,7 @@ This will create the *Template* object in the `openshift-config` *Project*.
 You can now see the *Templates* in the `openshift-config` project with the
 following:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get template -n openshift-config
 ----
@@ -264,7 +268,7 @@ configuration. This configuration is ultimately stored in a *ConfigMap* in
 the `openshift-apiserver` project. You can view the API Server configuration
 with the following command:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get cm config -n openshift-apiserver -o jsonpath --template="{.data.config\.yaml}" | jq  .projectConfig
 ----
@@ -299,7 +303,8 @@ The next step is to create this *CustomResource*. Once this *CR* is created,
 the OpenShift operator will notice the *CR*, and apply the configuration
 changes. To create the *CustomResource*, issue this command:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
+[subs="attributes+"]
 ----
 oc apply -f {HOME_PATH}/support/cr_project_request.yaml -n openshift-config
 ----
@@ -308,7 +313,7 @@ Once this command is run, the OpenShift API Server configurations will be
 updated by the operator. This takes some time. You can monitor the rollout
 by waiting for the `apiserver` *Deployment* to finish:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 sleep 30
 oc rollout status deploy apiserver -n openshift-apiserver
@@ -317,7 +322,7 @@ oc rollout status deploy apiserver -n openshift-apiserver
 This can now be verified by viewing the implemented
 configuration:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get cm config -n openshift-apiserver -o jsonpath --template="{.data.config\.yaml}" | jq
 ----
@@ -339,14 +344,14 @@ Notice the new *projectConfig* section:
 When creating a new project, you should see that a *Quota* and a *LimitRange*
 are created with it. First, create a new project called `template-test`:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc new-project template-test
 ----
 
 Then, use `describe` to look at some of this *Project's* details:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc describe project template-test
 ----
@@ -400,7 +405,7 @@ re-create it after a few moments.
 
 You can also see that the *Quota* and *LimitRange* objects were created:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc describe quota -n template-test
 ----
@@ -422,7 +427,7 @@ resourcequotas          1     1
 
 And:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc get limitrange -n template-test
 ----
@@ -450,7 +455,7 @@ and *LimitRange* are applied. If you do, be sure to look at the JSON/YAML output
 
 Before you continue, you may wish to delete the *Project* you just created:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes+"]
 ----
 oc delete project template-test
 ----
