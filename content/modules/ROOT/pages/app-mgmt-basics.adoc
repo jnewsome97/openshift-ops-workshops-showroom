@@ -861,7 +861,7 @@ Feel free to try out the mapit application:
 
 [source,bash,role="execute",subs="attributes+"]
 ----
-oc get route mapit -o jsonpath='{.spec.host}' | sed 's/^/http:\/\//'
+oc get route mapit -o jsonpath='{.spec.host}' | sed 's/^/https:\/\//'
 ----
 
 It should look something like this:
