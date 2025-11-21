@@ -533,19 +533,24 @@ Another way to look at a *Service*'s endpoints is with the following:
 
 [source,bash,role="execute",subs="attributes+"]
 ----
-oc get endpoints mapit
+oc get endpointslices -l kubernetes.io/service-name=mapit
 ----
 
 And you will see something like the following:
 
 ----
-NAME    ENDPOINTS                                                        AGE
-mapit   10.128.2.94:8080,10.131.0.99:8080,10.128.2.94:9779 + 3 more...   4m32s
+NAME             ADDRESSTYPE   PORTS             ENDPOINTS                                             AGE
+mapit-9b5ch      IPv4          8080,9779,8778    10.128.2.94,10.131.0.99,10.129.2.45 + 2 more...      4m32s
 ----
 
 Your IP addresses will likely be different, as each pod receives a unique IP
 within the OpenShift environment. The endpoint list is a quick way to see how
 many pods are behind a service.
+
+[NOTE]
+====
+In OpenShift 4.19 and earlier, you could use `oc get endpoints mapit` to view endpoints. Starting with OpenShift 4.20 (Kubernetes 1.33+), the v1 Endpoints API is deprecated in favor of the more scalable EndpointSlice API. The EndpointSlice API provides better performance for services with many endpoints.
+====
 
 Overall, that's how simple it is to scale an application (*Pods* in a
 *Service*). Application scaling can happen extremely quickly because OpenShift
