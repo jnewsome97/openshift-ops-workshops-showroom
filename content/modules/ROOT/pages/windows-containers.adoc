@@ -315,7 +315,7 @@ You can now see the status of the MachineSet.
 
 [source,bash,role="execute",subs="attributes+"]
 ----
-oc get machinesets  -n openshift-machine-api -l machine.openshift.io/os-id=Windows
+oc get machineset.machine.openshift.io -n openshift-machine-api -l machine.openshift.io/os-id=Windows
 ----
 
 This should show the following output.
@@ -382,7 +382,7 @@ MachineSet. Currently, you should have one
 
 [source,bash,role="execute",subs="attributes+"]
 ----
-oc get machineset -l machine.openshift.io/os-id=Windows -n openshift-machine-api
+oc get machineset.machine.openshift.io -l machine.openshift.io/os-id=Windows -n openshift-machine-api
 ----
 
 You should have the below output. It shows that you have one Windows
@@ -400,7 +400,7 @@ add it as an OpenShift Node.
 
 [source,bash,role="execute",subs="attributes+"]
 ----
-oc scale machineset -l machine.openshift.io/os-id=Windows -n openshift-machine-api --replicas=2
+oc scale machineset.machine.openshift.io -l machine.openshift.io/os-id=Windows -n openshift-machine-api --replicas=2
 ----
 
 NOTE: Just like when you created the inital Windows Node, this can take upwards of 15 minutes. This can be another good time to take a small break.
@@ -430,7 +430,7 @@ Remove this node by scaling the Windows MachineSet back down to 1.
 
 [source,bash,role="execute",subs="attributes+"]
 ----
-oc scale machineset -l machine.openshift.io/os-id=Windows -n openshift-machine-api --replicas=1
+oc scale machineset.machine.openshift.io -l machine.openshift.io/os-id=Windows -n openshift-machine-api --replicas=1
 ----
 
 WARNING: Please scale your Windows MachineSet to 1 before starting the next exercise.
