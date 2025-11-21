@@ -22,7 +22,7 @@ Execute the following:
 
 [source,bash,role="execute",subs="attributes+"]
 ----
-oc get machineset.machine.openshift.io -n openshift-machine-api
+oc get machinesets -n openshift-machine-api
 ----
 
 You will see something like:
@@ -107,18 +107,17 @@ Look at the list of `MachineSets` again:
 
 [source,bash,role="execute",subs="attributes+"]
 ----
-oc get machineset.machine.openshift.io -n openshift-machine-api
+oc get machinesets -n openshift-machine-api
 ----
 
 Within that list, we will scale one of the `MachineSet` objects with the
 `oc scale` command. Run:
 
 [source,bash,role="execute",subs="attributes+"]
-[subs="attributes+"]
 ----
 CLUSTERNAME=$(oc get infrastructure cluster -o=jsonpath='{.status.infrastructureName}')
 ZONENAME=$(oc get nodes --sort-by='.metadata.creationTimestamp' -o=jsonpath='{.items[-1:].metadata.labels.topology\.kubernetes\.io/zone}')
-oc scale machineset.machine.openshift.io ${CLUSTERNAME}-worker-${ZONENAME} -n openshift-machine-api --replicas=3
+oc scale machineset/${CLUSTERNAME}-worker-${ZONENAME} -n openshift-machine-api --replicas=3
 ----
 
 Take special note the `MachineSet` scaled is likely different from
@@ -171,15 +170,13 @@ when you scaled up, a few steps ago.
 First we will patch the deletePolicy of the machineset to delete only the newest machines:
 
 [source,bash,role="execute",subs="attributes+"]
-[subs="attributes+"]
 ----
-oc patch machineset.machine.openshift.io ${CLUSTERNAME}-worker-${ZONENAME} -n openshift-machine-api --type='merge' -p '{"spec":{"deletePolicy":"Newest"}}'
+oc patch machineset/${CLUSTERNAME}-worker-${ZONENAME} -n openshift-machine-api --type='merge' -p '{"spec":{"deletePolicy":"Newest"}}'
 ----
 
 Then we will scale down the machineset
 
 [source,bash,role="execute",subs="attributes+"]
-[subs="attributes+"]
 ----
-oc scale machineset.machine.openshift.io ${CLUSTERNAME}-worker-${ZONENAME} -n openshift-machine-api --replicas=1
+oc scale machineset/${CLUSTERNAME}-worker-${ZONENAME} -n openshift-machine-api --replicas=1
 ----
