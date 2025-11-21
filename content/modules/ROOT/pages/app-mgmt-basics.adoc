@@ -857,6 +857,20 @@ recent RS has a desired scale of 1.
 If you `oc describe` each of these RSs you will see how earlier versions have
 no probes, and the latest running RS has the new probes.
 
+Secure the Route with TLS
+By default, the route we created earlier uses HTTP. To make it accessible via HTTPS, we need to secure it with TLS termination:
+
+[source,bash,role="execute",subs="attributes+"]
+----
+oc patch route mapit -p '{"spec":{"tls":{"termination":"edge","insecureEdgeTerminationPolicy":"Redirect"}}}'
+----
+
+This command adds edge TLS termination to the route, which means:
+
+- The router terminates TLS encryption and forwards unencrypted traffic to the pod
+- HTTP requests are automatically redirected to HTTPS
+- OpenShift provides a default certificate for the route
+
 Feel free to try out the mapit application:
 
 [source,bash,role="execute",subs="attributes+"]
