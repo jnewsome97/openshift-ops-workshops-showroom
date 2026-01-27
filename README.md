@@ -24,6 +24,7 @@ Operations workshop content for OpenShift 4.x, built with Antora for the Showroo
 | Observability | :red_circle: Placeholder |
 | Debugging & Troubleshooting | :yellow_circle: Initial draft |
 | Performance Tuning | :yellow_circle: Initial draft |
+| OpenShift Lightspeed | :white_circle: TBA |
 
 ### Phase 4: Workloads & Architecture
 | Module | Status |
@@ -42,7 +43,6 @@ Operations workshop content for OpenShift 4.x, built with Antora for the Showroo
 |--------|--------|
 | Cloud Infrastructure | :red_circle: Placeholder |
 | Developer Hub | :yellow_circle: Initial draft |
-| OpenShift Lightspeed | :white_circle: TBA |
 
 ---
 

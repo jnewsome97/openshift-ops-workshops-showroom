@@ -1,0 +1,18 @@
+= OpenShift Lightspeed
+
+== Module Overview
+
+**Status:** TBA
+
+**Duration:** TBD +
+**Audience:** Platform Engineers, SRE, Operations Teams
+
+== Content
+
+_This module will cover:_
+
+* Introduction to OpenShift Lightspeed
+* AI-assisted troubleshooting and debugging
+* Natural language queries for cluster operations
+* Generating YAML and CLI commands
+* Integration with Day 2 operations workflows

@@ -17,6 +17,7 @@
 * xref:observability.adoc[Observability]
 * xref:debugging-troubleshooting.adoc[Debugging & Troubleshooting]
 * xref:performance-tuning.adoc[Performance Tuning]
+* xref:openshift-lightspeed.adoc[OpenShift Lightspeed (TBA)]
 
 .Phase 4: Workloads & Architecture
 * xref:virtualization.adoc[Virtualization]
