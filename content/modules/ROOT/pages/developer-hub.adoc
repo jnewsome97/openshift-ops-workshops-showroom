@@ -303,6 +303,10 @@ When you access Developer Hub, you see:
 
 The catalog is the heart of Developer Hub.
 
+image::rhdh-catalog.png[Software Catalog view]
+
+The catalog shows all registered components with filters for Kind, Owner, Lifecycle, and more. In a production environment, this would be populated with your organization's services, APIs, and resources.
+
 === What Goes in the Catalog?
 
 * **Components** - Applications, microservices
