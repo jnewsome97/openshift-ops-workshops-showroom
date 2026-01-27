@@ -127,8 +127,12 @@ oc get routes -n backstage
 === Step 3: Access the Portal
 
 1. **Open the Developer Hub URL** in a new browser tab
-2. You'll see the **Red Hat Developer Hub** landing page
-3. By default, you can access as a guest or login with OpenShift credentials
+2. You'll see the **Red Hat Developer Hub** login page
+3. Select **Guest** to enter without authentication, or use another sign-in method if configured
+
+image::rhdh-login-page.png[Developer Hub login page]
+
+Click **Enter** under Guest to access the portal.
 
 You're now in the **Developer Hub Portal**.
 
@@ -138,14 +142,18 @@ As an operations administrator, you'll want to understand how RHDH is deployed a
 
 === View RHDH in the OpenShift Console
 
-1. In the OpenShift console, go to **Workloads** -> **Deployments**
+1. In the OpenShift console, go to **Workloads** -> **Pods**
 2. Select the **backstage** project from the project dropdown
-3. You'll see the `backstage-developer-hub` deployment
-4. Click on the deployment to see:
-   * Pod details and status
-   * Resource usage (CPU/Memory)
-   * Environment variables
-   * Mounted ConfigMaps and Secrets
+3. You'll see the `backstage-developer-hub` and `backstage-psql-developer-hub` pods running
+
+image::rhdh-pods-running.png[Backstage pods running in the console]
+
+Click on a pod to see:
+
+* Pod details and status
+* Resource usage (CPU/Memory)
+* Environment variables
+* Mounted ConfigMaps and Secrets
 
 === Explore the Operator
 
@@ -155,6 +163,12 @@ The RHDH Operator manages the Backstage instance:
 2. Select **All Projects** or **backstage**
 3. Click on **Red Hat Developer Hub**
 4. Under **Provided APIs**, you'll see the `Backstage` custom resource
+
+image::rhdh-operator-installed.png[Red Hat Developer Hub Operator installed]
+
+Click on the **Red Hat Developer Hub** tab to see the Backstage instances:
+
+image::rhdh-backstage-cr.png[Backstage CR showing deployed status]
 
 View the Backstage CR via CLI:
 
