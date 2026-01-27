@@ -21,7 +21,7 @@ Operations workshop content for OpenShift 4.x, built with Antora for the Showroo
 ### Phase 3: Day 2 Operations
 | Module | Status |
 |--------|--------|
-| Observability | :red_circle: Placeholder |
+| Observability | :yellow_circle: Initial draft |
 | Debugging & Troubleshooting | :yellow_circle: Initial draft |
 | Performance Tuning | :yellow_circle: Initial draft |
 | OpenShift Lightspeed | :white_circle: TBA |
