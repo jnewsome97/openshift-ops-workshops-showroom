@@ -1,5 +1,6 @@
 // OpenShift Days - Ops Track (101)
 // Streamlined workshop matching requirements
+// Module-based navigation using ifdef conditionals
 
 * xref:index.adoc[Environment Setup]
 
@@ -20,13 +21,19 @@
 * xref:openshift-lightspeed.adoc[OpenShift Lightspeed (TBA)]
 
 .Phase 4: Workloads & Architecture
+ifdef::module_virt[]
 * xref:virtualization.adoc[Virtualization]
+endif::[]
+ifdef::module_acm[]
 * xref:acm-multicluster.adoc[ACM - Multi-Cluster Management (External)]
 * xref:hosted-control-planes.adoc[Advanced Architecture - HCP (Initial draft)]
+endif::[]
 
 .Phase 5: Security (External)
 * xref:security.adoc[Security - Secrets, Certs & ACS (External)]
 
 .Phase 6: Platform Engineering
 * xref:cloud-infrastructure.adoc[Cloud Infrastructure & Storage]
+ifdef::module_devhub[]
 * xref:developer-hub.adoc[Developer Hub]
+endif::[]
