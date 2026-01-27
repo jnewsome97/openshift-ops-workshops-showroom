@@ -136,6 +136,15 @@ Click **Enter** under Guest to access the portal.
 
 You're now in the **Developer Hub Portal**.
 
+image::rhdh-home-page.png[Developer Hub home page]
+
+The home page shows:
+
+* **Get started** - Links to documentation
+* **Explore** - Navigate to the Catalog, APIs, and templates
+* **Learn** - Learning paths and tutorials
+* **Quickstart guide** (right panel) - Steps for authentication, RBAC, Git, and plugins
+
 == Ops Admin: Exploring RHDH from the Console and CLI
 
 As an operations administrator, you'll want to understand how RHDH is deployed and configured. Let's explore.
