@@ -4,14 +4,14 @@
 * xref:index.adoc[Environment Setup]
 
 .Phase 1: Platform Foundation
-* xref:ocp-concepts.adoc[OpenShift Platform Overview (Done)]
-* xref:installation.adoc[Installation & Verification (Done)]
-* xref:oidc-authentication.adoc[Identity & Users - OIDC (Done)]
-* xref:ldap-groupsync.adoc[Identity & Users - LDAP (Done)]
-* xref:app-mgmt-basics.adoc[Application Management Basics (Done)]
+* xref:ocp-concepts.adoc[OpenShift Platform Overview (Initial draft)]
+* xref:installation.adoc[Installation & Verification (Initial draft)]
+* xref:oidc-authentication.adoc[Identity & Users - OIDC (Initial draft)]
+* xref:ldap-groupsync.adoc[Identity & Users - LDAP (Initial draft)]
+* xref:app-mgmt-basics.adoc[Application Management Basics (Initial draft)]
 
 .Phase 2: Networking
-* xref:networking.adoc[Networking & Ingress (Semi-Done)]
+* xref:networking.adoc[Networking & Ingress (Initial draft)]
 
 .Phase 3: Day 2 Operations
 * xref:observability.adoc[Observability]
@@ -21,7 +21,7 @@
 .Phase 4: Workloads & Architecture
 * xref:virtualization.adoc[Virtualization]
 * xref:acm-multicluster.adoc[ACM - Multi-Cluster Management (External)]
-* xref:hosted-control-planes.adoc[Advanced Architecture - HCP (Done)]
+* xref:hosted-control-planes.adoc[Advanced Architecture - HCP (Initial draft)]
 
 .Phase 5: Security (External)
 * xref:security.adoc[Security - Secrets, Certs & ACS (External)]
