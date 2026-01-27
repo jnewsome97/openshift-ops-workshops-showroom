@@ -25,12 +25,12 @@ ifdef::module_virt[]
 * xref:virtualization.adoc[Virtualization]
 endif::[]
 ifdef::module_acm[]
-* xref:acm-multicluster.adoc[ACM - Multi-Cluster Management (External)]
+* xref:acm-multicluster.adoc[ACM - Multi-Cluster Management (TBA)]
 * xref:hosted-control-planes.adoc[Advanced Architecture - HCP (Initial draft)]
 endif::[]
 
-.Phase 5: Security (External)
-* xref:security.adoc[Security - Secrets, Certs & ACS (External)]
+.Phase 5: Security
+* xref:security.adoc[Security - Secrets, Certs & ACS (TBA)]
 
 .Phase 6: Platform Engineering
 * xref:cloud-infrastructure.adoc[Cloud Infrastructure & Storage]

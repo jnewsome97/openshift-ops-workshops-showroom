@@ -2,12 +2,4 @@
 
 == Module Overview
 
-**Status:** This module is maintained by the ACM team.
-
-**Duration:** TBD +
-**Format:** TBD +
-**Audience:** Infrastructure Architects, Platform Teams
-
-== Content
-
-_This module covers ACM multi-cluster management, DR, and backup. Content provided by ACM team._
+**Status:** TBA
