@@ -303,9 +303,20 @@ When you access Developer Hub, you see:
 
 The catalog is the heart of Developer Hub.
 
-image::rhdh-catalog.png[Software Catalog view]
+image::rhdh-catalog-populated.png[Software Catalog with components]
 
-The catalog shows all registered components with filters for Kind, Owner, Lifecycle, and more. In a production environment, this would be populated with your organization's services, APIs, and resources.
+The catalog shows all registered components with filters for Kind, Owner, Type, Lifecycle, and more. Each entry shows key metadata at a glance - owner, type, lifecycle stage, and description.
+
+Click on a component to see its details:
+
+image::rhdh-component-details.png[Component details page]
+
+The component details page shows:
+
+* **Overview** - Description, owner, lifecycle, system
+* **Links** - Website, documentation, source code, chat
+* **Dependencies** - What this component depends on
+* **Docs** - TechDocs rendered from the repository
 
 === What Goes in the Catalog?
 
