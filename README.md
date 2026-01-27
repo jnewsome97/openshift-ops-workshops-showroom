@@ -7,30 +7,30 @@ Operations workshop content for OpenShift 4.x, built with Antora for the Showroo
 ### Phase 1: Platform Foundation
 | Module | Status |
 |--------|--------|
-| Platform Overview | :yellow_circle: Draft |
-| Installation & Verification | :yellow_circle: Draft |
-| Identity & Users (OIDC) | :yellow_circle: Draft |
-| Identity & Users (LDAP) | :yellow_circle: Draft |
-| Application Management | :yellow_circle: Draft |
+| Platform Overview | :yellow_circle: Initial draft |
+| Installation & Verification | :yellow_circle: Initial draft |
+| Identity & Users (OIDC) | :yellow_circle: Initial draft |
+| Identity & Users (LDAP) | :yellow_circle: Initial draft |
+| Application Management | :yellow_circle: Initial draft |
 
 ### Phase 2: Networking
 | Module | Status |
 |--------|--------|
-| Networking & Ingress | :yellow_circle: Draft |
+| Networking & Ingress | :yellow_circle: Initial draft |
 
 ### Phase 3: Day 2 Operations
 | Module | Status |
 |--------|--------|
 | Observability | :red_circle: Placeholder |
-| Debugging & Troubleshooting | :yellow_circle: Draft |
-| Performance Tuning | :yellow_circle: Draft |
+| Debugging & Troubleshooting | :yellow_circle: Initial draft |
+| Performance Tuning | :yellow_circle: Initial draft |
 
 ### Phase 4: Workloads & Architecture
 | Module | Status |
 |--------|--------|
-| Virtualization | :yellow_circle: Draft |
+| Virtualization | :yellow_circle: Initial draft |
 | ACM Multi-Cluster | :red_circle: Placeholder |
-| Hosted Control Planes | :yellow_circle: Draft |
+| Hosted Control Planes | :yellow_circle: Initial draft |
 
 ### Phase 5: Security
 | Module | Status |
@@ -41,7 +41,7 @@ Operations workshop content for OpenShift 4.x, built with Antora for the Showroo
 | Module | Status |
 |--------|--------|
 | Cloud Infrastructure | :red_circle: Placeholder |
-| Developer Hub | :yellow_circle: Draft |
+| Developer Hub | :yellow_circle: Initial draft |
 | OpenShift Lightspeed | :white_circle: TBA |
 
 ---
