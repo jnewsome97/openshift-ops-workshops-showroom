@@ -1,12 +1,327 @@
-= Cloud Infrastructure & Storage
+= Cloud Integration & Infrastructure
 
 == Module Overview
 
-**Status:** TBA
+**Duration:** 15-20 minutes +
+**Format:** Hands-on exploration +
+**Audience:** IT Operations, Infrastructure Architects, Platform Engineers
 
-**Topics to cover:**
+**Workshop Narrative Context:**
 
-* Cloud provider integration
-* Storage classes and CSI drivers
-* Persistent storage management
-* ODF (OpenShift Data Foundation)
+OpenShift doesn't just run *on* AWS—it *drives* AWS for you. In this module, you'll see how OpenShift abstracts cloud provider APIs so you can manage infrastructure using the same `oc` commands regardless of whether you're on AWS, Azure, VMware, or bare metal.
+
+== Learning Objectives
+
+By the end of this module, you will be able to:
+
+* Identify the cloud platform OpenShift is running on
+* Understand how OpenShift integrates with AWS infrastructure
+* View and understand storage classes and CSI drivers
+* Check node capacity and resource usage
+* Understand how ODF provides unified storage
+
+== The Value Proposition
+
+**The Admin's Pain Point:**
+
+* "I have to log into AWS Console to check my EC2 instances"
+* "Storage provisioning requires tickets and manual work"
+* "Managing infrastructure and Kubernetes separately is double the work"
+
+**OpenShift's Answer:**
+
+* Infrastructure is managed as Kubernetes objects
+* Storage is dynamically provisioned via StorageClasses
+* Same `oc` commands work on AWS, Azure, VMware, or bare metal
+
+== Hands-On: Exploring Cloud Integration
+
+=== Step 1: Identify the Cloud Platform
+
+First, let's confirm what cloud platform this cluster is running on:
+
+[source,bash,role="execute"]
+----
+oc get infrastructure cluster -o yaml | grep -A5 "status:"
+----
+
+You'll see output showing:
+
+----
+status:
+  apiServerInternalURI: https://api-int.cluster-xxxxx...
+  apiServerURL: https://api.cluster-xxxxx...
+  infrastructureName: cluster-xxxxx-xxxxx
+  platform: AWS
+  platformStatus:
+    aws:
+      region: us-east-2
+----
+
+**Key insight:** The `platform: AWS` tells OpenShift which cloud provider APIs to use. This same command on Azure would show `platform: Azure`.
+
+Get just the platform:
+
+[source,bash,role="execute"]
+----
+oc get infrastructure cluster -o jsonpath='{.status.platform}'
+----
+
+Get the AWS region:
+
+[source,bash,role="execute"]
+----
+oc get infrastructure cluster -o jsonpath='{.status.platformStatus.aws.region}'
+----
+
+=== Step 2: View the Nodes (EC2 Instances)
+
+Every OpenShift node is an EC2 instance. Let's look at them:
+
+[source,bash,role="execute"]
+----
+oc get nodes -o wide
+----
+
+Notice the node names follow AWS's internal DNS pattern: `ip-10-0-xx-xx.us-east-2.compute.internal`
+
+Check node roles:
+
+[source,bash,role="execute"]
+----
+oc get nodes -L node-role.kubernetes.io/worker,node-role.kubernetes.io/master
+----
+
+=== Step 3: Check Node Capacity and Usage
+
+As an admin, you need to know your capacity. Check current resource usage:
+
+[source,bash,role="execute"]
+----
+oc adm top nodes
+----
+
+This shows CPU and memory usage across all nodes.
+
+Get detailed capacity for a specific node:
+
+[source,bash,role="execute"]
+----
+oc describe node $(oc get nodes -l node-role.kubernetes.io/worker -o jsonpath='{.items[0].metadata.name}') | grep -A10 "Capacity:"
+----
+
+You'll see:
+
+----
+Capacity:
+  cpu:                32
+  memory:             129672952Ki
+  ephemeral-storage:  209124332Ki
+----
+
+**Key insight:** This worker node has 32 CPUs and ~128GB RAM—likely an `m5a.8xlarge` EC2 instance type.
+
+=== Step 4: Explore Storage Classes
+
+Storage classes define *how* storage is provisioned. On AWS, OpenShift comes pre-configured to talk to EBS (Elastic Block Store):
+
+[source,bash,role="execute"]
+----
+oc get storageclasses
+----
+
+You'll see multiple storage classes:
+
+----
+NAME                                         PROVISIONER
+gp2-csi                                      ebs.csi.aws.com
+gp3-csi                                      ebs.csi.aws.com
+ocs-storagecluster-ceph-rbd (default)        openshift-storage.rbd.csi.ceph.com
+ocs-storagecluster-cephfs                    openshift-storage.cephfs.csi.ceph.com
+openshift-storage.noobaa.io                  openshift-storage.noobaa.io/obc
+----
+
+**What you're seeing:**
+
+* `gp2-csi` / `gp3-csi` - AWS EBS volumes (OpenShift talks directly to AWS API)
+* `ocs-storagecluster-ceph-rbd` - ODF block storage (Ceph running on OpenShift)
+* `ocs-storagecluster-cephfs` - ODF file storage (shared filesystem)
+* `openshift-storage.noobaa.io` - ODF object storage (S3-compatible)
+
+=== Step 5: Understand CSI Drivers
+
+CSI (Container Storage Interface) drivers are the "glue" between OpenShift and storage backends:
+
+[source,bash,role="execute"]
+----
+oc get csidrivers
+----
+
+Output:
+
+----
+NAME                                    ATTACHREQUIRED   PODINFOONMOUNT
+ebs.csi.aws.com                         true             false
+openshift-storage.cephfs.csi.ceph.com   true             false
+openshift-storage.rbd.csi.ceph.com      true             false
+----
+
+**Key insight:** The `ebs.csi.aws.com` driver is what allows OpenShift to create EBS volumes automatically when a developer requests storage.
+
+=== Step 6: View Persistent Volumes in Use
+
+See what storage has been dynamically provisioned:
+
+[source,bash,role="execute"]
+----
+oc get pv | head -15
+----
+
+Notice the `STORAGECLASS` column—some volumes are on `gp3-csi` (AWS EBS), others on `ocs-storagecluster-ceph-rbd` (ODF).
+
+Get a count by storage class:
+
+[source,bash,role="execute"]
+----
+oc get pv -o jsonpath='{range .items[*]}{.spec.storageClassName}{"\n"}{end}' | sort | uniq -c
+----
+
+=== Step 7: Check ODF Status
+
+OpenShift Data Foundation provides software-defined storage that runs *on* the cluster:
+
+[source,bash,role="execute"]
+----
+oc get storagecluster -n openshift-storage
+----
+
+Check if ODF is healthy:
+
+[source,bash,role="execute"]
+----
+oc get storagecluster -n openshift-storage -o jsonpath='{.items[0].status.phase}'
+----
+
+Should return `Ready`.
+
+View ODF components:
+
+[source,bash,role="execute"]
+----
+oc get pods -n openshift-storage | grep -E "osd|mon|mgr|noobaa" | head -10
+----
+
+=== Step 8: Cloud Credentials
+
+OpenShift needs credentials to talk to AWS APIs. The Cloud Credential Operator manages this:
+
+[source,bash,role="execute"]
+----
+oc get cloudcredentials -n openshift-cloud-credential-operator
+----
+
+This shows the credential requests that allow OpenShift to create EBS volumes, manage load balancers, etc.
+
+== How This Translates Across Clouds
+
+The power of OpenShift is consistency. Here's how these concepts map:
+
+[cols="1,1,1,1"]
+|===
+|OpenShift Concept |AWS |Azure |VMware
+
+|Storage Class
+|`gp3-csi` (EBS)
+|`managed-csi` (Azure Disk)
+|`vsphere-volume`
+
+|CSI Driver
+|`ebs.csi.aws.com`
+|`disk.csi.azure.com`
+|`csi.vsphere.vmware.com`
+
+|Node Naming
+|`ip-10-0-xx-xx.region.compute.internal`
+|`node-xxx`
+|`host.domain.local`
+
+|Infrastructure Object
+|`platform: AWS`
+|`platform: Azure`
+|`platform: VSphere`
+|===
+
+**The key point:** The `oc` commands you just ran work identically on any platform. You don't need to learn cloud-specific CLIs.
+
+== Infrastructure Scaling (IPI Clusters)
+
+[NOTE]
+====
+This section applies to **Installer Provisioned Infrastructure (IPI)** clusters where OpenShift manages the underlying machines. In some environments, machines are managed externally.
+====
+
+On IPI clusters, you can scale infrastructure using MachineSets:
+
+[source,bash,role="copypaste"]
+----
+# View machine sets (IPI clusters only)
+oc get machinesets -n openshift-machine-api
+
+# Scale workers (IPI clusters only)
+oc scale machineset <name> --replicas=4 -n openshift-machine-api
+----
+
+When you scale a MachineSet, OpenShift calls the AWS API to:
+
+1. Launch a new EC2 instance
+2. Install RHEL CoreOS
+3. Join it to the cluster
+4. Mark it Ready
+
+All without logging into AWS Console.
+
+== Summary: Key Commands
+
+[source,bash]
+----
+# Check cloud platform
+oc get infrastructure cluster -o jsonpath='{.status.platform}'
+
+# View nodes (EC2 instances)
+oc get nodes -o wide
+
+# Check node capacity
+oc adm top nodes
+
+# List storage classes
+oc get storageclasses
+
+# View CSI drivers
+oc get csidrivers
+
+# Check ODF status
+oc get storagecluster -n openshift-storage
+
+# View provisioned volumes
+oc get pv
+----
+
+== Key Takeaways
+
+* **Platform Abstraction** - OpenShift knows it's on AWS and uses AWS APIs automatically
+* **Dynamic Storage** - Developers get storage on-demand without tickets
+* **Unified Management** - Same `oc` commands work across AWS, Azure, VMware, or bare metal
+* **ODF Integration** - Software-defined storage provides block, file, and object storage
+* **Visibility** - Admins can see infrastructure state without logging into cloud consoles
+
+== Next Steps
+
+This module showed how OpenShift integrates with cloud infrastructure. Related topics:
+
+* **Virtualization** - Run VMs alongside containers on this same infrastructure
+* **Backup & DR** - Use OADP to backup workloads to S3-compatible storage
+* **Observability** - Monitor storage and node health
+
+---
+
+**Questions?** Discuss cloud integration strategies with your instructor.
