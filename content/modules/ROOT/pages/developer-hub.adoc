@@ -1,0 +1,523 @@
+= Platform Engineering - Red Hat Developer Hub
+
+== Module Overview
+
+**Duration:** 20-25 minutes +
+**Format:** Dashboard exploration + Demo +
+**Audience:** IT Operations, Platform Engineers, Infrastructure Architects
+
+**Workshop Narrative Context:**
+
+We've learned how to:
+- Secure workloads with RHACS
+- Enforce governance policies
+- Monitor compliance
+
+**Now:** How do we **enable developer self-service** while maintaining operational control? How do we reduce repetitive requests and tickets?
+
+== Learning Objectives
+
+By the end of this module, you will be able to:
+
+* Understand what Red Hat Developer Hub (RHDH) is and how it fits into platform operations
+* Access the Developer Hub portal
+* Explore the software catalog
+* See how software templates provide "golden paths"
+* Understand how RHDH reduces operational toil
+
+== What is Red Hat Developer Hub?
+
+**Red Hat Developer Hub (RHDH)** is an **enterprise-grade Internal Developer Platform** based on Backstage.
+
+Think of it as: **Your organization's developer self-service portal**
+
+=== The Operations Problem It Solves
+
+**Before RHDH:**
+
+* Developers submit tickets: "Create me a new app with CI/CD"
+* Ops manually provisions: namespace, RBAC, quotas, pipeline, git repo
+* Process takes days or weeks
+* Inconsistent configurations
+* Documentation scattered everywhere
+
+**With RHDH:**
+
+* Developer clicks "Create New App" in portal
+* Template automatically provisions: namespace, RBAC, quotas, pipeline, git repo
+* Process takes minutes
+* **Ops-defined golden paths** ensure consistency
+* Self-service with governance built-in
+
+=== Key Capabilities
+
+* **Software Catalog** - Unified view of all services, APIs, libraries
+* **Software Templates** - Self-service app creation with Ops-approved patterns
+* **TechDocs** - Documentation integrated with code
+* **Plugins** - Integrate with tools (ArgoCD, Tekton, Jira, etc.)
+* **RBAC** - Fine-grained access control
+* **API Integration** - Connect to existing systems
+
+== RHDH Architecture (Quick Overview)
+
+RHDH on OpenShift consists of:
+
+* **Backstage Frontend** - Web portal UI
+* **Backstage Backend** - API and orchestration layer
+* **PostgreSQL Database** - Stores catalog and configuration
+* **Plugins** - Extend functionality (Kubernetes, Tekton, ArgoCD, etc.)
+
+All of this was deployed via the **Red Hat Developer Hub Operator** from the Software Catalog.
+
+== Hands-On: Accessing Developer Hub
+
+=== Step 1: Verify RHDH is Running
+
+Check the RHDH pods:
+
+[source,bash,role="execute"]
+----
+oc get pods -n rhdh
+----
+
+You should see:
+
+----
+NAME                                       READY   STATUS
+backstage-developer-hub-xxxxx              1/1     Running
+backstage-psql-developer-hub-0             1/1     Running
+----
+
+=== Step 2: Get the Developer Hub URL
+
+Get the Developer Hub portal URL:
+
+[source,bash,role="execute"]
+----
+oc get route backstage-developer-hub -n rhdh -o jsonpath='https://{.spec.host}'
+----
+
+Output:
+
+----
+https://backstage-developer-hub-rhdh.apps.cluster-GUID.example.com
+----
+
+=== Step 3: Access the Portal
+
+1. **Open the Developer Hub URL** in a new browser tab
+2. You'll see the **Red Hat Developer Hub** landing page
+3. By default, you can access as a guest or login with OpenShift credentials
+
+You're now in the **Developer Hub Portal**.
+
+== The Developer Hub Portal: First Look
+
+When you access Developer Hub, you see:
+
+* **Software Catalog** - All registered apps, services, APIs
+* **Create** - Software templates for new projects
+* **Docs** - TechDocs documentation
+* **APIs** - API catalog
+* **Search** - Find anything across the catalog
+
+**Key Concept:** This is a **developer-facing portal**, but **Ops defines the guardrails**.
+
+== Exploring the Software Catalog
+
+The catalog is the heart of Developer Hub.
+
+=== What Goes in the Catalog?
+
+* **Components** - Applications, microservices
+* **APIs** - REST APIs, GraphQL, gRPC
+* **Resources** - Databases, message queues, storage
+* **Systems** - Logical groupings of components
+* **Domains** - Business domains
+
+=== How Does Content Get Here?
+
+1. **Catalog YAML files** - Stored in Git repositories
+2. **Discovery** - RHDH scans repos for `catalog-info.yaml` files
+3. **Registration** - Ops can manually register systems
+4. **Plugins** - Auto-import from Kubernetes, ArgoCD, etc.
+
+Example `catalog-info.yaml`:
+
+[source,yaml]
+----
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: mapit
+  description: Mapping application for city data
+  annotations:
+    backstage.io/kubernetes-namespace: ops-track-demo
+spec:
+  type: service
+  lifecycle: production
+  owner: team-operations
+  system: geospatial-services
+----
+
+== Software Templates: Golden Paths
+
+**The Ops Superpower:** Software Templates let you define **how apps should be created**.
+
+=== What's a Golden Path?
+
+A **golden path** is a pre-approved, ops-blessed way to do something.
+
+**Example Golden Path Template:**
+
+* Create Git repo
+* Generate app scaffold (language-specific)
+* Create OpenShift namespace with quotas
+* Apply RBAC (developer access, not cluster-admin)
+* Set up Tekton pipeline
+* Configure ArgoCD for GitOps
+* Add monitoring/alerting
+* Register in service catalog
+
+**Developer Experience:**
+
+1. Click "Create" in portal
+2. Choose template: "Spring Boot Microservice"
+3. Fill form: app name, team, database type
+4. Click "Create"
+5. Everything provisioned in 2 minutes
+
+**Ops Experience:**
+
+* Template defined once
+* Consistent across all teams
+* Security/compliance baked in
+* No manual tickets
+* Standardized observability
+
+=== Template Benefits for Ops
+
+[cols="1,2"]
+|===
+|Ops Challenge |How Templates Help
+
+|**Inconsistent configurations**
+|Every app follows same pattern
+
+|**Manual provisioning tickets**
+|Self-service reduces toil
+
+|**Security misconfigurations**
+|Security built into template
+
+|**Quota violations**
+|Templates enforce resource limits
+
+|**Missing monitoring**
+|Templates add Prometheus annotations
+
+|**Documentation drift**
+|TechDocs generated from template
+|===
+
+== Integration with OpenShift
+
+RHDH integrates deeply with OpenShift:
+
+=== Kubernetes Plugin
+
+View OpenShift resources directly in the portal:
+
+1. Navigate to a component in the catalog
+2. Click the **Kubernetes** tab
+3. See:
+   * Pods status
+   * Deployments
+   * Services
+   * Routes
+   * Resource usage
+
+**Use Case:** Developer checks their app status without needing `oc` CLI access.
+
+=== Tekton Plugin
+
+View CI/CD pipelines:
+
+1. Navigate to a component
+2. Click the **CI/CD** tab
+3. See:
+   * Pipeline runs
+   * Build status
+   * Logs
+
+**Use Case:** Developer troubleshoots failed builds without accessing Tekton directly.
+
+=== ArgoCD Plugin
+
+View GitOps deployments:
+
+1. Navigate to a component
+2. Click the **ArgoCD** tab
+3. See:
+   * Sync status
+   * Deployment history
+   * Application health
+
+**Use Case:** Developer sees deployment status, Ops controls ArgoCD access.
+
+== RBAC and Access Control
+
+**Critical for Ops:** RHDH has fine-grained RBAC.
+
+=== Example Policies
+
+[source,yaml]
+----
+# Developers can:
+- Read catalog
+- Create apps from templates
+- View their namespace resources
+- Trigger pipelines for their apps
+
+# Developers CANNOT:
+- Delete catalog entries
+- Modify templates
+- Access other team namespaces
+- Change RBAC policies
+----
+
+**This is configured via:**
+
+* **RHDH RBAC plugin**
+* **OpenShift OAuth integration**
+* **Permission policies** (defined by Ops)
+
+Command to check RBAC configuration:
+
+[source,bash,role="execute"]
+----
+oc get configmap -n rhdh | grep rbac
+----
+
+== TechDocs: Documentation as Code
+
+RHDH supports **TechDocs** - documentation that lives with code.
+
+=== How It Works
+
+1. Write docs in Markdown in your Git repo (e.g., `docs/index.md`)
+2. RHDH builds and renders them
+3. Documentation shows up in the portal under your component
+
+**Benefits for Ops:**
+
+* No separate wiki to maintain
+* Docs versioned with code
+* Searchable across all services
+* Always up-to-date
+
+Example structure:
+
+----
+my-app/
+├── catalog-info.yaml
+├── docs/
+│   ├── index.md          # Overview
+│   ├── architecture.md   # Architecture
+│   └── operations.md     # Runbooks
+└── src/
+----
+
+When developers view `my-app` in the catalog, they see these docs rendered beautifully.
+
+== Ops Workflow: Creating a Template
+
+Here's how Ops would create a new golden path template:
+
+=== Step 1: Define Template YAML
+
+Create `template.yaml`:
+
+[source,yaml]
+----
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: openshift-app-template
+  title: OpenShift Application
+  description: Create a new app with namespace, pipeline, and GitOps
+spec:
+  owner: platform-team
+  type: service
+  parameters:
+    - title: Application Details
+      required:
+        - name
+        - owner
+      properties:
+        name:
+          title: Name
+          type: string
+        owner:
+          title: Team
+          type: string
+  steps:
+    - id: create-namespace
+      name: Create OpenShift Namespace
+      action: kubernetes:create-namespace
+      input:
+        name: ${{ parameters.name }}
+        labels:
+          owner: ${{ parameters.owner }}
+
+    - id: apply-quotas
+      name: Apply Resource Quotas
+      action: kubernetes:apply
+      input:
+        manifest: |
+          apiVersion: v1
+          kind: ResourceQuota
+          metadata:
+            name: default-quota
+            namespace: ${{ parameters.name }}
+          spec:
+            hard:
+              requests.cpu: "4"
+              requests.memory: 8Gi
+
+    - id: create-pipeline
+      name: Create Tekton Pipeline
+      action: tekton:create-pipeline
+      # ... pipeline definition
+
+    - id: register-catalog
+      name: Register in Catalog
+      action: catalog:register
+      # ... catalog registration
+----
+
+=== Step 2: Store in Git
+
+[source,bash,role="copypaste"]
+----
+# Store template in Git repo
+git clone https://github.com/your-org/rhdh-templates.git
+cd rhdh-templates
+mkdir openshift-app
+cp template.yaml openshift-app/
+git add .
+git commit -m "Add OpenShift app template"
+git push
+----
+
+=== Step 3: Register Template in RHDH
+
+Point RHDH at your templates repo:
+
+[source,yaml]
+----
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config-rhdh
+  namespace: rhdh
+data:
+  app-config.yaml: |
+    catalog:
+      locations:
+        - type: url
+          target: https://github.com/your-org/rhdh-templates/blob/main/catalog-info.yaml
+----
+
+Apply and reload:
+
+[source,bash,role="copypaste"]
+----
+oc apply -f app-config.yaml
+oc rollout restart deployment/backstage-developer-hub -n rhdh
+----
+
+**Result:** Template now appears in "Create" menu for developers.
+
+== CLI Access (For Automation)
+
+RHDH has a REST API for automation:
+
+[source,bash,role="copypaste"]
+----
+# Example: Get all catalog components
+curl -H "Authorization: Bearer $TOKEN" \
+  https://backstage-developer-hub-rhdh.apps.cluster.com/api/catalog/entities
+
+# Example: Trigger template scaffolding
+curl -X POST \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  https://backstage-developer-hub-rhdh.apps.cluster.com/api/scaffolder/v2/tasks \
+  -d '{
+    "templateRef": "template:default/openshift-app-template",
+    "values": {
+      "name": "my-new-app",
+      "owner": "team-a"
+    }
+  }'
+----
+
+This enables **infrastructure-as-code** provisioning via CI/CD.
+
+== Summary: How RHDH Fits into Ops Workflow
+
+[cols="1,2"]
+|===
+|Ops Activity |How RHDH Helps
+
+|**Developer requests new app**
+|Self-service via templates, no manual provisioning
+
+|**Onboarding new team**
+|Portal provides discoverability, no scattered docs
+
+|**Enforcing standards**
+|Templates bake in security, quotas, monitoring
+
+|**Tracking all services**
+|Catalog provides single source of truth
+
+|**Compliance auditing**
+|See which apps follow which patterns
+
+|**Reducing toil**
+|Automation via templates and plugins
+|===
+
+== Key Takeaways
+
+✅ **Self-Service** - Developers provision apps without tickets +
+✅ **Governance** - Ops defines templates with security baked in +
+✅ **Standardization** - Golden paths ensure consistency +
+✅ **Integration** - Works with OpenShift, Tekton, ArgoCD, RHACS +
+✅ **Visibility** - Catalog shows everything in one place +
+✅ **Reduced Toil** - Automation eliminates manual provisioning
+
+== The "Tee-Up" for Platform Engineering Workshops
+
+This module showed you **basic Developer Hub capabilities**.
+
+**RHDH can do much more:**
+- Advanced software templates with multi-step workflows
+- Custom plugins development
+- API catalog and governance
+- Cost tracking and showback
+- Integration with external systems (Jira, ServiceNow, GitHub, GitLab)
+- Organization structure modeling
+- Scaffolder actions for complex provisioning
+
+**Interested in a deep-dive?** Ask your instructor about the **Platform Engineering with RHDH Workshop**.
+
+== Next Module
+
+Continue to **Debugging & Troubleshooting** to learn how to diagnose and fix common OpenShift issues.
+
+---
+
+**Questions?** Discuss platform engineering strategies with your instructor.

@@ -35,7 +35,7 @@ oc create clusterquota for-user-normaluser1 \
     --hard pods=10
 ----
 
-[NOTE]
+[Note]
 ====
 The syntax is `openshift.io/requester=<username>`. 
 ====
@@ -346,7 +346,7 @@ Resource        Used    Hard
 pods            2       5
 ----
 
-[NOTE]
+[Note]
 ====
 The user `normaluser1` can create more pods because `pricelist-frontend` and `pricelist-backend` were assigned to the user by `kubeadmin`. They don't have the `openshift.io/requester=normaluser1` annotation since `normaluser1` didn't create them. You can already see how you can mix and match quota polices to fit your envrionment.
 ====

@@ -1,0 +1,678 @@
+= Cloud Infrastructure & Storage Basics
+
+== Module Overview
+
+**Duration:** 30-35 minutes +
+**Format:** Hands-on Lab +
+**Audience:** IT Operations, Platform Engineers
+
+**Workshop Narrative Context:**
+
+You've learned how to deploy and manage applications on OpenShift. But OpenShift doesn't run in isolation - it's deployed on cloud infrastructure (AWS, Azure, GCP) and integrates deeply with cloud services.
+
+**This module:** Understand how OpenShift uses cloud resources, troubleshoot cloud-related issues, and make informed operational decisions.
+
+== Learning Objectives
+
+By the end of this module, you will understand:
+
+* How OpenShift integrates with cloud providers
+* Cloud storage classes and persistent volume claims
+* How to create cloud-backed storage for applications
+* Cloud load balancer integration and cost implications
+* Where to find cloud resources for troubleshooting
+* Common cloud issues and how to diagnose them
+* Cloud provider quotas and operational limitations
+
+== Prerequisites Check
+
+.If you haven't completed "Application Management Basics" - click here to set up first
+[%collapsible]
+====
+
+**New to OpenShift basics?** Run these commands to familiarize yourself with core concepts before continuing.
+
+**Already completed Application Management Basics?** You can skip this section.
+
+---
+
+First, verify you're logged in:
+
+[source,bash,role="execute"]
+----
+oc whoami
+----
+
+You should see your username (e.g., `kube:admin` or your login).
+
+Create a project for this module (a project is an isolated workspace for your resources):
+
+[source,bash,role="execute"]
+----
+oc new-project cloud-demo
+----
+
+Deploy a simple application to see how it works:
+
+[source,bash,role="execute"]
+----
+oc new-app quay.io/openshift-workshop-applications/weathernow:latest -n cloud-demo
+----
+
+This command:
+* Pulls a container image from Quay.io
+* Creates a **Pod** (running container)
+* Creates a **Service** (internal networking)
+* Creates a **Deployment** (manages pod lifecycle)
+
+Check what was created:
+
+[source,bash,role="execute"]
+----
+oc get pods,svc -n cloud-demo
+----
+
+You should see output like:
+
+----
+NAME                              READY   STATUS    RESTARTS   AGE
+pod/weathernow-55f7fc4c99-abc12   1/1     Running   0          10s
+
+NAME                 TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+service/weathernow   ClusterIP   172.30.13.243   <none>        8080/TCP   10s
+----
+
+**Great!** You now have a running application in the `cloud-demo` project. We'll continue using this project throughout the module for hands-on exercises.
+
+====
+
+== OpenShift on Cloud Infrastructure
+
+When OpenShift runs on a cloud provider (AWS, Azure, GCP), it automatically integrates with cloud services:
+
+[source]
+----
+Cloud Resources Managed by OpenShift:
+├── Compute (EC2/VMs)     → Cluster nodes
+├── Storage (EBS/Disks)   → Persistent volumes
+├── Networking (VPC/VNET)  → Software-defined network
+└── Load Balancers        → External access to services
+----
+
+**As an ops team**, you need to understand these integrations to:
+
+* Provision storage correctly
+* Troubleshoot infrastructure issues
+* Optimize costs
+* Understand what resources OpenShift creates
+
+== Identifying the Cloud Platform
+
+**Why this matters:** When troubleshooting storage or networking issues, you'll need to check cloud provider consoles, understand platform-specific limitations, and work with cloud support teams.
+
+First, let's verify which cloud provider this cluster is running on:
+
+[source,bash,role="execute"]
+----
+oc get infrastructure cluster -o jsonpath='{.status.platformStatus.type}'
+----
+
+You should see output like:
+
+----
+AWS
+----
+
+This tells us the cluster is running on Amazon Web Services. Similarly, you might see `Azure`, `GCP`, `IBMCloud`, or other platforms.
+
+To get more details about the cloud configuration:
+
+[source,bash,role="execute"]
+----
+oc get infrastructure cluster -o yaml | grep -A 5 "platformStatus"
+----
+
+You'll see the region and other cloud-specific configuration.
+
+== Understanding Storage Classes
+
+Storage classes define the **type of storage** available in your cluster. On cloud platforms, these map to cloud storage services (AWS EBS, Azure Disk, GCP Persistent Disk).
+
+**Why this matters:** Applications request storage using PVCs, but YOU choose which storage class to use. Wrong choice = poor performance or high costs. gp2 is slower and more expensive than gp3 for the same IOPS.
+
+List available storage classes:
+
+[source,bash,role="execute"]
+----
+oc get storageclasses
+----
+
+You should see output like:
+
+----
+NAME                PROVISIONER       RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+gp2-csi             ebs.csi.aws.com   Delete          WaitForFirstConsumer   true                   61m
+gp3-csi (default)   ebs.csi.aws.com   Delete          WaitForFirstConsumer   true                   61m
+----
+
+**What this means:**
+
+* **Provisioner:** `ebs.csi.aws.com` - Uses AWS Elastic Block Store (EBS)
+* **gp2-csi:** General Purpose SSD version 2 (older, slower)
+* **gp3-csi:** General Purpose SSD version 3 (newer, faster, cheaper) - **Default**
+* **ReclaimPolicy:** `Delete` - Storage is deleted when PVC is deleted
+* **VolumeBindingMode:** `WaitForFirstConsumer` - Important! (explained next)
+
+Let's examine the default storage class in detail:
+
+[source,bash,role="execute"]
+----
+oc describe storageclass gp3-csi
+----
+
+You'll see:
+
+----
+Name:                  gp3-csi
+IsDefaultClass:        Yes
+Provisioner:           ebs.csi.aws.com
+Parameters:            encrypted=true,type=gp3
+AllowVolumeExpansion:  True
+VolumeBindingMode:     WaitForFirstConsumer
+----
+
+**Key Points:**
+
+* **encrypted=true:** All volumes are encrypted at rest
+* **type=gp3:** AWS EBS gp3 volume type
+* **AllowVolumeExpansion:** You can grow volumes without recreating them
+
+== Choosing Storage Types: Cloud vs Local
+
+**As an ops team**, you need to decide when applications should use cloud storage vs local storage.
+
+[cols="1,2,2,2", options="header"]
+|===
+|Storage Type |Use Case |Persistence |Cost
+
+|**Cloud Storage (PVCs)** +
+`storageClassName: gp3-csi`
+|Databases, user uploads, app state
+|Data survives pod restarts/moves
+|💰 Costs money (per GB/month)
+
+|**EmptyDir (Local)** +
+`emptyDir: {}`
+|Temporary files, caches, scratch space
+|Lost when pod is deleted
+|✅ Free
+
+|**HostPath (Node Local)** +
+`hostPath: /data`
+|Logging agents, node monitoring
+|Tied to specific node
+|✅ Free (advanced use only)
+|===
+
+**Decision guide for ops teams:**
+
+* **Database (PostgreSQL, MySQL)** → Use cloud storage (PVCs with gp3-csi)
+* **Application cache (Redis without persistence)** → Use EmptyDir
+* **User file uploads** → Use cloud storage (PVCs)
+* **Build artifacts (temporary)** → Use EmptyDir
+* **Log aggregation buffer** → Use EmptyDir
+* **Stateful app requiring migration** → Use cloud storage (can move between nodes)
+
+[WARNING]
+====
+**Common mistake:** Developers use EmptyDir for databases "to save money." When the pod restarts, all data is lost. Ops teams end up troubleshooting data loss incidents. Set clear policies: stateful apps MUST use PVCs.
+====
+
+== Creating Cloud-Backed Storage
+
+Let's request cloud storage for an application in our project.
+
+=== Create a Persistent Volume Claim (PVC)
+
+A PVC is a request for storage. OpenShift will automatically provision an AWS EBS volume for you.
+
+[source,bash,role="execute"]
+----
+cat <<EOF | oc apply -f -
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: app-data
+  namespace: cloud-demo
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: gp3-csi
+EOF
+----
+
+Check the PVC status:
+
+[source,bash,role="execute"]
+----
+oc get pvc -n cloud-demo
+----
+
+You'll see:
+
+----
+NAME       STATUS    VOLUME   CAPACITY   ACCESS MODES   STORAGECLASS
+app-data   Pending                                      gp3-csi
+----
+
+**Wait, why is it Pending?** This is **intentional**!
+
+=== Understanding WaitForFirstConsumer
+
+The `VolumeBindingMode: WaitForFirstConsumer` means:
+
+* The PVC stays **Pending** until a pod tries to use it
+* This ensures the volume is created in the **same availability zone** as the pod
+* Prevents cross-AZ latency issues
+
+**This is normal behavior - not an error!**
+
+[NOTE]
+====
+**Common ops issue:** Developers panic when they see "Pending" status. Explain this is expected behavior. The PVC will bind automatically when a pod mounts it. Only investigate if it stays Pending AFTER a pod tries to use it.
+====
+
+=== Deploy an Application Using the Storage
+
+Let's create a pod that uses this PVC:
+
+[source,bash,role="execute"]
+----
+cat <<EOF | oc apply -f -
+apiVersion: v1
+kind: Pod
+metadata:
+  name: storage-demo
+  namespace: cloud-demo
+spec:
+  containers:
+  - name: app
+    image: registry.access.redhat.com/ubi9/ubi-minimal:latest
+    command: ["sh", "-c", "echo 'Data from cloud storage!' > /data/test.txt && sleep 3600"]
+    volumeMounts:
+    - name: data
+      mountPath: /data
+  volumes:
+  - name: data
+    persistentVolumeClaim:
+      claimName: app-data
+EOF
+----
+
+Now check the PVC again:
+
+[source,bash,role="execute"]
+----
+oc get pvc -n cloud-demo
+----
+
+You should now see:
+
+----
+NAME       STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS
+app-data   Bound    pvc-87345f1a-e2b7-48a8-b608-c40c04564968   10Gi       RWO            gp3-csi
+----
+
+**Status: Bound!** OpenShift automatically created an AWS EBS volume.
+
+=== Examine the Persistent Volume
+
+Get details about the automatically-created PersistentVolume:
+
+[source,bash,role="execute"]
+----
+oc describe pvc app-data -n cloud-demo
+----
+
+Look for the events section:
+
+----
+Events:
+  Normal  WaitForFirstConsumer   Waiting for pod to be scheduled
+  Normal  Provisioning           External provisioner is provisioning volume
+  Normal  ProvisioningSucceeded  Successfully provisioned volume pvc-xxxxx
+----
+
+To see the AWS EBS volume ID:
+
+[source,bash,role="execute"]
+----
+oc get pv $(oc get pvc app-data -n cloud-demo -o jsonpath='{.spec.volumeName}') -o jsonpath='{.spec.csi.volumeHandle}'
+----
+
+You'll see an AWS volume ID like:
+
+----
+vol-0e1fa4ed3f2350fae
+----
+
+**This is the actual AWS EBS volume** backing your storage. You could find this in the AWS console!
+
+[TIP]
+====
+**When to use this:**
+* Pod won't start (FailedAttachVolume / FailedMount) - Check if volume exists in AWS console
+* Performance issues - Verify volume type and IOPS in AWS
+* Troubleshooting with cloud support - They need the volume ID
+* Checking costs - Track which volumes belong to which apps
+====
+
+=== Verify the Storage is Working
+
+Check if the pod is running:
+
+[source,bash,role="execute"]
+----
+oc get pod storage-demo -n cloud-demo
+----
+
+Verify the data was written to the cloud-backed volume:
+
+[source,bash,role="execute"]
+----
+oc exec storage-demo -n cloud-demo -- cat /data/test.txt
+----
+
+You should see:
+
+----
+Data from cloud storage!
+----
+
+Check the mounted volume:
+
+[source,bash,role="execute"]
+----
+oc exec storage-demo -n cloud-demo -- df -h /data
+----
+
+Output:
+
+----
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/nvme3n1    9.8G   24K  9.8G   1% /data
+----
+
+**Success!** Your pod is using AWS EBS storage.
+
+== Cloud Load Balancer Integration
+
+OpenShift Routes use the built-in IngressController for external access. But you can also create **cloud load balancers** directly.
+
+**Why this matters:** Each LoadBalancer service creates a separate cloud load balancer ($$$). Developers might create these without understanding the cost. Routes are free (use the shared IngressController). You'll need to set policies about when LoadBalancer services are allowed.
+
+=== Deploy an Application
+
+Let's deploy the weathernow application:
+
+[source,bash,role="execute"]
+----
+oc new-app quay.io/openshift-workshop-applications/weathernow:latest -n cloud-demo
+----
+
+By default, this creates a ClusterIP service (internal only):
+
+[source,bash,role="execute"]
+----
+oc get svc weathernow -n cloud-demo
+----
+
+Output:
+
+----
+NAME         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+weathernow   ClusterIP   172.30.239.143   <none>        8080/TCP   10s
+----
+
+=== Create a Cloud Load Balancer
+
+Change the service type to **LoadBalancer** to create a cloud load balancer:
+
+[source,bash,role="execute"]
+----
+oc patch service weathernow -n cloud-demo -p '{"spec":{"type":"LoadBalancer"}}'
+----
+
+Wait a few seconds, then check the service:
+
+[source,bash,role="execute"]
+----
+oc get svc weathernow -n cloud-demo
+----
+
+Output:
+
+----
+NAME         TYPE           CLUSTER-IP       EXTERNAL-IP                                                              PORT(S)          AGE
+weathernow   LoadBalancer   172.30.239.143   ab941a484d5d54e78ad5ee5d03cceb56-854747234.us-east-2.elb.amazonaws.com   8080:32359/TCP   30s
+----
+
+**Notice the EXTERNAL-IP!** This is an **AWS Elastic Load Balancer** that was automatically created.
+
+=== Verify the Cloud Load Balancer
+
+Get the load balancer hostname:
+
+[source,bash,role="execute"]
+----
+oc get svc weathernow -n cloud-demo -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
+----
+
+You'll see an AWS Elastic Load Balancer hostname like:
+
+----
+aa2cfd32dd1524b68b46ff5aba395d20-643244834.us-east-2.elb.amazonaws.com
+----
+
+**Note:** Cloud load balancers take 1-2 minutes to become fully ready (DNS propagation, health checks). The hostname appears immediately, but traffic routing takes time.
+
+Verify the application is working by checking the pod directly:
+
+[source,bash,role="execute"]
+----
+oc get pods -n cloud-demo -l deployment=weathernow
+----
+
+[source,bash,role="execute"]
+----
+oc exec -n cloud-demo deployment/weathernow -- curl -s localhost:8080/health
+----
+
+You should see:
+
+[source,json]
+----
+{"checks":1,"pod":"weathernow-55f7fc4c99-vn9b5","status":"UP"}
+----
+
+**Important:** This created a **real cloud load balancer** that costs money (~$15-25/month on AWS)! In production, you typically use Routes instead (included in OpenShift licensing).
+
+Let's change it back to ClusterIP to avoid costs:
+
+[source,bash,role="execute"]
+----
+oc patch service weathernow -n cloud-demo -p '{"spec":{"type":"ClusterIP"}}'
+----
+
+The cloud load balancer will be automatically deleted.
+
+== Viewing Cloud Infrastructure
+
+As an ops team, you need to understand what cloud resources OpenShift is managing.
+
+=== Cloud Instance IDs for Nodes
+
+Each OpenShift node is a cloud VM (EC2 instance on AWS). Get the cloud instance IDs:
+
+[source,bash,role="execute"]
+----
+oc get nodes -o jsonpath='{.items[*].spec.providerID}' | tr ' ' '\n'
+----
+
+Output:
+
+----
+aws:///us-east-2a/i-099698ea72135995e
+aws:///us-east-2b/i-0ad3d08df16c30de8
+aws:///us-east-2c/i-09bc08082474fd0bf
+----
+
+These are the **EC2 instance IDs**. You could search for these in the AWS console.
+
+[TIP]
+====
+**Ops use cases:**
+* **Troubleshooting node issues** - SSH to the EC2 instance, check system logs in AWS
+* **Performance problems** - Verify instance type, check if CPU credits exhausted (t3 instances)
+* **Cost optimization** - Identify instance types, check if right-sized
+* **Cloud support tickets** - Provide instance IDs when opening cases
+====
+
+=== List Persistent Volumes
+
+See all cloud-backed volumes in the cluster:
+
+[source,bash,role="execute"]
+----
+oc get pv | grep gp3-csi | head -10
+----
+
+Each line represents an **AWS EBS volume** attached to the cluster.
+
+== Common Cloud Issues for Ops Teams
+
+As an ops team, you'll encounter these cloud-related issues:
+
+**1. Storage Provisioning Failures**
+
+When PVCs stay Pending even after a pod tries to use them, check:
+
+[source,bash,role="execute"]
+----
+oc describe pvc app-data -n cloud-demo
+----
+
+Look for events like:
+----
+Warning  ProvisioningFailed   volume.ProvisionVolume failed
+----
+
+**Common causes:**
+* **AWS quota exceeded** - Too many EBS volumes in the region
+* **No availability zones available** - Node is in AZ with no capacity
+* **IAM permissions missing** - Cloud credentials can't create volumes
+* **Storage class doesn't exist** - Typo in storageClassName
+
+**2. Volume Attachment Failures**
+
+Pod stuck in ContainerCreating state? Check pod events:
+
+[source,bash,role="execute"]
+----
+oc get pod storage-demo -n cloud-demo
+oc describe pod storage-demo -n cloud-demo | grep -A 10 Events
+----
+
+**Common causes:**
+* **Volume in different AZ than node** - Can't attach cross-AZ
+* **Volume already attached to another node** - ReadWriteOnce volumes can only attach to one node
+* **AWS API rate limiting** - Too many attachment requests
+
+**3. Cloud Provider Quotas**
+
+Check your AWS quotas to prevent surprises:
+* **EC2 instances** - Limits how many nodes you can add
+* **EBS volumes** - Limits how many PVCs you can create
+* **EBS snapshots** - Impacts backup solutions
+* **Elastic IPs** - Limits LoadBalancer services
+
+**What to do:** Work with your cloud team to monitor quotas and request increases BEFORE hitting limits.
+
+== Cost Awareness for Ops Teams
+
+**Understanding cloud costs is critical for ops:**
+
+[source]
+----
+What Costs Money in OpenShift on Cloud?
+
+💰 Compute (Nodes)
+   - EC2/VM instances running 24/7
+   - Charged per hour
+   - Tip: Right-size instance types
+
+💰 Storage (Persistent Volumes)
+   - EBS volumes charged by GB/month
+   - Even if not in use!
+   - Tip: Delete unused PVCs
+
+💰 Load Balancers
+   - Each LoadBalancer service = $$$
+   - ~$15-25/month per LB (AWS)
+   - Tip: Use Routes instead
+
+💰 Data Transfer
+   - Cross-AZ traffic costs money
+   - Egress to internet costs money
+   - Tip: Keep apps in same AZ
+----
+
+**Best Practice:** Use the default IngressController (Routes) for external access instead of LoadBalancer services. It's included in OpenShift licensing and more cost-effective.
+
+== Cleanup
+
+Let's clean up the resources we created:
+
+[source,bash,role="execute"]
+----
+oc delete project cloud-demo
+----
+
+This will delete:
+* The project
+* All pods
+* The PVC
+* **The AWS EBS volume** (automatically deleted due to ReclaimPolicy: Delete)
+
+[IMPORTANT]
+====
+**ReclaimPolicy matters!** The default `Delete` policy automatically removes cloud storage when you delete the PVC. For production data, consider using `Retain` policy to prevent accidental data loss.
+====
+
+== Key Takeaways
+
+✅ **Storage Classes:** Understand gp2-csi vs gp3-csi (use gp3, it's faster and cheaper)
+
+✅ **WaitForFirstConsumer:** PVCs stay Pending until a pod uses them (this is normal!)
+
+✅ **Cloud Integration:** OpenShift automatically creates and manages cloud resources
+
+✅ **Volume IDs:** You can find the actual cloud volume IDs for troubleshooting with cloud support
+
+✅ **Load Balancers:** LoadBalancer services create real cloud LBs ($$), use Routes instead
+
+✅ **Cost Awareness:** Delete unused PVCs, right-size nodes, use Routes not LBs
+
+✅ **Troubleshooting:** Know how to diagnose storage provisioning failures, volume attachment issues, and quota limits
+
+✅ **Operational Context:** Understand when to check AWS console, how to work with cloud support, and platform-specific limitations
+
+== What's Next?
+
+In the next modules, you'll learn about:
+* Security - Managing secrets and certificates
+* Virtualization - Running VMs on OpenShift
+* Advanced operations - ACM, monitoring, troubleshooting

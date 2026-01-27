@@ -152,7 +152,7 @@ You should see your fresh and happy new nodes. They are the ones with a very you
 ip-10-0-34-107.us-east-2.compute.internal   Ready   worker   44s    v1.28.10+a2c84a5
 ----
 
-[NOTE]
+[Note]
 ====
 It can take several minutes for a `Machine` to be prepared and added
 as a `Node`. You can follow the process by running a `watch` against

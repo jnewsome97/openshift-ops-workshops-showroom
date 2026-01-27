@@ -1,17 +1,31 @@
-// OpenShift for Admins - Standard Workshop
+// OpenShift Days - Ops Track (101)
+// Streamlined workshop matching requirements
+
 * xref:index.adoc[Environment Setup]
-* xref:installation.adoc[Installation]
-* xref:app-mgmt-basics.adoc[Application Management Basics]
-* xref:app-storage-basics.adoc[Application Storage Basics]
-* xref:machinesets.adoc[MachineSets]
-* xref:infra-nodes.adoc[Infrastructure Nodes]
-* xref:logging-with-loki.adoc[Logging with Loki]
-* xref:ldap-groupsync.adoc[LDAP Group Synchronization]
-* xref:monitoring-basics.adoc[Monitoring Basics]
-* xref:template-quota-limits.adoc[Templates, Quotas, and Limits]
-* xref:networking.adoc[Networking]
-* xref:disabling-project-self-provisioning.adoc[Disabling Project Self-Provisioning]
-* xref:clusterresourcequota.adoc[Cluster Resource Quota]
-* xref:taints-and-tolerations.adoc[Taints and Tolerations]
-* xref:gitops.adoc[GitOps]
-* xref:windows-containers.adoc[Windows Containers]
+
+.Phase 1: Platform Foundation
+* xref:ocp-concepts.adoc[OpenShift Platform Overview (Done)]
+* xref:installation.adoc[Installation & Verification (Done)]
+* xref:oidc-authentication.adoc[Identity & Users - OIDC (Done)]
+* xref:ldap-groupsync.adoc[Identity & Users - LDAP (Done)]
+* xref:app-mgmt-basics.adoc[Application Management Basics (Done)]
+
+.Phase 2: Networking
+* xref:networking.adoc[Networking & Ingress (Semi-Done)]
+
+.Phase 3: Day 2 Operations
+* xref:observability.adoc[Observability]
+* xref:debugging-troubleshooting.adoc[Debugging & Troubleshooting]
+* xref:performance-tuning.adoc[Performance Tuning]
+
+.Phase 4: Workloads & Architecture
+* xref:virtualization.adoc[Virtualization]
+* xref:acm-multicluster.adoc[ACM - Multi-Cluster Management (External)]
+* xref:hosted-control-planes.adoc[Advanced Architecture - HCP (Done)]
+
+.Phase 5: Security (External)
+* xref:security.adoc[Security - Secrets, Certs & ACS (External)]
+
+.Phase 6: Platform Engineering
+* xref:cloud-infrastructure.adoc[Cloud Infrastructure & Storage]
+* xref:developer-hub.adoc[Developer Hub]

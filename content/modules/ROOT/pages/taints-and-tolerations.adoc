@@ -27,7 +27,7 @@ accept any workload that does not tolerate the taint(s). Tolerations that are
 applied to these workloads will allow (but do not require) the corresponding
 pods to schedule onto nodes with matching taints.
 
-[NOTE]
+[Note]
 ====
 You will have to use `nodeSelector` along with taints and tolerations to have
 workloads ALWAYS land on a specific node.
@@ -73,7 +73,7 @@ this exercise. The application deploys on nodes labeled `appnode=welcome-php`.
 oc get nodes -l 'node-role.kubernetes.io/worker,!node-role.kubernetes.io/infra,!cluster.ocs.openshift.io/openshift-storage' -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}' | xargs -I{} oc label node {} appnode=welcome-php
 ----
 
-[NOTE]
+[Note]
 ====
 To label a node, you pass the node name with a `key=value` pair. Example: `oc label node worker.example.com appnode=welcome-php`
 ====
@@ -90,7 +90,7 @@ the home directory.
 
 [source,bash,role="execute"]
 ----
-oc create -f ~/support/welcome-php.yaml
+oc create -f $HOME/support/welcome-php.yaml
 ----
 
 This creates the following objects
@@ -118,7 +118,7 @@ oc scale deploy welcome-php --replicas=${NODE_NUMBER}
 oc rollout status deploy welcome-php
 ----
 
-[NOTE]
+[Note]
 ====
 If the pods are not evenly distributed between nodes, you may have to run
 `oc delete pods --all` to let them rebalance.
@@ -170,7 +170,7 @@ TTNODE=$(oc get nodes -l 'node-role.kubernetes.io/worker,!node-role.kubernetes.i
 oc adm taint node ${TTNODE} welcome-php=run:NoSchedule
 ----
 
-[NOTE]
+[Note]
 ====
 The syntax is: `oc adm taint node ${nodename} key=value:Effect`
 ====

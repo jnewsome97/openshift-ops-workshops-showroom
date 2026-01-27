@@ -1,0 +1,20 @@
+= Security - Secrets, Certificates & ACS
+
+== Module Overview
+
+**Status:** This module is maintained by the Security/ACS team.
+
+**Duration:** TBD +
+**Format:** TBD +
+**Audience:** Security Administrators, Platform Teams
+
+== Content
+
+_This module covers:_
+
+* Secrets management
+* Certificate management
+* ACS (Advanced Cluster Security)
+* TSSC (Trusted Software Supply Chain)
+
+_Content provided by Security/ACS team._

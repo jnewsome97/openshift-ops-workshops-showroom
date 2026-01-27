@@ -1,0 +1,22 @@
+= Observability
+
+== Module Overview
+
+**Duration:** TBD +
+**Format:** Hands-on +
+**Audience:** Platform Engineers, Operations Teams
+
+== Learning Objectives
+
+By the end of this module, you will be able to:
+
+* Understand OpenShift monitoring stack (Prometheus, Alertmanager)
+* Configure and query metrics
+* Set up logging with Loki
+* Configure alerts
+* Understand OpenTelemetry integration
+
+== Content
+
+_TODO: Combine content from monitoring-basics.adoc and logging-with-loki.adoc_
+_TODO: Add OpenTelemetry section_

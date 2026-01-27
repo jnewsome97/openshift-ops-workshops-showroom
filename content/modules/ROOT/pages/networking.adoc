@@ -1,265 +1,805 @@
-## OpenShift Network Policy Based SDN
-OpenShift's default software defined network (SDN) inside the platform is based
-on Open Virtual Network (OVN), and is called OVN-Kubernetes.
+= Networking & Ingress
 
-Older versions of OpenShift may be running a different SDN, based on Open vSwitch 
-called OpenShift SDN. As of OpenShift 4.12 OVN-Kubernetes has succeeded Openshift as the 
-default SDN. To read more about OVN-Kubernetes, please read
-link:https://access.redhat.com/documentation/en-us/openshift_container_platform/4.16/html/networking/ovn-kubernetes-network-plugin#about-ovn-kubernetes[the official documentation].
+== Module Overview
 
-The SDN is used to provide connectivity between application
-components inside of the OpenShift environment. It comes with default network
-ranges pre-configured, although you can make changes to these should they
-conflict with your existing infrastructure, or for whatever other reason you may
-have.
+**Duration:** 45 minutes +
+**Format:** Hands-on networking configuration +
+**Audience:** Platform Engineers, Network Administrators, Operations Teams
 
-Kubernetes `NetworkPolicy` allows projects to truly isolate their
-network infrastructure inside OpenShift’s software defined network. While you
-have seen projects isolate resources through OpenShift’s RBAC, the network policy
-SDN plugin is able to isolate pods in projects using pod and namespace label selectors.
+**Narrative Context:**
 
-### Switch Your Project
-Before continuing, make sure you are using a project that actually exists. If
-the last thing you did in the previous lab was delete a project, this will
-cause errors in the scripts in this lab.
+Your cluster is running applications. Now you need to understand:
+
+- How traffic flows inside the cluster
+- How external traffic reaches your applications
+- How to secure network communication
+- How to control egress traffic to external systems
+
+== Learning Objectives
+
+By the end of this module, you will be able to:
+
+* Understand OpenShift's OVN-Kubernetes software-defined network
+* Configure and troubleshoot the Ingress Controller
+* Create Routes with different TLS termination strategies
+* Implement NetworkPolicy for pod-to-pod security
+* Configure EgressFirewall to control outbound traffic
+* Use EgressIP for predictable source IPs
+* Understand load balancing options
+
+== OpenShift Networking Architecture
+
+OpenShift 4.x uses **OVN-Kubernetes** as the default Container Network Interface (CNI) plugin. OVN-Kubernetes replaced the legacy OpenShift SDN in OpenShift 4.12.
+
+**What OVN-Kubernetes provides:**
+
+* Pod-to-pod networking across nodes
+* Network isolation with NetworkPolicy
+* Egress traffic control (EgressFirewall, EgressIP)
+* IPsec encryption (optional)
+* Hardware offloading support
+* Integration with cloud provider load balancers
+
+=== View Cluster Network Configuration
 
 [source,bash,role="execute"]
 ----
-oc project default
+oc get network.config cluster -o yaml
 ----
 
-### Execute the Creation Script
+Key fields:
+
+* `networkType: OVNKubernetes` - Confirms OVN-Kubernetes is active
+* `clusterNetwork` - IP range for pod networking (typically 10.128.0.0/14)
+* `serviceNetwork` - IP range for Services (typically 172.30.0.0/16)
+
+=== Verify Network Operator Health
+
+[source,bash,role="execute"]
+----
+oc get clusteroperator network
+----
+
+The network operator should show `AVAILABLE: True` and `DEGRADED: False`.
+
+[source,bash,role="execute"]
+----
+oc get pods -n openshift-ovn-kubernetes
+----
+
+You'll see OVN pods running on every node: `ovnkube-node`, `ovnkube-controller`, and `ovs-daemon`.
+
+== Ingress Controller & Load Balancing
+
+The **Ingress Controller** (based on HAProxy) handles external traffic entering the cluster. It's how users reach your applications.
+
+=== View Ingress Controller Configuration
+
+[source,bash,role="execute"]
+----
+oc get ingresscontroller default -n openshift-ingress-operator -o yaml | head -60
+----
+
+Key configuration options:
+
+* `replicas` - Number of router pods (default: 2 for HA)
+* `routeAdmission.wildcardPolicy` - Whether wildcard routes are allowed
+* `defaultCertificate` - TLS certificate for *.apps domain
+
+=== View Router Pods
+
+[source,bash,role="execute"]
+----
+oc get pods -n openshift-ingress -o wide
+----
+
+Router pods run on worker nodes and handle incoming HTTP/HTTPS traffic.
+
+=== View Ingress Service
+
+[source,bash,role="execute"]
+----
+oc get svc -n openshift-ingress
+----
+
+The `router-default` service exposes the ingress controller:
+
+* On cloud platforms: `LoadBalancer` type with external IP
+* On bare metal: Typically `NodePort` or MetalLB `LoadBalancer`
+
+== Routes: OpenShift's Ingress Resource
+
+OpenShift **Routes** expose services externally. They're more feature-rich than Kubernetes Ingress.
+
+=== Use the Application from App Management
+
+In the previous module, you deployed the `weathernow` application. Let's examine its networking.
+
+[source,bash,role="execute"]
+----
+oc project app-management
+----
+
 [NOTE]
 ====
-Only users with project or cluster administration privileges can manipulate *Project*
-network policies.
+**Skipped the App Management module?**
+
+Check if the weathernow app exists:
+
+[source,bash,role="execute"]
+----
+oc get pods -n app-management -l deployment=weathernow
+----
+
+If no pods are found, deploy the app now:
+
+[source,bash,role="execute"]
+----
+oc new-project app-management 2>/dev/null || oc project app-management
+oc new-app --name=weathernow --image=quay.io/openshifttest/hello-openshift:1.2.0
+----
+
+Wait for the pod to be ready before continuing.
 ====
 
-Execute a script that we have prepared for you. It will create two
-*Projects* and then deploy a *Deployment* with a *Pod* for you:
+=== Create an Edge Route with TLS
+
+First, let's create a route with edge TLS termination:
 
 [source,bash,role="execute"]
 ----
-bash {{ HOME_PATH }}/support/create-net-projects.sh
+oc create route edge weathernow --service=weathernow 2>/dev/null || echo "Route already exists"
 ----
 
-### Examine the created infrastructure
-Two *Projects* were created for you, `netproj-a` and `netproj-b`. Execute the
-following command to see the created resources:
+=== View the Route Configuration
 
 [source,bash,role="execute"]
 ----
-oc get pods -n netproj-a
+oc get route weathernow -o yaml
 ----
 
-After a while you will see something like the following:
+Key route fields:
 
-```
-NAME           READY   STATUS              RESTARTS   AGE
-ose-5895b8687d-sp4dz    0/1     ContainerCreating   0          7s
-```
+* `spec.host` - The external hostname
+* `spec.to.name` - The backend Service
+* `spec.tls.termination` - TLS termination type (edge in this case)
 
-Similarly:
+=== Test the Route
+
+Test with HTTP first:
 
 [source,bash,role="execute"]
 ----
-oc get pods -n netproj-b
+curl -s http://$(oc get route weathernow -o jsonpath='{.spec.host}') | head -5
 ----
 
-After a while you will see something like the following:
-
-```
-NAME           READY   STATUS      RESTARTS   AGE
-ose-5895b8687d-slwzq    1/1     Running     0          30s
-```
-
-We will run commands inside the pod in the `netproj-a` *Project* that will
-connect to TCP port 5000 of the pod in the `netproj-b` *Project*.
-
-### Test Connectivity (should work)
-Now that you have some projects and pods, let's test the connectivity between
-the pod in the `netproj-a` *Project* and the pod in the `netproj-b` *Project*.
-
-To test connectivity between the two pods, run:
+Test with HTTPS (edge TLS):
 
 [source,bash,role="execute"]
 ----
-bash {{ HOME_PATH }}/support/test-connectivity.sh
+curl -sk https://$(oc get route weathernow -o jsonpath='{.spec.host}') | head -5
 ----
 
-You will see something like the following:
+This request flows: **Client → Load Balancer → Ingress Controller → Service → Pod**
 
-[source]
+You should see the WeatherNow HTML page returned.
+
+=== TLS Termination Strategies
+
+OpenShift Routes support three TLS termination types:
+
+[cols="1,2,2"]
+|===
+|Type |Description |Use Case
+
+|**edge**
+|TLS terminates at the router, traffic to pod is HTTP
+|Most common. Router handles certificates.
+
+|**passthrough**
+|TLS passes through to the pod unchanged
+|Application manages its own certificates
+
+|**reencrypt**
+|TLS terminates at router, new TLS to pod
+|End-to-end encryption with router certificate validation
+|===
+
+=== Examine TLS Configuration
+
+View the TLS settings on the edge route:
+
+[source,bash,role="execute"]
 ----
-Getting Pod B's IP... 10.131.0.101
-Getting Pod A's Name... ose-5895b8687d-sp4dz
-Checking connectivity between Pod A and Pod B... worked
+oc get route weathernow -o jsonpath='{.spec.tls}' | python3 -m json.tool
 ----
 
-Note that the last line says `worked`. This means that the pod in the
-`netproj-a` *Project* was able to connect to the pod in the `netproj-b`
-*Project*.
+If the route has edge termination, you'll see:
 
-This worked because, by default, the networkpolicy lets all pods in all
-projects can connect to each other.
-
-### Restricting Access
-With NetworkPolicy, it's possible to restrict access in a
-project by creating a `NetworkPolicy` custom resource (CR).
-
-For example, the following restricts all access to all pods in a *Project*
-where this `NetworkPolicy` CR is applied. This is the equivalent of a `DenyAll`
-default rule on a firewall:
-
-[source,yaml]
+[source,json]
 ----
-kind: NetworkPolicy
+{
+    "termination": "edge"
+}
+----
+
+Edge termination means:
+
+* TLS terminates at the Ingress Controller (HAProxy)
+* Traffic from router to pod is unencrypted HTTP
+* The router uses the cluster's wildcard certificate
+
+=== Create a Route with Custom TLS
+
+For applications needing custom certificates, you can specify them:
+
+[source,bash,role="copypaste"]
+----
+# Example: Create route with custom certificate (not executed)
+oc create route edge myapp \
+  --service=myapp \
+  --cert=tls.crt \
+  --key=tls.key \
+  --ca-cert=ca.crt
+----
+
+=== Route Annotations for Advanced Features
+
+Routes support annotations for rate limiting, timeouts, and more:
+
+[source,bash,role="execute"]
+----
+# View available route annotations
+oc explain route.metadata.annotations
+----
+
+Common annotations:
+
+* `haproxy.router.openshift.io/timeout` - Backend timeout
+* `haproxy.router.openshift.io/rate-limit-connections` - Connection rate limiting
+* `haproxy.router.openshift.io/ip-whitelist` - IP-based access control
+
+=== View Existing Routes Across Cluster
+
+[source,bash,role="execute"]
+----
+oc get routes -A | head -20
+----
+
+Notice different termination types: `edge`, `passthrough`, `reencrypt`.
+
+== NetworkPolicy: Pod-to-Pod Security
+
+By default, all pods can communicate with all other pods. **NetworkPolicy** restricts this.
+
+=== Create Test Projects
+
+[source,bash,role="execute"]
+----
+# Create two projects for testing network isolation
+oc new-project netpol-frontend
+oc new-project netpol-backend
+
+# Deploy apps in each
+oc new-app --name=frontend --image=quay.io/openshifttest/hello-openshift:1.2.0 -n netpol-frontend
+oc new-app --name=backend --image=quay.io/openshifttest/hello-openshift:1.2.0 -n netpol-backend
+----
+
+Wait for pods:
+
+[source,bash,role="execute"]
+----
+oc get pods -n netpol-frontend -w
+----
+
+Press Ctrl+C when running.
+
+=== Test Default Connectivity (Should Work)
+
+Get the backend pod IP:
+
+[source,bash,role="execute"]
+----
+BACKEND_IP=$(oc get pod -n netpol-backend -l deployment=backend -o jsonpath='{.items[0].status.podIP}')
+echo "Backend IP: $BACKEND_IP"
+----
+
+Test connectivity from frontend to backend:
+
+[source,bash,role="execute"]
+----
+oc exec -n netpol-frontend deployment/frontend -- curl -s --connect-timeout 5 http://${BACKEND_IP}:8080
+----
+
+Expected: `Hello OpenShift!` - connectivity works by default.
+
+=== Apply Deny-All NetworkPolicy
+
+[source,bash,role="execute"]
+----
+cat <<EOF | oc apply -n netpol-backend -f -
 apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
 metadata:
-  name: deny-by-default
+  name: deny-all
 spec:
-  podSelector:
+  podSelector: {}
+  policyTypes:
+  - Ingress
   ingress: []
+EOF
 ----
 
-Note that the `podSelector` is empty, which means that this will apply to all
-pods in this *Project*. Also note that the `ingress` list is empty, which
-means that there are no allowed `ingress` rules defined by this
-`NetworkPolicy` CR.
+This blocks all incoming traffic to pods in `netpol-backend`.
 
-To restrict access to the pod in the `netproj-b` *Project* simply apply the
-above NetworkPolicy CR with:
+=== Test Connectivity Again (Should Fail)
 
 [source,bash,role="execute"]
 ----
-oc create -n netproj-b -f {{ HOME_PATH }}/support/network-policy-block-all.yaml
+oc exec -n netpol-frontend deployment/frontend -- curl -s --connect-timeout 5 http://${BACKEND_IP}:8080
 ----
 
-### Test Connectivity #2 (should fail)
-Since the "block all by default" `NetworkPolicy` CR has been applied,
-connectivity between the pod in the `netproj-a` *Project* and the pod in the
-`netproj-b` *Project* should now be blocked.
+Expected: Connection times out (no output after 5 seconds). The NetworkPolicy blocked it.
 
-Test by running:
+=== Allow Traffic from Specific Namespace
 
 [source,bash,role="execute"]
 ----
-bash {{ HOME_PATH }}/support/test-connectivity.sh
-----
+# First, label the frontend namespace
+oc label namespace netpol-frontend app-tier=frontend
 
-You will see something like the following:
-
-[source]
-----
-Getting Pod B's IP... 10.131.0.101
-Getting Pod A's Name... ose-5895b8687d-sp4dz
-Checking connectivity between Pod A and Pod B............ FAILED!
-----
-
-Note the last line that says `FAILED!`. This means that the pod in the
-`netproj-a` *Project* was unable to connect to the pod in the `netproj-b`
-*Project* (as expected).
-
-To list all the `NetworkPolicy` objects, run the following:
-
-[source,bash,role="execute"]
-----
-oc get networkpolicy -n netproj-b
-----
-
-You should see something like the following:
-
-[source]
-----
-NAME              POD-SELECTOR   AGE
-deny-by-default   <none>         3m19s
-----
-
-### Allow Access
-With NetworkPolicy, it's possible to allow access to
-individual or groups of pods in a project by creating multiple
-`NetworkPolicy` CRs.
-
-The following allows access to port 5000 on TCP for all pods in the project
-with the label `run: ose`. The pod in the `netproj-b` project has this label.
-
-The ingress section specifically allows this access from all projects that
-have the label `name: netproj-a`.
-
-[source,yaml]
-----
-# allow access to TCP port 5000 for pods with the label "run: ose" specifically
-# from projects with the label "name: netproj-a".
-kind: NetworkPolicy
+# Create NetworkPolicy allowing traffic from frontend namespace
+cat <<EOF | oc apply -n netpol-backend -f -
 apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
 metadata:
-  name: allow-tcp-5000-from-netproj-a-namespace
+  name: allow-from-frontend
 spec:
   podSelector:
     matchLabels:
-      run: ose
+      deployment: backend
+  policyTypes:
+  - Ingress
   ingress:
-  - ports:
-    - protocol: TCP
-      port: 5000
-    from:
+  - from:
     - namespaceSelector:
         matchLabels:
-          name: netproj-a
+          app-tier: frontend
+    ports:
+    - protocol: TCP
+      port: 8080
+EOF
 ----
 
-Note that the `podSelector` is where the local project's pods are matched
-using a specific label selector.
-
-All `NetworkPolicy` CRs in a project are combined to create the allowed
-ingress access for the pods in the project. In this specific case the "deny
-all" policy is combined with the "allow TCP 5000" policy.
-
-To allow access to the pod in the `netproj-b` *Project* from all pods in the
-`netproj-a` *Project*, apply the above NetworkPolicy CR with:
+=== Test Connectivity (Should Work Again)
 
 [source,bash,role="execute"]
 ----
-oc create -n netproj-b -f {{ HOME_PATH }}/support/network-policy-allow-all-from-netproj-a.yaml
+oc exec -n netpol-frontend deployment/frontend -- curl -s --connect-timeout 5 http://${BACKEND_IP}:8080
 ----
 
-Listing the *NetworkPolicies*:
+Expected: `Hello OpenShift!` - the allow policy takes effect.
+
+=== View NetworkPolicies
 
 [source,bash,role="execute"]
 ----
-oc get networkpolicy -n netproj-b
+oc get networkpolicy -n netpol-backend
 ----
 
-This should show the new policy in place
+You should see both `deny-all` and `allow-from-frontend` policies.
 
-[source]
-----
-NAME                                      POD-SELECTOR   AGE
-allow-tcp-5000-from-netproj-a-namespace   run=ose        81s
-deny-by-default                           <none>         7m11s
-----
+== EgressFirewall: Controlling Outbound Traffic
 
-### Test Connectivity #3 (should work again)
-Since the "allow access from `netproj-a` on port 5000" NetworkPolicy has been applied,
-connectivity between the pod in the `netproj-a` *Project* and the pod in the
-`netproj-b` *Project* should be allowed again.
+**EgressFirewall** controls which external IPs/domains pods can reach. This is an OVN-Kubernetes feature.
 
-Test by running:
+=== Understanding EgressFirewall
+
+EgressFirewall applies per-namespace and evaluates rules in order. Traffic not matching any rule is **allowed** by default.
+
+View the API:
 
 [source,bash,role="execute"]
 ----
-bash {{ HOME_PATH }}/support/test-connectivity.sh
+oc explain egressfirewall.spec
 ----
 
-You will see something like the following:
+=== Create an EgressFirewall
 
-[source]
+Block traffic to a specific CIDR (example: block 1.1.1.0/24):
+
+[source,bash,role="execute"]
 ----
-Getting Pod B's IP... 10.131.0.101
-Getting Pod A's Name... ose-5895b8687d-sp4dz
-Checking connectivity between Pod A and Pod B... worked
+cat <<EOF | oc apply -n netpol-frontend -f -
+apiVersion: k8s.ovn.org/v1
+kind: EgressFirewall
+metadata:
+  name: default
+spec:
+  egress:
+  - type: Deny
+    to:
+      cidrSelector: 1.1.1.0/24
+  - type: Allow
+    to:
+      cidrSelector: 0.0.0.0/0
+EOF
 ----
 
-Note the last line that says `worked`. This means that the pod in the
-`netproj-a` *Project* was able to connect to the pod in the `netproj-b`
-*Project* (as expected).
+This blocks egress to 1.1.1.0/24 but allows all other traffic.
+
+=== Test EgressFirewall
+
+[source,bash,role="execute"]
+----
+# This should fail (blocked)
+oc exec -n netpol-frontend deployment/frontend -- curl -s --connect-timeout 3 http://1.1.1.1 || echo "Blocked!"
+
+# This should work (allowed)
+oc exec -n netpol-frontend deployment/frontend -- curl -s --connect-timeout 3 -I http://google.com | head -1
+----
+
+=== View EgressFirewall
+
+[source,bash,role="execute"]
+----
+oc get egressfirewall -n netpol-frontend -o yaml
+----
+
+=== DNS-Based EgressFirewall
+
+You can also use DNS names (OVN resolves them):
+
+[source,bash,role="execute"]
+----
+cat <<EOF | oc apply -n netpol-backend -f -
+apiVersion: k8s.ovn.org/v1
+kind: EgressFirewall
+metadata:
+  name: default
+spec:
+  egress:
+  - type: Allow
+    to:
+      dnsName: "*.redhat.com"
+  - type: Allow
+    to:
+      dnsName: "quay.io"
+  - type: Deny
+    to:
+      cidrSelector: 0.0.0.0/0
+EOF
+----
+
+This allows only RedHat and Quay traffic, blocking everything else.
+
+== EgressIP: Predictable Source IPs
+
+**EgressIP** assigns a fixed source IP for egress traffic from specific pods. Useful when external firewalls need to allowlist your cluster.
+
+=== Understanding EgressIP
+
+[source,bash,role="execute"]
+----
+oc explain egressip
+----
+
+EgressIP requires:
+
+1. Nodes labeled for hosting egress IPs
+2. Available IPs on the node's network
+3. EgressIP CR referencing namespace/pod selectors
+
+=== View EgressIP Capability
+
+[source,bash,role="execute"]
+----
+oc get nodes -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.metadata.annotations.k8s\.ovn\.org/node-egress-label}{"\n"}{end}'
+----
+
+Nodes need the annotation `k8s.ovn.org/node-egress-label` or the label `k8s.ovn.org/egress-assignable` to host EgressIPs.
+
+**Note:** EgressIP configuration requires network planning and is typically done during cluster setup.
+
+== Services: Internal Load Balancing
+
+OpenShift Services provide internal load balancing and service discovery.
+
+=== Service Types
+
+[cols="1,2,2"]
+|===
+|Type |Description |Access
+
+|**ClusterIP**
+|Internal IP only
+|Inside cluster only
+
+|**NodePort**
+|Port on every node
+|External via node IP:port
+
+|**LoadBalancer**
+|Cloud/MetalLB external IP
+|External via dedicated IP
+|===
+
+=== View Service Details
+
+View the services in the app-management namespace:
+
+[source,bash,role="execute"]
+----
+oc get svc -n app-management
+----
+
+=== View the Ingress LoadBalancer Service
+
+The ingress controller itself uses a LoadBalancer service:
+
+[source,bash,role="execute"]
+----
+oc get svc router-default -n openshift-ingress
+----
+
+On AWS, this is typically a Network Load Balancer (NLB). On bare metal, MetalLB can provide LoadBalancer functionality.
+
+== DNS and Service Discovery
+
+OpenShift provides automatic DNS for services.
+
+=== DNS Format
+
+Services are accessible at:
+
+----
+<service-name>.<namespace>.svc.cluster.local
+----
+
+=== Test DNS Resolution
+
+Test DNS resolution from any pod. During the NetworkPolicy exercise, you can test:
+
+[source,bash,role="execute"]
+----
+oc exec -n netpol-frontend deployment/frontend -- nslookup backend.netpol-backend.svc.cluster.local
+----
+
+Or test from a debug pod:
+
+[source,bash,role="copypaste"]
+----
+oc debug -n app-management deployment/weathernow -- nslookup weathernow.app-management.svc.cluster.local
+----
+
+=== View Cluster DNS Configuration
+
+[source,bash,role="execute"]
+----
+oc get dns cluster -o yaml
+----
+
+Shows:
+
+* `baseDomain` - Cluster's base DNS domain
+* `publicZone` - External DNS zone
+* `privateZone` - Internal DNS zone
+
+== Ingress Controller Scaling and Customization
+
+=== Scale Ingress Controller
+
+[source,bash,role="execute"]
+----
+oc patch ingresscontroller default -n openshift-ingress-operator --type=merge -p '{"spec":{"replicas":3}}'
+----
+
+Watch the new router pod come up:
+
+[source,bash,role="execute"]
+----
+oc get pods -n openshift-ingress -w
+----
+
+Press Ctrl+C when you see 3 pods running.
+
+=== View Ingress Controller Metrics
+
+The router exposes metrics on port 1936, which are scraped by Prometheus. View them in the OpenShift console:
+
+**Observe → Metrics** and query for `haproxy_` metrics.
+
+Or check router status:
+
+[source,bash,role="execute"]
+----
+oc get ingresscontroller default -n openshift-ingress-operator -o jsonpath='{.status.conditions}' | python3 -m json.tool
+----
+
+== Cleanup
+
+[source,bash,role="execute"]
+----
+oc delete project netpol-frontend netpol-backend
+----
+
+== AWS WAF Integration
+
+OpenShift on AWS can integrate with **AWS WAF** (Web Application Firewall) for advanced threat protection.
+
+=== Architecture Options
+
+**Option 1: AWS ALB with WAF (Recommended)**
+
+----
+Client → Route 53 → AWS ALB + WAF → OpenShift NLB → Ingress Controller → Pods
+----
+
+* AWS ALB handles WAF rules before traffic reaches OpenShift
+* Protects against OWASP Top 10, SQL injection, XSS
+* Managed rule sets available (AWS, F5, Imperva)
+
+**Option 2: CloudFront with WAF**
+
+----
+Client → CloudFront + WAF → Route 53 → OpenShift NLB → Ingress Controller → Pods
+----
+
+* Adds CDN caching plus WAF protection
+* Global edge locations for DDoS protection
+* Best for public-facing applications
+
+=== View Current Load Balancer Configuration
+
+[source,bash,role="execute"]
+----
+# Check what type of AWS LB the ingress uses
+oc get svc -n openshift-ingress router-default -o jsonpath='{.metadata.annotations}' | python3 -m json.tool
+----
+
+By default, OpenShift on AWS uses a Network Load Balancer (NLB). AWS WAF requires an Application Load Balancer (ALB).
+
+=== AWS Load Balancer Operator
+
+The **AWS Load Balancer Operator** can create ALB-based ingress that supports WAF:
+
+[source,bash,role="execute"]
+----
+# Check if AWS Load Balancer Operator is available
+oc get csv -A | grep aws-load-balancer || echo "AWS Load Balancer Operator not installed"
+----
+
+**To use AWS WAF with OpenShift:**
+
+1. Install AWS Load Balancer Operator
+2. Create an ALBIngressController or use Ingress (not Route) with ALB class
+3. Attach WAF WebACL to the ALB in AWS Console
+
+=== Built-in Protection (No AWS WAF)
+
+Even without AWS WAF, OpenShift provides:
+
+* **Rate limiting** - Via route annotations
+* **IP whitelisting** - Via route annotations
+* **NetworkPolicy** - Block traffic at pod level
+* **EgressFirewall** - Control outbound connections
+
+Example: Add rate limiting to the weathernow route:
+
+[source,bash,role="execute"]
+----
+oc annotate route weathernow -n app-management \
+  haproxy.router.openshift.io/rate-limit-connections=true \
+  haproxy.router.openshift.io/rate-limit-connections.concurrent-tcp=50 \
+  haproxy.router.openshift.io/rate-limit-connections.rate-http=100 \
+  --overwrite
+----
+
+Verify annotation:
+
+[source,bash,role="execute"]
+----
+oc get route weathernow -n app-management -o jsonpath='{.metadata.annotations}' | python3 -m json.tool | grep rate
+----
+
+=== When to Use What
+
+[cols="1,2,2"]
+|===
+|Scenario |Solution |Notes
+
+|Basic rate limiting
+|Route annotations
+|Built-in, no extra cost
+
+|IP-based blocking
+|Route annotations or NetworkPolicy
+|Built-in
+
+|OWASP protection (SQLi, XSS)
+|AWS WAF + ALB
+|Requires ALB, extra cost
+
+|DDoS protection
+|AWS Shield + CloudFront
+|Enterprise feature
+
+|API security
+|3scale API Management
+|Full API gateway
+|===
+
+== Network Troubleshooting
+
+=== Check Pod Connectivity
+
+[source,bash,role="execute"]
+----
+# Get pod IPs
+oc get pods -A -o wide | grep Running | head -5
+----
+
+=== Check Network Operator Logs
+
+[source,bash,role="copypaste"]
+----
+oc logs -n openshift-network-operator deployment/network-operator --tail=50
+----
+
+=== Check OVN Controller Logs
+
+[source,bash,role="copypaste"]
+----
+oc logs -n openshift-ovn-kubernetes ds/ovnkube-node -c ovnkube-controller --tail=30
+----
+
+=== Verify NetworkPolicy is Applied
+
+[source,bash,role="copypaste"]
+----
+oc describe networkpolicy <policy-name> -n <namespace>
+----
+
+== Summary
+
+**What you learned:**
+
+* OpenShift uses OVN-Kubernetes as the default SDN
+* The Ingress Controller (HAProxy) handles external traffic
+* Routes expose services with TLS termination options
+* NetworkPolicy controls pod-to-pod communication
+* EgressFirewall controls outbound traffic to external destinations
+* EgressIP provides predictable source IPs for egress
+* Services provide internal load balancing and DNS discovery
+* AWS WAF can be integrated via ALB for advanced threat protection
+* Built-in rate limiting and IP whitelisting via route annotations
+
+**Key operational commands:**
+
+[source,bash]
+----
+# View network configuration
+oc get network.config cluster -o yaml
+
+# Check ingress controller
+oc get ingresscontroller -n openshift-ingress-operator
+
+# View routes
+oc get routes -A
+
+# View network policies
+oc get networkpolicy -A
+
+# View egress firewalls
+oc get egressfirewall -A
+----
+
+== Additional Resources
+
+* **OVN-Kubernetes:** link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/ovn-kubernetes_network_plugin/index[OVN-Kubernetes network plugin]
+* **Ingress Controller:** link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/networking/configuring-ingress-cluster-traffic[Configuring ingress cluster traffic]
+* **NetworkPolicy:** link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/networking/network-policy[About network policy]
+* **EgressFirewall:** link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/networking/configuring-egress-firewall-ovn[Configuring an egress firewall for a project]
+* **EgressIP:** link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/networking/configuring-egress-ips-ovn[Configuring an egress IP address]
+* **AWS Load Balancer Operator:** link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/networking/aws-load-balancer-operator[AWS Load Balancer Operator]
+* **Route Annotations:** link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/networking/configuring-ingress-cluster-traffic#nw-route-specific-annotations_route-configuration[Route-specific annotations]

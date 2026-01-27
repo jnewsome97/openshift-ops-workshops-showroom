@@ -1,0 +1,21 @@
+= Cloud Infrastructure & Storage
+
+== Module Overview
+
+**Duration:** TBD +
+**Format:** Hands-on +
+**Audience:** Platform Engineers, Infrastructure Teams
+
+== Learning Objectives
+
+By the end of this module, you will be able to:
+
+* Understand cloud provider integration
+* Configure storage classes and CSI drivers
+* Manage persistent storage
+* Understand ODF (OpenShift Data Foundation)
+* Configure backup strategies
+
+== Content
+
+_TODO: Review and update cloud-infrastructure-basics.adoc content_

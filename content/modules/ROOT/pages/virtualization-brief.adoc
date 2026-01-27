@@ -1,0 +1,192 @@
+= OpenShift Virtualization
+
+== Module Overview
+
+**Duration:** 25-30 minutes +
+**Format:** Hands-on Lab +
+**Audience:** Infrastructure Architects, IT Operations
+
+== Learning Objectives
+
+* Understand how VMs and containers run side-by-side on OpenShift
+* Create and manage virtual machines using the Console and CLI
+* See the migration path from traditional VM infrastructure
+
+== Why Virtualization on OpenShift?
+
+**The Legacy Challenge:**
+- Thousands of VMs in traditional infrastructure (VMware, RHV, HyperV)
+- Can't containerize everything overnight  
+- Operating two platforms is expensive
+
+**The OpenShift Virt Solution:**
+- Run VMs and Containers side-by-side
+- Same management interface
+- Gradual migration path
+
+== Verifying OpenShift Virtualization
+
+Check if virtualization is installed:
+
+[source,bash,role="execute"]
+----
+oc get csv -n openshift-cnv
+----
+
+Expected output:
+
+----
+NAME                                       DISPLAY                    VERSION
+kubevirt-hyperconverged-operator.v4.20.3   OpenShift Virtualization   4.20.3
+----
+
+Check running pods:
+
+[source,bash,role="execute"]
+----
+oc get pods -n openshift-cnv
+----
+
+You'll see virt-controller, virt-operator, and other virtualization components.
+
+== Hands-On: Create Your First VM
+
+=== Step 1: Using the Web Console
+
+1. Navigate to **Virtualization → VirtualMachines**
+2. Click **Create VirtualMachine**
+3. Select **From Template**
+4. Choose template:  
+   - **Fedora** or **CentOS Stream**
+   - Flavor: **Small** (1 CPU, 2Gi RAM)
+5. Name: `ops-track-vm-01`
+6. Click **Create**
+
+=== Step 2: Start the VM
+
+1. Click on your VM name
+2. Click **Actions → Start**
+3. Watch status: `Stopped` → `Starting` → `Running`
+
+=== Step 3: Access via Console (VNC)
+
+1. Click the **Console** tab
+2. Select **VNC Console**
+3. You now have graphical access inside your browser!
+
+This is running a **full operating system** on OpenShift.
+
+== CLI Management (Power Users)
+
+Install `virtctl` CLI (if not already available):
+
+[source,bash,role="copypaste"]
+----
+# virtctl is included in oc client tools for OCP 4.20+
+oc virt version
+----
+
+Manage VMs via CLI:
+
+[source,bash,role="execute"]
+----
+# List VMs
+oc get vms -A
+
+# Get VM details
+oc get vm ops-track-vm-01 -o yaml
+
+# Check VM instance (running VM)
+oc get vmi
+----
+
+Stop and start VMs:
+
+[source,bash,role="copypaste"]
+----
+# Stop VM
+oc virt stop ops-track-vm-01
+
+# Start VM
+oc virt start ops-track-vm-01
+
+# Restart VM
+oc virt restart ops-track-vm-01
+----
+
+== Unified Topology: VMs and Containers Together
+
+1. Navigate to **Topology** view (Developer perspective)
+2. You'll see:
+   - **Containerized apps** (Pods, Deployments)
+   - **Virtual machines** (VM resources)
+   - All in the same view!
+
+**This is the magic:** Everything managed in one platform.
+
+== Live Migration
+
+One of virtualization's killer features:
+
+[source,bash,role="copypaste"]
+----
+# Migrate VM to another node (zero downtime)
+oc virt migrate ops-track-vm-01
+----
+
+Watch the migration:
+
+[source,bash,role="execute"]
+----
+oc get vmim
+----
+
+The VM moves to another worker node **without stopping**.
+
+== Storage for VMs
+
+VMs use PersistentVolumeClaims (same as containerized apps):
+
+[source,bash,role="execute"]
+----
+# See VM disks
+oc get pvc -l vm.kubevirt.io/name=ops-track-vm-01
+----
+
+Output:
+
+----
+NAME                      STATUS   VOLUME       CAPACITY   STORAGECLASS
+ops-track-vm-01-disk-0    Bound    pvc-xxxxx    30Gi       ocs-storagecluster-ceph-rbd
+----
+
+Same storage classes, same management.
+
+== Migration Strategy
+
+**The Hybrid Approach:**
+
+1. **Keep existing VMs** - Migrate to OpenShift Virt
+2. **Modernize over time** - Containerize when apps are updated
+3. **Single platform** - Reduce operational burden
+
+**Migration Tools:**
+- **MTV** (Migration Toolkit for Virtualization)
+- Import from VMware, RHV, OpenStack
+- Automated workflows
+
+== Key Takeaways
+
+✅ **VMs + Containers** on the same platform +
+✅ **Single pane of glass** management +
+✅ **Gradual migration** - not big-bang +
+✅ **Cost consolidation** - reduce VMware licenses +
+✅ **Enterprise features** - Live migration, HA, snapshots
+
+== Next Module
+
+Continue to **Multi-Cluster Management with ACM** to see how to manage multiple OpenShift clusters.
+
+---
+
+**Questions?** Ask your instructor.

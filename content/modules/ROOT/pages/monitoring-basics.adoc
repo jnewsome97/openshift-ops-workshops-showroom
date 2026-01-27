@@ -17,7 +17,7 @@ Container Platform clusters.
 
 #### Examine Alerting Configuration
 
-1. Login to the link:{{ MASTER_URL }}[OpenShift Web Console] with the kubeadmin credentials.
+1. Login to the link:{{ MASTER_URL }}[OpenShift Web Console] with the kubeadmin credentials. (Please do not use built-in console)
 +
 [source,role="copypaste"]
 ----
@@ -106,8 +106,267 @@ multiple metrics in easy to consume form graphed over time.
 Click the "Dashboards" link under the "Observe" section on the left hand side.
 
 .Dashboards OpenShift
-image::monitoring-basics/ocp-grafana-replacement-new.png[]
+image::images/ocp-grafana-replacement-new.png[]
 
 Here you can click on the "Dashboard" arrow and select different metrics
 to visualize. Go ahead and play around with this view. Note that this
 is a visualization of the information that is provided by Prometheus.
+
+### Key Takeaway
+
+**Modern OpenShift Observability Stack:**
+
+* **Prometheus** - Metrics (built-in) ✓
+* **Grafana** - Visualization (built-in) ✓
+* **Loki** - Log aggregation ✓
+* **OpenTelemetry/Tempo** - Distributed tracing (optional, for advanced use cases)
+
+You now have the foundation to monitor, visualize, and troubleshoot your
+OpenShift clusters effectively!
+
+.Advanced: OpenTelemetry and Distributed Tracing (Optional - 15-20 minutes)
+[%collapsible]
+====
+
+**Duration:** 15-20 minutes +
+**Level:** Advanced +
+**Prerequisites:** Understanding of microservices architecture
+
+While Prometheus provides excellent metrics collection and Grafana visualizes
+them beautifully, modern cloud-native applications often need **distributed
+tracing** to understand request flows across microservices.
+
+==== What is OpenTelemetry?
+
+**OpenTelemetry (OTel)** is an open-source observability framework that provides:
+
+* **Traces** - Track requests as they flow through distributed systems
+* **Metrics** - Similar to Prometheus, but with different collection methods
+* **Logs** - Structured logging with context correlation
+
+Think of observability as three pillars:
+
+----
+Metrics (Prometheus)  → What is happening? (CPU, memory, request rate)
+Logs (Loki)          → What went wrong? (Error messages, events)
+Traces (Tempo/OTel)  → Where is the bottleneck? (Request flow, latency)
+----
+
+==== When to Use OpenTelemetry
+
+**Use Prometheus when:**
+* You need cluster-wide metrics (CPU, memory, disk)
+* You want to monitor infrastructure health
+* You're tracking aggregated performance
+
+**Use OpenTelemetry/Tempo when:**
+* You have microservices calling each other
+* You need to debug slow requests across services
+* You want to see the complete request path (Service A → B → C → Database)
+
+**Example Use Case:**
+
+----
+User reports: "The checkout page is slow"
+
+Prometheus shows: API pod CPU is high (but why?)
+Traces show:
+  - Frontend → API: 50ms ✓
+  - API → Payment Service: 2000ms ❌ (found the bottleneck!)
+  - Payment Service → Database: 1900ms (root cause: slow query)
+----
+
+==== Hands-On: Installing Red Hat Tempo Operator
+
+OpenShift 4.20+ supports OpenTelemetry through the **Red Hat build of Tempo**
+operator, which provides distributed tracing capabilities.
+
+===== Step 1: Verify Tempo Operator Availability
+
+Check that the Tempo operator is available in your cluster:
+
+[source,bash,role="execute"]
+----
+oc get packagemanifest tempo-product -n openshift-marketplace -o jsonpath='{.metadata.name}'
+----
+
+Expected output:
+----
+tempo-product
+----
+
+===== Step 2: Subscribe to Tempo Operator
+
+The Tempo operator must be installed cluster-wide in the `openshift-operators` namespace:
+
+[source,bash,role="execute"]
+----
+cat <<EOF | oc apply -f -
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: tempo-operator
+  namespace: openshift-operators
+spec:
+  channel: stable
+  name: tempo-product
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
+EOF
+----
+
+Expected output:
+----
+subscription.operators.coreos.com/tempo-operator created
+----
+
+[NOTE]
+====
+**Why openshift-operators?** The Tempo operator only supports cluster-wide installation (`AllNamespaces` mode), so it must be installed in the `openshift-operators` namespace, not in a custom namespace.
+====
+
+===== Step 3: Verify Operator Installation
+
+Wait 30-60 seconds for the operator to install, then check:
+
+[source,bash,role="execute"]
+----
+oc get csv -n openshift-operators | grep tempo
+----
+
+Expected output (wait for PHASE: Succeeded):
+----
+tempo-operator.v0.19.0-2    Tempo Operator    0.19.0-2    tempo-operator.v0.19.0-1    Succeeded
+----
+
+[NOTE]
+====
+If the CSV doesn't appear immediately, wait another 30 seconds and try again. The operator installation takes time to complete.
+====
+
+===== Step 4: Check Operator Pods
+
+Verify the Tempo operator pod is running:
+
+[source,bash,role="execute"]
+----
+oc get pods -n openshift-operators | grep tempo
+----
+
+Expected output:
+----
+tempo-operator-controller-xxxxx-xxxxx    1/1     Running   0          2m
+----
+
+===== Step 5: Deploy Tempo Instance with Jaeger UI
+
+Now let's deploy a TempoMonolithic instance to access the Jaeger UI for viewing traces:
+
+[source,bash,role="execute"]
+----
+cat <<EOF | oc apply -f -
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tempo-demo
+---
+apiVersion: tempo.grafana.com/v1alpha1
+kind: TempoMonolithic
+metadata:
+  name: tempo-sample
+  namespace: tempo-demo
+spec:
+  storage:
+    traces:
+      backend: memory
+      size: 1Gi
+  resources:
+    limits:
+      cpu: "1"
+      memory: 1Gi
+  jaegerui:
+    enabled: true
+    route:
+      enabled: true
+EOF
+----
+
+Expected output:
+----
+namespace/tempo-demo created
+tempomonolithic.tempo.grafana.com/tempo-sample created
+----
+
+Wait 60-90 seconds for the Tempo instance to deploy:
+
+[source,bash,role="execute"]
+----
+oc get pods -n tempo-demo
+----
+
+Expected output (wait for 4/4 Running):
+----
+NAME                   READY   STATUS    RESTARTS   AGE
+tempo-tempo-sample-0   4/4     Running   0          2m
+----
+
+===== Step 6: Access Jaeger UI
+
+Get the Jaeger UI route URL:
+
+[source,bash,role="execute"]
+----
+oc get route -n tempo-demo tempo-tempo-sample-jaegerui -o jsonpath='https://{.spec.host}{"\n"}'
+----
+
+This will output the URL to access the Jaeger UI, for example:
+----
+https://tempo-tempo-sample-jaegerui-tempo-demo.apps.cluster-xxxxx.com
+----
+
+[NOTE]
+====
+**What is Jaeger UI?** Jaeger is the industry-standard UI for viewing distributed traces. It allows you to:
+
+* Search for traces by service, operation, or tags
+* Visualize request flows across microservices
+* Identify performance bottlenecks
+* Analyze error patterns
+
+While we've deployed the UI, actual trace data requires instrumenting applications with OpenTelemetry SDKs - covered in advanced workshops.
+====
+
+==== OpenTelemetry in Production
+
+For production use, you would also:
+
+1. **Create TempoStack Instance** - Deploy Tempo storage and query components
+2. **Configure Object Storage** - Set up S3-compatible storage for traces
+3. **Install OpenTelemetry Operator** - Collect and forward traces from applications
+4. **Configure Instrumentation** - Auto-instrument applications to send traces
+5. **Integrate with Applications** - Update apps to generate trace data
+
+**For this 101 workshop:** Prometheus + Grafana + Loki provide comprehensive
+observability for most operational needs. OpenTelemetry/Tempo is excellent for
+deep microservices debugging and is covered in advanced observability workshops.
+
+==== Cleanup (Optional)
+
+If you want to remove the Tempo installation:
+
+[source,bash,role="copypaste"]
+----
+# Delete the Tempo instance and demo namespace
+oc delete namespace tempo-demo
+
+# Delete the operator subscription and CSV
+oc delete subscription.operators.coreos.com tempo-operator -n openshift-operators
+oc delete csv tempo-operator.v0.19.0-2 -n openshift-operators
+----
+
+[NOTE]
+====
+We don't delete the `openshift-operators` namespace as it's used by other cluster-wide operators.
+====
+
+====

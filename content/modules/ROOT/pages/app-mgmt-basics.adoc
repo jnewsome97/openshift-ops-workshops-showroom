@@ -35,24 +35,23 @@ You will now launch a specific image that exists on Quay
 
 [source,bash,role="execute"]
 ----
-oc new-app quay.io/openshiftroadshow/mapit
+oc new-app quay.io/openshift-workshop-applications/weathernow:latest
 ----
 
 The output will look like:
 
 ----
---> Found container image a464a13 (8 months old) from quay.io for "quay.io/openshiftroadshow/mapit"
+--> Found container image 6dbcf6a (5 minutes old) from quay.io for "quay.io/openshift-workshop-applications/weathernow:latest"
 
-    * An image stream tag will be created as "mapit:latest" that will track this image
+    * An image stream tag will be created as "weathernow:latest" that will track this image
 
 --> Creating resources ...
-    imagestream.image.openshift.io "mapit" created
-    deployment.apps "mapit" created
-    service "mapit" created
+    imagestream.image.openshift.io "weathernow" created
+    deployment.apps "weathernow" created
+    service "weathernow" created
 --> Success
-    Application is not exposed. You can expose services to the outside world by executing one or more of the comma
-nds below:
-     'oc expose service/mapit'
+    Application is not exposed. You can expose services to the outside world by executing one or more of the commands below:
+     'oc expose service/weathernow'
     Run 'oc status' to view your app.
 ----
 
@@ -66,7 +65,7 @@ message by running `oc new-app -h`.
 ### Pods
 
 .OpenShift Pods
-image::app-mgmt-basics/openshift_pod_new.png[width=40%]
+image::images/openshift_pod_new.png[]
 
 Pods are one or more containers deployed together on a host. A pod is the
 smallest compute unit you can define, deploy and manage in OpenShift. Each pod is allocated
@@ -87,7 +86,7 @@ And you will see something like the following:
 
 ----
 NAME                     READY   STATUS    RESTARTS   AGE
-mapit-764c5bf8b8-l49z7   1/1     Running   0          2m53s
+weathernow-764c5bf8b8-l49z7   1/1     Running   0          2m53s
 ----
 
 NOTE: Pod names are dynamically generated as part of the deployment process,
@@ -99,22 +98,22 @@ In the case of the pod name above:
 
 [source,bash,role="execute"]
 ----
-oc describe pod -l deployment=mapit
+oc describe pod -l deployment=weathernow
 ----
 
-NOTE: The `-l deployment=mapit` selects the pod that is related to the
+NOTE: The `-l deployment=weathernow` selects the pod that is related to the
 `Deployment` which will be discussed later.
 
 And you will see output similar to the following:
 
 ----
-Name:             mapit-85ddc7b8f-6kf4b
+Name:             weathernow-85ddc7b8f-6kf4b
 Namespace:        app-management
 Priority:         0
 Service Account:  default
 Node:             ip-10-0-20-193.us-east-2.compute.internal/10.0.20.193
 Start Time:       Fri, 05 Jul 2024 13:36:23 +0000
-Labels:           deployment=mapit
+Labels:           deployment=weathernow
                   pod-template-hash=85ddc7b8f
 Annotations:      k8s.ovn.org/pod-networks:
                     {"default":{"ip_addresses":["10.128.2.75/23"],"mac_address":"0a:58:0a:80:02:4b","gateway_ips":
@@ -138,13 +137,13 @@ SeccompProfile:   RuntimeDefault
 IP:               10.128.2.75
 IPs:
   IP:           10.128.2.75
-Controlled By:  ReplicaSet/mapit-85ddc7b8f
+Controlled By:  ReplicaSet/weathernow-85ddc7b8f
 Containers:
-  mapit:
+  weathernow:
     Container ID:   cri-o://6ac58477bc41b7428da44b8a4504384faa2cd772740ca21c963a1fa5c4578f65
-    Image:          quay.io/openshiftroadshow/mapit@sha256:1366b430c7d4bddf35c7b2d067bc24e8d67ba297dbaacd10e0d8093
+    Image:          quay.io/openshiftroadshow/weathernow@sha256:1366b430c7d4bddf35c7b2d067bc24e8d67ba297dbaacd10e0d8093
 9efd1de9d
-    Image ID:       quay.io/openshiftroadshow/mapit@sha256:1366b430c7d4bddf35c7b2d067bc24e8d67ba297dbaacd10e0d8093
+    Image ID:       quay.io/openshiftroadshow/weathernow@sha256:1366b430c7d4bddf35c7b2d067bc24e8d67ba297dbaacd10e0d8093
 9efd1de9d
     Ports:          8080/TCP, 8778/TCP, 9779/TCP
     Host Ports:     0/TCP, 0/TCP, 0/TCP
@@ -178,15 +177,15 @@ Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists fo
 Events:
   Type    Reason          Age   From               Message
   ----    ------          ----  ----               -------
-  Normal  Scheduled       38s   default-scheduler  Successfully assigned app-management/mapit-85ddc7b8f-6kf4b to i
+  Normal  Scheduled       38s   default-scheduler  Successfully assigned app-management/weathernow-85ddc7b8f-6kf4b to i
 p-10-0-20-193.us-east-2.compute.internal
   Normal  AddedInterface  38s   multus             Add eth0 [10.128.2.75/23] from ovn-kubernetes
-  Normal  Pulling         38s   kubelet            Pulling image "quay.io/openshiftroadshow/mapit@sha256:1366b430c
+  Normal  Pulling         38s   kubelet            Pulling image "quay.io/openshiftroadshow/weathernow@sha256:1366b430c
 7d4bddf35c7b2d067bc24e8d67ba297dbaacd10e0d80939efd1de9d"
-  Normal  Pulled          32s   kubelet            Successfully pulled image "quay.io/openshiftroadshow/mapit@sha2
+  Normal  Pulled          32s   kubelet            Successfully pulled image "quay.io/openshiftroadshow/weathernow@sha2
 56:1366b430c7d4bddf35c7b2d067bc24e8d67ba297dbaacd10e0d80939efd1de9d" in 5.976s (5.976s including waiting)
-  Normal  Created         32s   kubelet            Created container mapit
-  Normal  Started         32s   kubelet            Started container mapit
+  Normal  Created         32s   kubelet            Created container weathernow
+  Normal  Started         32s   kubelet            Started container weathernow
 ----
 
 This is a more detailed description of the pod that is running. You can see what
@@ -195,12 +194,12 @@ and other information about what is going on.
 
 ### Services
 .OpenShift Service
-image::app-mgmt-basics/openshift_service_new.png[]
+image::images/openshift_service_new.png[]
 
 *Services* provide a convenient abstraction layer inside OpenShift to find a
 group of like *Pods*. They also act as an internal proxy/load balancer between
 those *Pods* and anything else that needs to access them from inside the
-OpenShift environment. For example, if you needed more `mapit` instances to
+OpenShift environment. For example, if you needed more `weathernow` instances to
 handle the load, you could spin up more *Pods*. OpenShift automatically maps
 them as endpoints to the *Service*, and the incoming requests would not notice
 anything different except that the *Service* was now doing a better job handling
@@ -231,7 +230,7 @@ You will see something like the following:
 
 ----
 NAME    TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
-mapit   ClusterIP   172.30.239.63   <none>        8080/TCP,8778/TCP,9779/TCP   2m35s
+weathernow   ClusterIP   172.30.239.63   <none>        8080/TCP,8778/TCP,9779/TCP   2m35s
 ----
 
 NOTE: Service IP addresses are dynamically assigned on creation and are
@@ -243,19 +242,19 @@ Just like with pods, you can `describe` services, too. In fact, you can
 
 [source,bash,role="execute"]
 ----
-oc describe service mapit
+oc describe service weathernow
 ----
 
 You will see something like the following:
 
 ----
-Name:              mapit
+Name:              weathernow
 Namespace:         app-management
-Labels:            app=mapit
-                   app.kubernetes.io/component=mapit
-                   app.kubernetes.io/instance=mapit
+Labels:            app=weathernow
+                   app.kubernetes.io/component=weathernow
+                   app.kubernetes.io/instance=weathernow
 Annotations:       openshift.io/generated-by: OpenShiftNewApp
-Selector:          deployment=mapit
+Selector:          deployment=weathernow
 Type:              ClusterIP
 IP Family Policy:  SingleStack
 IP Families:       IPv4
@@ -282,7 +281,7 @@ Take a look at the YAML output for the service:
 
 [source,bash,role="execute"]
 ----
-oc get service mapit -o yaml
+oc get service weathernow -o yaml
 ----
 
 You will see something like the following:
@@ -295,10 +294,10 @@ metadata:
     openshift.io/generated-by: OpenShiftNewApp
   creationTimestamp: "2024-07-05T13:36:23Z"
   labels:
-    app: mapit
-    app.kubernetes.io/component: mapit
-    app.kubernetes.io/instance: mapit
-  name: mapit
+    app: weathernow
+    app.kubernetes.io/component: weathernow
+    app.kubernetes.io/instance: weathernow
+  name: weathernow
   namespace: app-management
   resourceVersion: "122841"
   uid: 9f4b742b-cb10-472f-8e44-547c1fbdd490
@@ -324,7 +323,7 @@ spec:
     protocol: TCP
     targetPort: 9779
   selector:
-    deployment: mapit
+    deployment: weathernow
   sessionAffinity: None
   type: ClusterIP
 status:
@@ -334,12 +333,12 @@ status:
 Take note of the `selector` stanza. Remember it.
 
 It is also of interest to view the YAML of the *Pod* to understand how OpenShift
-wires components together. Go back and find the name of your `mapit` *Pod*, and
+wires components together. Go back and find the name of your `weathernow` *Pod*, and
 then execute the following:
 
 [source,bash,role="execute"]
 ----
-oc get pod -l deployment=mapit -o jsonpath='{.items[*].metadata.labels}' | jq -r
+oc get pod -l deployment=weathernow -o jsonpath='{.items[*].metadata.labels}' | jq -r
 ----
 
 NOTE: The `-o jsonpath` selects a specific field. In this case we are asking
@@ -349,20 +348,20 @@ The output should look something like this:
 
 ----
 {
-  "deployment": "mapit",
+  "deployment": "weathernow",
   "pod-template-hash": "764c5bf8b8"
 }
 ----
 
-* The *Service* has a `selector` stanza that refers to `deployment: mapit`.
+* The *Service* has a `selector` stanza that refers to `deployment: weathernow`.
 * The *Pod* has multiple *Labels*:
-** `deployment: mapit`
+** `deployment: weathernow`
 ** `pod-template-hash: 764c5bf8b8`
 
 *Labels* are just key/value pairs. Any *Pod* in this *Project* that has a *Label* that
 matches the *Selector* will be associated with the *Service*. If you look at the
 `describe` output again, you will see that there is one endpoint for the
-service: the existing `mapit` *Pod*.
+service: the existing `weathernow` *Pod*.
 
 The default behavior of `new-app` is to create just one instance of the item
 requested. We will see how to modify/adjust this in a moment, but there are a
@@ -407,7 +406,7 @@ documentation] for more details.
 Now that we know the background of what a *ReplicaSet* and
 *Deployment* are, we can explore how they work and are related. Take a
 look at the *Deployment* (deploy) that was created for you when you told
-OpenShift to stand up the `mapit` image:
+OpenShift to stand up the `weathernow` image:
 
 [source,bash,role="execute"]
 ----
@@ -418,7 +417,7 @@ You will see something like the following:
 
 ----
 NAME    READY   UP-TO-DATE   AVAILABLE   AGE
-mapit   1/1     1            1           76m
+weathernow   1/1     1            1           76m
 ----
 
 you can also shorten the command to `oc get deploy`.
@@ -426,7 +425,7 @@ you can also shorten the command to `oc get deploy`.
 To get more details, we can look into the *ReplicaSet* (*RS*).
 
 Take a look at the *ReplicaSet* (RS) that was created for you when
-you told OpenShift to stand up the `mapit` image:
+you told OpenShift to stand up the `weathernow` image:
 
 [source,bash,role="execute"]
 ----
@@ -437,8 +436,8 @@ You will see something like the following:
 
 ----
 NAME               DESIRED   CURRENT   READY   AGE
-mapit-7bf4f447ff   0         0         0       18m
-mapit-85fdb44576   1         1         1       18m
+weathernow-7bf4f447ff   0         0         0       18m
+weathernow-85fdb44576   1         1         1       18m
 ----
 
 you can also shorten the command to `oc get rs`.
@@ -449,12 +448,12 @@ the desired number, we can tell OpenShift that we want more or less *Pods*.
 
 ### Scaling the Application
 
-Let's scale our mapit "application" up to 2 instances. We can do this with
+Let's scale our weathernow "application" up to 2 instances. We can do this with
 the `scale` command.
 
 [source,bash,role="execute"]
 ----
-oc scale --replicas=2 deploy/mapit
+oc scale --replicas=2 deploy/weathernow
 ----
 
 To verify that we changed the number of replicas, issue the following command:
@@ -468,8 +467,8 @@ You will see something like the following:
 
 ----
 NAME               DESIRED   CURRENT   READY   AGE
-mapit-764c5bf8b8   2         2         2       79m
-mapit-8695cb9c67   0         0         0       79m
+weathernow-764c5bf8b8   2         2         2       79m
+weathernow-8695cb9c67   0         0         0       79m
 ----
 
 NOTE: The "older" version was kept. This is to we can "rollback" to a previous
@@ -487,8 +486,8 @@ You will see something like the following:
 
 ----
 NAME                     READY   STATUS    RESTARTS   AGE
-mapit-764c5bf8b8-b4vpn   1/1     Running   0          112s
-mapit-764c5bf8b8-l49z7   1/1     Running   0          81m
+weathernow-764c5bf8b8-b4vpn   1/1     Running   0          112s
+weathernow-764c5bf8b8-l49z7   1/1     Running   0          81m
 ----
 
 And lastly, let's verify that the *Service* that we learned about in the
@@ -496,21 +495,21 @@ previous lab accurately reflects two endpoints:
 
 [source,bash,role="execute"]
 ----
-oc describe service mapit
+oc describe service weathernow
 ----
 
-you can also shorten the command to `oc describe svc mapit`.
+you can also shorten the command to `oc describe svc weathernow`.
 
 You will see something like the following:
 
 ----
-Name:              mapit
+Name:              weathernow
 Namespace:         app-management
-Labels:            app=mapit
-                   app.kubernetes.io/component=mapit
-                   app.kubernetes.io/instance=mapit
+Labels:            app=weathernow
+                   app.kubernetes.io/component=weathernow
+                   app.kubernetes.io/instance=weathernow
 Annotations:       openshift.io/generated-by: OpenShiftNewApp
-Selector:          deployment=mapit
+Selector:          deployment=weathernow
 Type:              ClusterIP
 IP Family Policy:  SingleStack
 IP Families:       IPv4
@@ -533,14 +532,14 @@ Another way to look at a *Service*'s endpoints is with the following:
 
 [source,bash,role="execute"]
 ----
-oc get endpoints mapit
+oc get endpoints weathernow
 ----
 
 And you will see something like the following:
 
 ----
 NAME    ENDPOINTS                                                        AGE
-mapit   10.128.2.94:8080,10.131.0.99:8080,10.128.2.94:9779 + 3 more...   4m32s
+weathernow   10.128.2.94:8080,10.131.0.99:8080,10.128.2.94:9779 + 3 more...   4m32s
 ----
 
 Your IP addresses will likely be different, as each pod receives a unique IP
@@ -562,7 +561,7 @@ different places.
 For example, a *Service* could listen on port 80 (for legacy reasons) but the
 *Pod* could be listening on port 8080, 8888, or anything else.
 
-In this `mapit` case, the image we ran has several `EXPOSE` statements in the
+In this `weathernow` case, the image we ran has several `EXPOSE` statements in the
 `Dockerfile`, so OpenShift automatically created ports on the service and mapped
 them into the *Pods*.
 
@@ -585,15 +584,15 @@ You will see something like the following:
 
 ----
 NAME                     READY   STATUS    RESTARTS   AGE
-mapit-764c5bf8b8-lxnvw   1/1     Running   0          2m28s
-mapit-764c5bf8b8-rscss   1/1     Running   0          2m54s
+weathernow-764c5bf8b8-lxnvw   1/1     Running   0          2m28s
+weathernow-764c5bf8b8-rscss   1/1     Running   0          2m54s
 ----
 
-Now, delete the pods that belong to the *Deployment* `mapit`:
+Now, delete the pods that belong to the *Deployment* `weathernow`:
 
 [source,bash,role="execute"]
 ----
-oc delete pods -l deployment=mapit --wait=false
+oc delete pods -l deployment=weathernow --wait=false
 ----
 
 Run the `oc get pods` command once again:
@@ -612,7 +611,7 @@ fixed it by scheduling the *Pods*.
 
 ### Background: Routes
 .OpenShift Route
-image::app-mgmt-basics/openshift_route_new.png[]
+image::images/openshift_route_new.png[]
 
 While *Services* provide internal abstraction and load balancing within an
 OpenShift environment, sometimes clients (users, systems, devices, etc.)
@@ -639,20 +638,20 @@ oc describe deployment router-default -n openshift-ingress
 You will explore the Operator for the router more in a subsequent exercise.
 
 ### Creating a Route
-Creating a *Route* is a pretty straight-forward process.  You simply `expose`
-the *Service* via the command line. If you remember from earlier, your *Service*
-name is `mapit`. With the *Service* name, creating a *Route* is a simple
+Creating a *Route* is a pretty straight-forward process. We will create a
+secure HTTPS route. If you remember from earlier, your *Service* name is
+`weathernow`. With the *Service* name, creating a secure *Route* is a simple
 one-command task:
 
 [source,bash,role="execute"]
 ----
-oc expose service mapit
+oc create route edge weathernow --service=weathernow
 ----
 
 You will see:
 
 ----
-route/mapit exposed
+route.route.openshift.io/weathernow created
 ----
 
 Verify the *Route* was created with the following command:
@@ -665,8 +664,8 @@ oc get route
 You will see something like:
 
 ----
-NAME    HOST/PORT                                             PATH   SERVICES   PORT       TERMINATION   WILDCARD
-mapit   mapit-app-management.{{ ROUTE_SUBDOMAIN }}                   mapit      8080-tcp                 None
+NAME         HOST/PORT                                             PATH   SERVICES     PORT       TERMINATION   WILDCARD
+weathernow   weathernow-app-management.{{ ROUTE_SUBDOMAIN }}              weathernow   8080-tcp   edge          None
 ----
 
 If you take a look at the `HOST/PORT` column, you'll see a familiar looking
@@ -697,9 +696,9 @@ commands you deployed an application, scaled it, and made it accessible to the
 outside world:
 
 ----
-oc new-app quay.io/openshiftroadshow/mapit
-oc scale --replicas=2 deploy/mapit
-oc expose service mapit
+oc new-app quay.io/openshift-workshop-applications/weathernow:latest
+oc scale --replicas=2 deploy/weathernow
+oc create route edge weathernow --service=weathernow
 ----
 
 ### Scale Down
@@ -708,7 +707,7 @@ instance:
 
 [source,bash,role="execute"]
 ----
-oc scale --replicas=1 deploy/mapit
+oc scale --replicas=1 deploy/weathernow
 ----
 
 ### Application Probes
@@ -747,20 +746,20 @@ Health] section of the documentation.
 
 ### Add Probes to the Application
 The `oc set` command can be used to perform several different functions, one of
-which is creating and/or modifying probes. The `mapit` application exposes an
+which is creating and/or modifying probes. The `weathernow` application exposes an
 endpoint which we can check to see if it is alive and ready to respond. You can
 test it using `curl`:
 
 [source,bash,role="execute"]
 ----
-curl mapit-app-management.{{ ROUTE_SUBDOMAIN }}/health
+curl https://weathernow-app-management.{{ ROUTE_SUBDOMAIN }}/health
 ----
 
 You will get some JSON as a response:
 
 [source,json]
 ----
-{"status":"UP","diskSpace":{"status":"UP","total":10724835328,"free":10257825792,"threshold":10485760}}
+{"checks":1,"pod":"weathernow-76cd968975-bv4rk","status":"UP"}
 ----
 
 We can ask OpenShift to probe this endpoint for liveness with the following
@@ -768,14 +767,14 @@ command:
 
 [source,bash,role="execute"]
 ----
-oc set probe deploy/mapit --liveness --get-url=http://:8080/health --initial-delay-seconds=30
+oc set probe deploy/weathernow --liveness --get-url=http://:8080/health --initial-delay-seconds=30
 ----
 
 You can then see that this probe is defined in the `oc describe` output:
 
 [source,bash,role="execute"]
 ----
-oc describe deployment mapit
+oc describe deployment weathernow
 ----
 
 You will see a section like:
@@ -783,11 +782,10 @@ You will see a section like:
 ----
 ...
   Containers:
-   mapit:
-    Image:        quay.io/openshiftroadshow/mapit@sha256:1366b430c7d4bddf35c7b2d067bc24e8d67ba297dbaacd10e0d80939e
-fd1de9d
-    Ports:        8080/TCP, 8778/TCP, 9779/TCP
-    Host Ports:   0/TCP, 0/TCP, 0/TCP
+   weathernow:
+    Image:        quay.io/openshift-workshop-applications/weathernow@sha256:362b6db3baa0c17704ff670ecea1eb15054288750c62e91f1b683502f5ac7757
+    Ports:        8080/TCP
+    Host Ports:   0/TCP
     Liveness:     http-get http://:8080/health delay=30s timeout=1s period=10s #success=1 #failure=3
     Environment:  <none>
     Mounts:       <none>
@@ -799,7 +797,7 @@ Similarly, you can set a readiness probe in the same manner:
 
 [source,bash,role="execute"]
 ----
-oc set probe deploy/mapit --readiness --get-url=http://:8080/health --initial-delay-seconds=30
+oc set probe deploy/weathernow --readiness --get-url=http://:8080/health --initial-delay-seconds=30
 ----
 
 ### Examining Deployments and ReplicaSets
@@ -819,7 +817,7 @@ You should see something like:
 
 ----
 NAME    READY   UP-TO-DATE   AVAILABLE   AGE
-mapit   1/1     1            1           131m
+weathernow   1/1     1            1           131m
 ----
 
 You made two material configuration changes (plus a scale), after the initial deployment,
@@ -836,10 +834,10 @@ You should see something like:
 
 ----
 NAME               DESIRED   CURRENT   READY   AGE
-mapit-5f695ff4b8   1         1         1       4m19s
-mapit-668f69cdd5   0         0         0       6m18s
-mapit-764c5bf8b8   0         0         0       133m
-mapit-8695cb9c67   0         0         0       133m
+weathernow-5f695ff4b8   1         1         1       4m19s
+weathernow-668f69cdd5   0         0         0       6m18s
+weathernow-764c5bf8b8   0         0         0       133m
+weathernow-8695cb9c67   0         0         0       133m
 ----
 
 Each time a new deployment is triggered, the deployer pod creates a new
@@ -850,13 +848,11 @@ recent RS has a desired scale of 1.
 If you `oc describe` each of these RSs you will see how earlier versions have
 no probes, and the latest running RS has the new probes.
 
-Feel free to try out the mapit application:
+Feel free to try out the weathernow application:
 
 [source,bash,role="execute"]
 ----
-oc get route mapit -o jsonpath='{.spec.host}' | sed 's/^/http:\/\//'
+oc get route weathernow -o jsonpath='{.spec.host}' | sed 's/^/https:\/\//'
 ----
 
-It should look something like this:
-
-image::app-mgmt-basics/mapit-app-route.png[]
+The application should now be accessible via the route. You can test it with curl or visit it in your browser to see the weather lookup interface.

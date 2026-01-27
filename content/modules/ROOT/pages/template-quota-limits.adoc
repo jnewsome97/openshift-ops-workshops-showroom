@@ -56,7 +56,7 @@ example, are users allowed to create *Projects*? Does this user have too many
 If you look at the objects defined in the *Template*, you will notice that
 there's no mention of quota or limits. You'll change that now.
 
-[NOTE]
+[Note]
 ====
 *Templates* are a powerful tool that enable the user to easily create reusable
 sets of OpenShift objects with powerful parameterization. They can be used to
@@ -216,7 +216,7 @@ In combination with quota, you can create very fine-grained controls, even
 across projects, for how users are allowed to request and utilize OpenShift's
 various resources.
 
-[NOTE]
+[Note]
 ====
 Remember that quotas and limits are applied at the *Project* level. *Users*
 may have access to multiple *Projects*, but quotas and limits do not apply
@@ -389,7 +389,7 @@ Resource limits:
         Container       memory          5Mi     1Gi     512Mi           1Gi             -
 ----
 
-[NOTE]
+[Note]
 ====
 If you don't see the Quota and Resource limits sections, you may have been
 too quick. Remember that the operator takes a moment to do everything it
@@ -434,7 +434,7 @@ NAME                   CREATED AT
 template-test-limits   2024-07-11T15:30:30Z
 ----
 
-[NOTE]
+[Note]
 ====
 Please make sure that the `project-request` template is created in the
 `openshift-config` project. Defining it in the OpenShift API server

@@ -18,7 +18,7 @@ We will talk about this concept in more detail later. But let's imagine for a
 moment, the `mapit` application needs persistent storage available under the
 `/app-storage` directory inside the container.
 
-[NOTE]
+[Note]
 ====
 The directories that make up the container's internal filesystem are a blend
 of the read-only layers of the container image and the top-most writable
@@ -133,7 +133,7 @@ doesn't specify a `StorageClass`, the default will be used. In this case, the
 default is an EBS provisioner that will create an EBS GP2 volume of the
 requested size (in our example, 1Gi).
 
-[NOTE]
+[Note]
 ====
 You'll note that there is also a `gp3-csi`. This implements the
 https://github.com/container-storage-interface/spec[CSI interface],
