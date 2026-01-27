@@ -33,7 +33,7 @@ endif::[]
 * xref:security.adoc[Security - Secrets, Certs & ACS (TBA)]
 
 .Phase 6: Platform Engineering
-* xref:cloud-infrastructure.adoc[Cloud Infrastructure & Storage]
+* xref:cloud-infrastructure.adoc[Cloud Infrastructure & Storage (TBA)]
 ifdef::module_devhub[]
 * xref:developer-hub.adoc[Developer Hub]
 endif::[]
