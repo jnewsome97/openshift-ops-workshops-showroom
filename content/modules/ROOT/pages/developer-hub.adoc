@@ -213,14 +213,14 @@ Check the Backstage application logs:
 
 [source,bash,role="execute"]
 ----
-oc logs -n backstage -l app.kubernetes.io/component=backstage --tail=50
+oc logs -n backstage -l rhdh.redhat.com/app=backstage-developer-hub --tail=50
 ----
 
 Check PostgreSQL database logs:
 
 [source,bash,role="execute"]
 ----
-oc logs -n backstage -l app.kubernetes.io/component=database --tail=20
+oc logs -n backstage -l rhdh.redhat.com/app=backstage-psql-developer-hub --tail=20
 ----
 
 === Check Resource Usage
@@ -616,8 +616,10 @@ View the Backstage health endpoint:
 
 [source,bash,role="execute"]
 ----
-curl -s $(oc get route backstage-developer-hub -n backstage -o jsonpath='https://{.spec.host}')/healthcheck
+curl -sk $(oc get route backstage-developer-hub -n backstage -o jsonpath='https://{.spec.host}')/.backstage/health/v1/readiness
 ----
+
+You should see `{"status":"ok"}` if RHDH is healthy.
 
 === Database Connectivity
 
@@ -650,7 +652,7 @@ If the Backstage CR is not reconciling properly:
 
 [source,bash,role="execute"]
 ----
-oc logs -n rhdh-operator deployment/rhdh-operator-controller-manager --tail=50
+oc logs -n rhdh-operator -l app=rhdh-operator --tail=50
 ----
 
 == CLI Access (For Automation)
@@ -715,7 +717,7 @@ oc get pods -n backstage
 oc get backstage -n backstage
 
 # View application logs
-oc logs -n backstage -l app.kubernetes.io/component=backstage --tail=50
+oc logs -n backstage -l rhdh.redhat.com/app=backstage-developer-hub --tail=50
 
 # View configuration
 oc get configmaps -n backstage
