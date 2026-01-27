@@ -11,7 +11,7 @@
 * xref:app-mgmt-basics.adoc[Application Management Basics (Initial draft)]
 
 .Phase 2: Networking
-* xref:networking.adoc[Networking & Ingress (Initial draft)]
+* xref:networking.adoc[Networking & Ingress (Initial draft - needs review)]
 
 .Phase 3: Day 2 Operations
 * xref:observability.adoc[Observability]
