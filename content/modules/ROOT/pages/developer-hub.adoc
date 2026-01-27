@@ -77,7 +77,7 @@ Check the RHDH pods:
 
 [source,bash,role="execute"]
 ----
-oc get pods -n rhdh
+oc get pods -n backstage
 ----
 
 You should see:
@@ -88,19 +88,40 @@ backstage-developer-hub-xxxxx              1/1     Running
 backstage-psql-developer-hub-0             1/1     Running
 ----
 
+Check the deployment details:
+
+[source,bash,role="execute"]
+----
+oc get deployment -n backstage
+----
+
+View the Backstage container resources:
+
+[source,bash,role="execute"]
+----
+oc get deployment backstage-developer-hub -n backstage -o jsonpath='{.spec.template.spec.containers[0].resources}' | python3 -m json.tool
+----
+
 === Step 2: Get the Developer Hub URL
 
 Get the Developer Hub portal URL:
 
 [source,bash,role="execute"]
 ----
-oc get route backstage-developer-hub -n rhdh -o jsonpath='https://{.spec.host}'
+oc get route backstage-developer-hub -n backstage -o jsonpath='https://{.spec.host}'
 ----
 
 Output:
 
 ----
-https://backstage-developer-hub-rhdh.apps.cluster-GUID.example.com
+https://backstage-developer-hub-backstage.apps.cluster-GUID.example.com
+----
+
+View all routes in the backstage namespace:
+
+[source,bash,role="execute"]
+----
+oc get routes -n backstage
 ----
 
 === Step 3: Access the Portal
@@ -110,6 +131,138 @@ https://backstage-developer-hub-rhdh.apps.cluster-GUID.example.com
 3. By default, you can access as a guest or login with OpenShift credentials
 
 You're now in the **Developer Hub Portal**.
+
+== Ops Admin: Exploring RHDH from the Console and CLI
+
+As an operations administrator, you'll want to understand how RHDH is deployed and configured. Let's explore.
+
+=== View RHDH in the OpenShift Console
+
+1. In the OpenShift console, go to **Workloads** -> **Deployments**
+2. Select the **backstage** project from the project dropdown
+3. You'll see the `backstage-developer-hub` deployment
+4. Click on the deployment to see:
+   * Pod details and status
+   * Resource usage (CPU/Memory)
+   * Environment variables
+   * Mounted ConfigMaps and Secrets
+
+=== Explore the Operator
+
+The RHDH Operator manages the Backstage instance:
+
+1. Go to **Operators** -> **Installed Operators**
+2. Select **All Projects** or **backstage**
+3. Click on **Red Hat Developer Hub**
+4. Under **Provided APIs**, you'll see the `Backstage` custom resource
+
+View the Backstage CR via CLI:
+
+[source,bash,role="execute"]
+----
+oc get backstage -n backstage
+----
+
+Get detailed status:
+
+[source,bash,role="execute"]
+----
+oc describe backstage developer-hub -n backstage
+----
+
+=== View Configuration
+
+RHDH configuration is stored in ConfigMaps. List them:
+
+[source,bash,role="execute"]
+----
+oc get configmaps -n backstage
+----
+
+View the main app configuration:
+
+[source,bash,role="execute"]
+----
+oc get configmap backstage-developer-hub-app-config -n backstage -o yaml
+----
+
+=== Check Secrets
+
+RHDH uses secrets for sensitive configuration (database credentials, OAuth, etc.):
+
+[source,bash,role="execute"]
+----
+oc get secrets -n backstage
+----
+
+View the PostgreSQL secret (credentials):
+
+[source,bash,role="execute"]
+----
+oc get secret backstage-psql-developer-hub -n backstage -o jsonpath='{.data}' | python3 -m json.tool
+----
+
+[NOTE]
+====
+Secret values are base64 encoded. You can decode them with `echo <value> | base64 -d`.
+====
+
+=== View Pod Logs
+
+Check the Backstage application logs:
+
+[source,bash,role="execute"]
+----
+oc logs -n backstage -l app.kubernetes.io/component=backstage --tail=50
+----
+
+Check PostgreSQL database logs:
+
+[source,bash,role="execute"]
+----
+oc logs -n backstage -l app.kubernetes.io/component=database --tail=20
+----
+
+=== Check Resource Usage
+
+View current resource consumption:
+
+[source,bash,role="execute"]
+----
+oc adm top pods -n backstage
+----
+
+=== View Services and Networking
+
+Check the services exposed:
+
+[source,bash,role="execute"]
+----
+oc get svc -n backstage
+----
+
+Check the route configuration:
+
+[source,bash,role="execute"]
+----
+oc get route backstage-developer-hub -n backstage -o yaml | grep -A 10 "spec:"
+----
+
+=== Persistent Storage
+
+RHDH uses PostgreSQL for persistence. Check the PVC:
+
+[source,bash,role="execute"]
+----
+oc get pvc -n backstage
+----
+
+View storage details:
+
+[source,bash,role="execute"]
+----
+oc describe pvc -n backstage
+----
 
 == The Developer Hub Portal: First Look
 
@@ -296,7 +449,7 @@ Command to check RBAC configuration:
 
 [source,bash,role="execute"]
 ----
-oc get configmap -n rhdh | grep rbac
+oc get configmap -n backstage | grep rbac
 ----
 
 == TechDocs: Documentation as Code
@@ -420,7 +573,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: app-config-rhdh
-  namespace: rhdh
+  namespace: backstage
 data:
   app-config.yaml: |
     catalog:
@@ -434,10 +587,71 @@ Apply and reload:
 [source,bash,role="copypaste"]
 ----
 oc apply -f app-config.yaml
-oc rollout restart deployment/backstage-developer-hub -n rhdh
+oc rollout restart deployment/backstage-developer-hub -n backstage
 ----
 
 **Result:** Template now appears in "Create" menu for developers.
+
+== Troubleshooting RHDH
+
+Common issues and how to diagnose them:
+
+=== Check Pod Status
+
+[source,bash,role="execute"]
+----
+oc get pods -n backstage
+----
+
+If pods are not running, check events:
+
+[source,bash,role="execute"]
+----
+oc get events -n backstage --sort-by='.lastTimestamp' | tail -20
+----
+
+=== Check Application Health
+
+View the Backstage health endpoint:
+
+[source,bash,role="execute"]
+----
+curl -s $(oc get route backstage-developer-hub -n backstage -o jsonpath='https://{.spec.host}')/healthcheck
+----
+
+=== Database Connectivity
+
+If you see database connection errors in logs, check PostgreSQL:
+
+[source,bash,role="execute"]
+----
+oc exec -n backstage backstage-psql-developer-hub-0 -- psql -U postgres -c "SELECT 1"
+----
+
+=== Restart the Deployment
+
+If RHDH is misbehaving after config changes:
+
+[source,bash,role="copypaste"]
+----
+oc rollout restart deployment/backstage-developer-hub -n backstage
+----
+
+Watch the rollout:
+
+[source,bash,role="execute"]
+----
+oc rollout status deployment/backstage-developer-hub -n backstage
+----
+
+=== View Operator Logs
+
+If the Backstage CR is not reconciling properly:
+
+[source,bash,role="execute"]
+----
+oc logs -n rhdh-operator deployment/rhdh-operator-controller-manager --tail=50
+----
 
 == CLI Access (For Automation)
 
@@ -490,14 +704,34 @@ This enables **infrastructure-as-code** provisioning via CI/CD.
 |Automation via templates and plugins
 |===
 
+**Key operational commands:**
+
+[source,bash]
+----
+# View RHDH pods
+oc get pods -n backstage
+
+# Check Backstage CR status
+oc get backstage -n backstage
+
+# View application logs
+oc logs -n backstage -l app.kubernetes.io/component=backstage --tail=50
+
+# View configuration
+oc get configmaps -n backstage
+
+# Restart after config changes
+oc rollout restart deployment/backstage-developer-hub -n backstage
+----
+
 == Key Takeaways
 
-✅ **Self-Service** - Developers provision apps without tickets +
-✅ **Governance** - Ops defines templates with security baked in +
-✅ **Standardization** - Golden paths ensure consistency +
-✅ **Integration** - Works with OpenShift, Tekton, ArgoCD, RHACS +
-✅ **Visibility** - Catalog shows everything in one place +
-✅ **Reduced Toil** - Automation eliminates manual provisioning
+* **Self-Service** - Developers provision apps without tickets
+* **Governance** - Ops defines templates with security baked in
+* **Standardization** - Golden paths ensure consistency
+* **Integration** - Works with OpenShift, Tekton, ArgoCD, RHACS
+* **Visibility** - Catalog shows everything in one place
+* **Reduced Toil** - Automation eliminates manual provisioning
 
 == The "Tee-Up" for Platform Engineering Workshops
 
