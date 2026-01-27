@@ -5,14 +5,14 @@
 * xref:index.adoc[Environment Setup]
 
 .Phase 1: Platform Foundation
-* xref:ocp-concepts.adoc[OpenShift Platform Overview (Initial draft)]
-* xref:installation.adoc[Installation & Verification (Initial draft)]
-* xref:oidc-authentication.adoc[Identity & Users - OIDC (Initial draft)]
-* xref:ldap-groupsync.adoc[Identity & Users - LDAP (Initial draft)]
-* xref:app-mgmt-basics.adoc[Application Management Basics (Initial draft)]
+* xref:ocp-concepts.adoc[OpenShift Platform Overview]
+* xref:installation.adoc[Installation & Verification]
+* xref:oidc-authentication.adoc[Identity & Users - OIDC]
+* xref:ldap-groupsync.adoc[Identity & Users - LDAP]
+* xref:app-mgmt-basics.adoc[Application Management Basics]
 
 .Phase 2: Networking
-* xref:networking.adoc[Networking & Ingress (Initial draft - needs review)]
+* xref:networking.adoc[Networking & Ingress]
 
 .Phase 3: Day 2 Operations
 * xref:observability.adoc[Observability]
@@ -26,7 +26,7 @@ ifdef::module_virt[]
 endif::[]
 ifdef::module_acm[]
 * xref:acm-multicluster.adoc[ACM - Multi-Cluster Management (TBA)]
-* xref:hosted-control-planes.adoc[Advanced Architecture - HCP (Initial draft)]
+* xref:hosted-control-planes.adoc[Advanced Architecture - HCP]
 endif::[]
 
 .Phase 5: Security
