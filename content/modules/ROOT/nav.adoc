@@ -31,8 +31,10 @@ ifdef::module_acm[]
 * xref:hosted-control-planes.adoc[Advanced Architecture - HCP]
 endif::[]
 
+ifdef::module_security[]
 .Phase 5: Security
 * xref:security.adoc[Security - Secrets, Certs & ACS (TBA)]
+endif::[]
 
 .Phase 6: Platform Engineering
 * xref:cloud-infrastructure.adoc[Cloud Integration & Infrastructure]
