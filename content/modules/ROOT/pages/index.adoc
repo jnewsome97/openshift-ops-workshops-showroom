@@ -2,7 +2,7 @@
 
 == OpenShift Days - Ops Track
 
-Welcome to the OpenShift Operations workshop. This hands-on lab covers Day 2 operations tasks for OpenShift administrators and platform engineers.
+Welcome to the OpenShift Operations workshop. This hands-on lab covers platform setup, Day 2 operations, and advanced capabilities for OpenShift administrators and platform engineers.
 
 == Your Environment
 
