@@ -25,6 +25,7 @@ echo "  MODULE_ENABLE_VIRT=${MODULE_ENABLE_VIRT:-true}"
 echo "  MODULE_ENABLE_ACM=${MODULE_ENABLE_ACM:-true}"
 echo "  MODULE_ENABLE_BACKUP=${MODULE_ENABLE_BACKUP:-true}"
 echo "  MODULE_ENABLE_DEVHUB=${MODULE_ENABLE_DEVHUB:-true}"
+echo "  MODULE_ENABLE_OLS=${MODULE_ENABLE_OLS:-true}"
 
 # Create attributes section for Antora
 # Only set attributes for ENABLED modules (ifdef checks for presence, not value)
@@ -44,6 +45,10 @@ fi
 
 if [ "${MODULE_ENABLE_DEVHUB:-true}" = "true" ]; then
     ATTRS="${ATTRS}    module_devhub: ''"$'\n'
+fi
+
+if [ "${MODULE_ENABLE_OLS:-true}" = "true" ]; then
+    ATTRS="${ATTRS}    module_ols: ''"$'\n'
 fi
 
 # Also add standard workshop variables

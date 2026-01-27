@@ -18,7 +18,9 @@
 * xref:observability.adoc[Observability]
 * xref:debugging-troubleshooting.adoc[Debugging & Troubleshooting]
 * xref:performance-tuning.adoc[Performance Tuning]
-* xref:openshift-lightspeed.adoc[OpenShift Lightspeed (TBA)]
+ifdef::module_ols[]
+* xref:openshift-lightspeed.adoc[OpenShift Lightspeed]
+endif::[]
 
 .Phase 4: Workloads & Architecture
 ifdef::module_virt[]
