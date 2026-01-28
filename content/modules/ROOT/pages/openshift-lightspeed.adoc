@@ -98,7 +98,7 @@ All conditions should show `"status": "True"` and `"message": "Ready"`.
 
 == Access Lightspeed in the Console
 
-Once deployed, refresh your OpenShift console. You'll see a new Lightspeed chat button in the bottom right corner:
+Once the OLSConfig is ready, refresh your OpenShift console. The Lightspeed chat button in the bottom right corner will now be functional:
 
 image::ols-chat-button.png[Lightspeed chat button in bottom right]
 
