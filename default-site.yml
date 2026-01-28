@@ -16,3 +16,13 @@ ui:
 
 output:
   dir: ./public
+
+asciidoc:
+  attributes:
+    # Show all modules in GitHub Pages preview
+    module_virt: ''
+    module_acm: ''
+    module_backup: ''
+    module_devhub: ''
+    module_ols: ''
+    module_security: ''
