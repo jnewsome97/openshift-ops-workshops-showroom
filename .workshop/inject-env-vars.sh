@@ -20,18 +20,25 @@ fi
 # Build asciidoc attributes based on MODULE_ENABLE_* environment variables
 # These control which nav items are shown via ifdef:: conditionals
 
-echo "Module settings:"
+echo "Module settings (with workloads):"
 echo "  MODULE_ENABLE_VIRT=${MODULE_ENABLE_VIRT:-true}"
 echo "  MODULE_ENABLE_ACM=${MODULE_ENABLE_ACM:-true}"
 echo "  MODULE_ENABLE_BACKUP=${MODULE_ENABLE_BACKUP:-true}"
 echo "  MODULE_ENABLE_DEVHUB=${MODULE_ENABLE_DEVHUB:-true}"
 echo "  MODULE_ENABLE_OLS=${MODULE_ENABLE_OLS:-true}"
 echo "  MODULE_ENABLE_SECURITY=${MODULE_ENABLE_SECURITY:-true}"
+echo "Module settings (content only):"
+echo "  MODULE_ENABLE_LDAP=${MODULE_ENABLE_LDAP:-true}"
+echo "  MODULE_ENABLE_OIDC=${MODULE_ENABLE_OIDC:-true}"
+echo "  MODULE_ENABLE_OBSERVABILITY=${MODULE_ENABLE_OBSERVABILITY:-true}"
+echo "  MODULE_ENABLE_PERFORMANCE=${MODULE_ENABLE_PERFORMANCE:-true}"
+echo "  MODULE_ENABLE_CLOUD_INFRA=${MODULE_ENABLE_CLOUD_INFRA:-true}"
 
 # Create attributes section for Antora
 # Only set attributes for ENABLED modules (ifdef checks for presence, not value)
 ATTRS=""
 
+# Modules with workloads
 if [ "${MODULE_ENABLE_VIRT:-true}" = "true" ]; then
     ATTRS="${ATTRS}    module_virt: ''"$'\n'
 fi
@@ -41,7 +48,7 @@ if [ "${MODULE_ENABLE_ACM:-true}" = "true" ]; then
 fi
 
 if [ "${MODULE_ENABLE_BACKUP:-true}" = "true" ]; then
-    ATTRS="${ATTRS}    module_backup: ''"$'\n'
+    ATTRS="${ATTRS}    module_oadp: ''"$'\n'
 fi
 
 if [ "${MODULE_ENABLE_DEVHUB:-true}" = "true" ]; then
@@ -54,6 +61,27 @@ fi
 
 if [ "${MODULE_ENABLE_SECURITY:-true}" = "true" ]; then
     ATTRS="${ATTRS}    module_security: ''"$'\n'
+fi
+
+# Modules without workloads (content only)
+if [ "${MODULE_ENABLE_LDAP:-true}" = "true" ]; then
+    ATTRS="${ATTRS}    module_ldap: ''"$'\n'
+fi
+
+if [ "${MODULE_ENABLE_OIDC:-true}" = "true" ]; then
+    ATTRS="${ATTRS}    module_oidc: ''"$'\n'
+fi
+
+if [ "${MODULE_ENABLE_OBSERVABILITY:-true}" = "true" ]; then
+    ATTRS="${ATTRS}    module_observability: ''"$'\n'
+fi
+
+if [ "${MODULE_ENABLE_PERFORMANCE:-true}" = "true" ]; then
+    ATTRS="${ATTRS}    module_performance: ''"$'\n'
+fi
+
+if [ "${MODULE_ENABLE_CLOUD_INFRA:-true}" = "true" ]; then
+    ATTRS="${ATTRS}    module_cloud_infra: ''"$'\n'
 fi
 
 # Also add standard workshop variables
