@@ -2,4 +2,151 @@
 
 == Module Overview
 
-**Status:** TBA
+OpenShift Lightspeed is an AI-powered assistant integrated into the OpenShift web console. It helps administrators and developers with:
+
+* Troubleshooting cluster issues
+* Understanding OpenShift concepts
+* Getting guidance on configurations
+* Diagnosing pod failures and errors
+
+In this module, you'll configure OpenShift Lightspeed and use it to troubleshoot a broken workload.
+
+== Prerequisites
+
+The OpenShift Lightspeed Operator has been pre-installed on your cluster. You'll create the configuration to connect it to an LLM provider.
+
+== Verify the Operator Installation
+
+First, verify the Lightspeed operator is installed:
+
+[source,bash,role=execute]
+----
+oc get csv -n openshift-lightspeed | grep lightspeed
+----
+
+You should see the operator in `Succeeded` phase.
+
+You can also verify in the console by navigating to *Operators* → *Installed Operators* and switching to the `openshift-lightspeed` namespace:
+
+image::ols-operator-installed.png[OpenShift Lightspeed Operator Installed]
+
+To switch namespace, use the dropdown at the top:
+
+image::ols-switch-namespace.png[Switch to openshift-lightspeed namespace]
+
+== Create the OLSConfig
+
+The operator is installed but needs configuration to connect to an LLM provider. Azure OpenAI credentials have been pre-configured as a secret.
+
+Verify the credentials secret exists:
+
+[source,bash,role=execute]
+----
+oc get secret azure-api-keys -n openshift-lightspeed
+----
+
+Now create the OLSConfig to enable Lightspeed:
+
+[source,bash,role=execute]
+----
+oc apply -f - <<EOF
+apiVersion: ols.openshift.io/v1alpha1
+kind: OLSConfig
+metadata:
+  name: cluster
+spec:
+  llm:
+    providers:
+      - name: Azure
+        type: azure_openai
+        url: 'https://llm-gpt4-lightspeed.openai.azure.com/'
+        deploymentName: gpt-4
+        credentialsSecretRef:
+          name: azure-api-keys
+        models:
+          - name: gpt-4
+  ols:
+    defaultModel: gpt-4
+    defaultProvider: Azure
+    logLevel: DEBUG
+EOF
+----
+
+== Wait for Lightspeed to Initialize
+
+Monitor the deployment progress:
+
+[source,bash,role=execute]
+----
+oc get pods -n openshift-lightspeed -w
+----
+
+Wait until all pods show `Running` status (press Ctrl+C to exit watch):
+
+* `lightspeed-app-server` - 2/2 Running
+* `lightspeed-console-plugin` - 1/1 Running
+* `lightspeed-postgres-server` - 1/1 Running
+
+Check the OLSConfig status:
+
+[source,bash,role=execute]
+----
+oc get olsconfig cluster -o jsonpath='{.status.conditions}' | jq .
+----
+
+All conditions should show `"status": "True"` and `"message": "Ready"`.
+
+== Access Lightspeed in the Console
+
+Once deployed, refresh your OpenShift console. You'll see a new Lightspeed chat button in the bottom right corner:
+
+image::ols-chat-button.png[Lightspeed chat button in bottom right]
+
+Click the button to open the Lightspeed chat window:
+
+image::ols-chat-window.png[Lightspeed chat window]
+
+== Troubleshoot a Broken Pod
+
+A demo pod with an intentional issue has been deployed. Let's use Lightspeed to diagnose it.
+
+First, check the broken pod:
+
+[source,bash,role=execute]
+----
+oc get pods -n lightspeed-demo
+----
+
+You'll see a pod stuck in `Pending` state:
+
+[source,bash,role=execute]
+----
+oc describe pod broken-pod -n lightspeed-demo
+----
+
+Now use Lightspeed to help diagnose the issue. In the chat window, try asking:
+
+[quote]
+I have a pod called broken-pod in the lightspeed-demo namespace that is stuck in Pending state. Can you help me diagnose why?
+
+Lightspeed will analyze the pod specification and events to identify the issue - in this case, an invalid node selector.
+
+== Try More Queries
+
+Explore what else Lightspeed can help with:
+
+* "How do I create a NetworkPolicy to restrict traffic between namespaces?"
+* "What's the difference between a Deployment and a StatefulSet?"
+* "How do I troubleshoot ImagePullBackOff errors?"
+* "Explain the OpenShift SDN architecture"
+
+== Summary
+
+In this module, you:
+
+* Verified the Lightspeed operator installation
+* Created an OLSConfig to connect to Azure OpenAI
+* Accessed the Lightspeed chat interface
+* Used Lightspeed to troubleshoot a broken pod
+
+OpenShift Lightspeed provides AI-assisted operations directly in the console, helping reduce time-to-resolution for common issues.
