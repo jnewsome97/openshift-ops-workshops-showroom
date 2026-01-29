@@ -681,10 +681,26 @@ Output: `yes` (cluster-admin role)
 
 **Test as viewer1 (should see all projects, read-only):**
 
-1. Log in to web console as `viewer1` / `OpenShift123!` (via rhsso)
-2. Click your username (top-right) → **Copy login command** → **Display Token**
-3. Copy and paste the `oc login --token=...` command into your terminal
-4. Test permissions:
+First, log out of the current CLI session:
+
+[source,bash,role="execute"]
+----
+oc logout
+----
+
+Get the console URL:
+
+[source,bash,role="execute"]
+----
+oc whoami --show-console
+----
+
+1. Open the console URL in your browser
+2. Log out if already logged in (top-right → **Log out**)
+3. Click **rhsso** and log in as `viewer1` / `OpenShift123!`
+4. Click your username (top-right) → **Copy login command** → **Display Token**
+5. Copy and paste the `oc login --token=...` command into your terminal
+6. Test permissions:
 
 [source,bash,role="copypaste"]
 ----
@@ -702,10 +718,18 @@ This checks if viewer1 can create deployments - returns `no` (cluster-reader is 
 
 **Test as developer1:**
 
-1. Log in to web console as `developer1` / `OpenShift123!` (via rhsso)
-2. Click your username (top-right) → **Copy login command** → **Display Token**
-3. Copy and paste the `oc login --token=...` command into your terminal
-4. Check accessible projects:
+Log out and switch users:
+
+[source,bash,role="execute"]
+----
+oc logout
+----
+
+1. In the web console, log out (top-right → **Log out**)
+2. Click **rhsso** and log in as `developer1` / `OpenShift123!`
+3. Click your username (top-right) → **Copy login command** → **Display Token**
+4. Copy and paste the `oc login --token=...` command into your terminal
+5. Check accessible projects:
 
 [source,bash,role="copypaste"]
 ----
