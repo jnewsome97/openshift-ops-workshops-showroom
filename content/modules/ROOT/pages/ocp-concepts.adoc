@@ -351,6 +351,8 @@ image::nodes-console-view.png[Nodes Console View]
 
 OpenShift on cloud platforms (AWS, Azure, GCP) uses **MachineSets** to automate infrastructure:
 
+NOTE: When ACM is installed, `machinesets` exists in two API groups (Cluster API and OpenShift Machine API). We use the full resource name `machinesets.machine.openshift.io` to target OpenShift's Machine API.
+
 [source,bash,role="execute"]
 ----
 oc get machinesets.machine.openshift.io -n openshift-machine-api
