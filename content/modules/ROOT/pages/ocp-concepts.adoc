@@ -24,7 +24,21 @@ For some commands in this module, you'll need full cluster administrator access.
 ssh -l demo-user bastion.{guid}.{route_subdomain} -o ServerAliveInterval=120
 ----
 
-When prompted, enter the password from your credentials page. Then become the `ec2-user`:
+When prompted to confirm the host key, type:
+
+[source,bash,role="execute"]
+----
+yes
+----
+
+Then enter the password:
+
+[source,bash,role="execute"]
+----
+{ssh_password}
+----
+
+Then become the `ec2-user`:
 
 [source,bash,role="execute"]
 ----
