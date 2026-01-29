@@ -665,7 +665,7 @@ You will see something like:
 
 ----
 NAME         HOST/PORT                                             PATH   SERVICES     PORT       TERMINATION   WILDCARD
-weathernow   weathernow-app-management.{{ ROUTE_SUBDOMAIN }}              weathernow   8080-tcp   edge          None
+weathernow   weathernow-app-management.{route_subdomain}              weathernow   8080-tcp   edge          None
 ----
 
 If you take a look at the `HOST/PORT` column, you'll see a familiar looking
@@ -752,7 +752,7 @@ test it using `curl`:
 
 [source,bash,role="execute"]
 ----
-curl https://weathernow-app-management.{{ ROUTE_SUBDOMAIN }}/health
+curl https://weathernow-app-management.{route_subdomain}/health
 ----
 
 You will get some JSON as a response:

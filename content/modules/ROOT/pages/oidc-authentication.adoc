@@ -535,7 +535,7 @@ This will print a URL. Open it in your browser, select **rhsso**, authenticate, 
 
 [source,bash,role="execute"]
 ----
-oc login -u kubeadmin -p {{ KUBEADMIN_PASSWORD }}
+oc login -u kubeadmin -p {kubeadmin_password}
 oc get users
 ----
 
@@ -722,7 +722,7 @@ First returns: `no`, second returns: `yes` (view role)
 
 [source,bash,role="execute"]
 ----
-oc login -u kubeadmin -p {{ KUBEADMIN_PASSWORD }}
+oc login -u kubeadmin -p {kubeadmin_password}
 ----
 
 == Step 12: Test Group Updates (Automatic Sync)
@@ -775,7 +775,7 @@ echo "developer1 added to ocp-admins group"
 
 [source,bash,role="execute"]
 ----
-oc login -u kubeadmin -p {{ KUBEADMIN_PASSWORD }}
+oc login -u kubeadmin -p {kubeadmin_password}
 oc get group ocp-admins -o yaml
 oc get group ocp-developers -o yaml
 ----
@@ -984,7 +984,7 @@ Both methods are valid - choose based on your organization's existing identity i
 
 [source,bash,role="execute"]
 ----
-oc login -u kubeadmin -p {{ KUBEADMIN_PASSWORD }}
+oc login -u kubeadmin -p {kubeadmin_password}
 ----
 
 **Next Module:** Continue with xref:app-mgmt-basics.adoc[Application Management Basics] to learn about deploying applications.

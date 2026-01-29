@@ -21,7 +21,7 @@ For some commands in this module, you'll need full cluster administrator access.
 
 [source,bash,role="execute"]
 ----
-ssh -l demo-user bastion.{{ GUID }}.{{ ROUTE_SUBDOMAIN }} -o ServerAliveInterval=120
+ssh -l demo-user bastion.{guid}.{route_subdomain} -o ServerAliveInterval=120
 ----
 
 When prompted, enter the password from your credentials page. Then become the `ec2-user`:
@@ -108,13 +108,13 @@ The OpenShift Web Console provides a unified view of your entire cluster.
 Navigate to the Console URL (provided by your instructor):
 
 ----
-{{ MASTER_URL }}
+{master_url}
 ----
 
 Login with your credentials:
 
 * Username: `admin` (or as provided)
-* Password: `{{ KUBEADMIN_PASSWORD }}`
+* Password: `{kubeadmin_password}`
 
 === Step 2: Switch to Administrator Perspective
 

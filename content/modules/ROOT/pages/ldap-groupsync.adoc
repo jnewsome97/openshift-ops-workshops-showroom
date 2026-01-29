@@ -254,7 +254,7 @@ Notice the user was **automatically created** on first login. Log back in as adm
 
 [source,bash,role="execute"]
 ----
-oc login -u kubeadmin -p {{ KUBEADMIN_PASSWORD }}
+oc login -u kubeadmin -p {kubeadmin_password}
 ----
 
 **View the auto-created user:**
@@ -393,7 +393,7 @@ Log back in as cluster admin:
 
 [source,bash,role="execute"]
 ----
-oc login -u kubeadmin -p {{ KUBEADMIN_PASSWORD }}
+oc login -u kubeadmin -p {kubeadmin_password}
 ----
 
 Create a typical SDLC project structure:
@@ -546,7 +546,7 @@ Filter by project to see who has access to what.
 
 [source,bash,role="execute"]
 ----
-oc login -u kubeadmin -p {{ KUBEADMIN_PASSWORD }}
+oc login -u kubeadmin -p {kubeadmin_password}
 ----
 
 First, grant cluster-admin to a real user:
@@ -693,7 +693,7 @@ Check for degraded conditions and follow remediation steps.
 
 [source,bash,role="execute"]
 ----
-oc login -u kubeadmin -p {{ KUBEADMIN_PASSWORD }}
+oc login -u kubeadmin -p {kubeadmin_password}
 ----
 
 **Next Module:** You'll learn application management basics including deployments, services, and routes.
