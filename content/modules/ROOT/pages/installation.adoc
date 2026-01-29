@@ -161,7 +161,7 @@ This cluster was installed using **IPI on AWS**:
 
 == Accessing the Cluster
 
-This workshop provides a pre-installed OpenShift cluster. You're already logged in as `kubeadmin`, the default cluster administrator.
+This workshop provides a pre-installed OpenShift cluster. The terminal runs as a service account with **cluster-admin** privileges.
 
 Verify you can access the cluster:
 
@@ -172,8 +172,10 @@ oc whoami
 
 Expected output:
 ----
-kube:admin
+system:serviceaccount:showroom-{guid}:showroom
 ----
+
+NOTE: You're logged in as a service account, not `kubeadmin`. The service account has full cluster-admin permissions.
 
 Check your permissions:
 
