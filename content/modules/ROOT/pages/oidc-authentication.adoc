@@ -507,20 +507,22 @@ OIDC uses the **authorization code flow** which requires a web browser for authe
 **Test OIDC authentication via web console (recommended):**
 
 1. Get the console URL:
++
 [source,bash,role="execute"]
 ----
 oc whoami --show-console
 ----
 
 2. Open the URL in a web browser
-3. You'll see two login options:
+3. If you're already logged in from previous modules, click on your username in the top-right corner and select **Log out**
+4. You'll see two login options:
    - **kubeadmin** (local admin account)
    - **rhsso** (OIDC provider)
-4. Click **rhsso**
-5. You'll be redirected to Keycloak
-6. Log in with: `developer1` / `OpenShift123!`
-7. You'll be redirected back to OpenShift console
-8. You're now logged in via OIDC!
+5. Click **rhsso**
+6. You'll be redirected to Keycloak
+7. Log in with: `developer1` / `OpenShift123!`
+8. You'll be redirected back to OpenShift console
+9. You're now logged in via OIDC!
 
 **Verify the login worked:**
 
