@@ -380,7 +380,7 @@ Due to operator limitations with the KeycloakRealm, KeycloakUser, and KeycloakCl
 
 [source,bash,role="execute"]
 ----
-bash $HOME/support/setup-keycloak-oidc.sh
+bash /showroom/repo/.workshop/setup-keycloak-oidc.sh
 ----
 
 This script creates:
