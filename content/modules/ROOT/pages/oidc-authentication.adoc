@@ -542,9 +542,17 @@ This will print a URL. Open it in your browser, select **rhsso**, authenticate, 
 
 **Verify from cluster admin perspective:**
 
+If you tested the OIDC login via CLI, you're now logged in as developer1. Switch back to the service account to run admin commands:
+
 [source,bash,role="execute"]
 ----
-oc login -u kubeadmin -p {kubeadmin_password}
+oc logout
+----
+
+The terminal will automatically use the service account with cluster-admin permissions. Now verify the users:
+
+[source,bash,role="execute"]
+----
 oc get users
 ----
 
