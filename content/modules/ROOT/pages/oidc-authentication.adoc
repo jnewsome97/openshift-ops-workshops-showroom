@@ -390,11 +390,13 @@ This script creates:
 - OIDC client with groups protocol mapper
 - User-to-group assignments
 
-**Option B: Manual setup via Keycloak admin console:**
-
-If you prefer to use the web console:
+.Option B: Manual setup via Keycloak admin console (click to expand)
+[%collapsible]
+====
+If you prefer to use the web console instead of the script:
 
 1. Get the admin credentials:
++
 [source,bash,role="execute"]
 ----
 oc get secret credential-rhsso -n rhsso -o jsonpath='{.data.ADMIN_USERNAME}' | base64 -d && echo
@@ -402,6 +404,7 @@ oc get secret credential-rhsso -n rhsso -o jsonpath='{.data.ADMIN_PASSWORD}' | b
 ----
 
 2. Get the Keycloak URL:
++
 [source,bash,role="execute"]
 ----
 oc get route keycloak -n rhsso -o jsonpath='{.spec.host}' && echo
@@ -414,6 +417,7 @@ oc get route keycloak -n rhsso -o jsonpath='{.spec.host}' && echo
 7. Create groups: ocp-admins, ocp-developers, ocp-viewers
 8. Assign users to their respective groups
 9. Create OIDC client `openshift-cluster` with groups protocol mapper
+====
 
 **Production Note:** In production environments, you would integrate Keycloak with your organization's existing LDAP/Active Directory rather than creating users manually.
 
