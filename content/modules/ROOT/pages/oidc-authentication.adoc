@@ -163,10 +163,10 @@ EOF
 
 [source,bash,role="execute"]
 ----
-oc get keycloak rhsso -n rhsso -w
+oc get pods -n rhsso -w
 ----
 
-Wait for `READY: true` (this takes 2-3 minutes). Press Ctrl+C to exit.
+Wait for `keycloak-0` pod to show `1/1 Running` (this takes 2-3 minutes). Press Ctrl+C to exit.
 
 **Verify Keycloak is running:**
 
@@ -176,7 +176,7 @@ oc get pods -n rhsso
 oc get routes -n rhsso
 ----
 
-You should see Keycloak pods running and a route URL.
+You should see `keycloak-0` in Running state and a route URL.
 
 **Get the Keycloak admin credentials:**
 
