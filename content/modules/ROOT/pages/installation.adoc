@@ -424,7 +424,7 @@ Watch it provision:
 oc get pvc test-pvc
 ----
 
-You'll see it go from `Pending` to `Bound` (CSI provisioner creates EBS volume automatically).
+TIP: Cloud storage provisioning is fast - the PVC may already show `Bound` by the time you check. That's a good sign - it means dynamic provisioning is working correctly.
 
 Clean up:
 
