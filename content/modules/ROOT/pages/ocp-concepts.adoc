@@ -353,7 +353,7 @@ OpenShift on cloud platforms (AWS, Azure, GCP) uses **MachineSets** to automate 
 
 [source,bash,role="execute"]
 ----
-oc get machinesets -n openshift-machine-api
+oc get machinesets.machine.openshift.io -n openshift-machine-api
 ----
 
 You'll see:
@@ -374,7 +374,7 @@ You can also view the actual cloud resources:
 
 [source,bash,role="execute"]
 ----
-oc get machines -n openshift-machine-api
+oc get machines.machine.openshift.io -n openshift-machine-api
 ----
 
 This shows the underlying EC2 instances (3 masters running m5a.2xlarge, 2 workers running m6a.4xlarge) that OpenShift is managing for you.
@@ -386,7 +386,7 @@ To add another worker node, simply scale the MachineSet:
 [source,bash,role="copypaste"]
 ----
 # Example - scales zone C from 0 to 1 worker
-oc scale machineset cluster-wdmpc-zx5kn-worker-us-east-2c --replicas=1 -n openshift-machine-api
+oc scale machineset.machine.openshift.io cluster-wdmpc-zx5kn-worker-us-east-2c --replicas=1 -n openshift-machine-api
 ----
 
 **What happens:** OpenShift automatically provisions an EC2 instance, configures it, and joins it to the cluster.
