@@ -663,6 +663,7 @@ oc get route
 
 You will see something like:
 
+[subs="attributes"]
 ----
 NAME         HOST/PORT                                             PATH   SERVICES     PORT       TERMINATION   WILDCARD
 weathernow   weathernow-app-management.{route_subdomain}              weathernow   8080-tcp   edge          None
@@ -750,7 +751,7 @@ which is creating and/or modifying probes. The `weathernow` application exposes 
 endpoint which we can check to see if it is alive and ready to respond. You can
 test it using `curl`:
 
-[source,bash,role="execute"]
+[source,bash,role="execute",subs="attributes"]
 ----
 curl https://weathernow-app-management.{route_subdomain}/health
 ----

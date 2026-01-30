@@ -171,6 +171,8 @@ oc whoami
 ----
 
 Expected output:
+
+[subs="attributes"]
 ----
 system:serviceaccount:showroom-{guid}:showroom
 ----
