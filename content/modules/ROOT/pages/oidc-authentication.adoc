@@ -503,12 +503,14 @@ First returns: `no`, second returns: `yes` (view role)
 
 **OIDC groups automatically control RBAC** - developer1's membership in `ocp-developers` grants the configured permissions.
 
-**Log back in as cluster admin:**
+**Log out to restore cluster admin access:**
 
-[source,bash,role="execute",subs="attributes"]
+[source,bash,role="execute"]
 ----
-oc login -u kubeadmin -p {kubeadmin_password}
+oc logout
 ----
+
+The terminal automatically uses a service account with cluster-admin permissions.
 
 '''
 
@@ -669,12 +671,5 @@ Both methods are valid - choose based on your organization's existing identity i
 * **Identity Providers Overview:** link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/authentication_and_authorization/understanding-identity-provider[Understanding identity providers]
 
 ---
-
-**Log back in as cluster admin:**
-
-[source,bash,role="execute",subs="attributes"]
-----
-oc login -u kubeadmin -p {kubeadmin_password}
-----
 
 **Next Module:** Continue with xref:app-mgmt-basics.adoc[Application Management Basics] to learn about deploying applications.
