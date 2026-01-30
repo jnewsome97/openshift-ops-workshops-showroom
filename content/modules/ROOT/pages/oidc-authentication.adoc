@@ -346,29 +346,9 @@ image::oidc-login-options.png[OpenShift login page showing kube:admin and rhsso 
 +
 image::oidc-logged-in-console.png[OpenShift console after OIDC login]
 
-**Verify the login worked:**
+TIP: If you want to use the CLI with your OIDC login, click your username in the top-right corner and select "Copy login command" to get a token.
 
-After logging in via web console, click on your username in the top-right corner and select "Copy login command". This will give you a token you can use with the CLI.
-
-**Alternative: CLI login with browser (oc login without credentials):**
-
-[source,bash,role="execute"]
-----
-oc login --server=$(oc whoami --show-server) --insecure-skip-tls-verify
-----
-
-This will print a URL. Open it in your browser, select **rhsso**, authenticate, and copy the provided login command.
-
-**Verify from cluster admin perspective:**
-
-If you tested the OIDC login via CLI, you're now logged in as developer1. Switch back to the service account to run admin commands:
-
-[source,bash,role="execute"]
-----
-oc logout
-----
-
-The terminal will automatically use the service account with cluster-admin permissions. Now verify the users:
+**Verify OIDC users from admin perspective:**
 
 [source,bash,role="execute"]
 ----
