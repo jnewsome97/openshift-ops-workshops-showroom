@@ -587,8 +587,9 @@ This demonstrates automatic group sync - no manual `oc adm groups sync` command 
    - Document group-to-role mappings
    - Regular access reviews in identity provider
 
-== Troubleshooting
-
+.Troubleshooting (click to expand)
+[%collapsible]
+====
 **Issue: Users not appearing in groups**
 
 Check if groups claim is in the ID token:
@@ -635,6 +636,7 @@ oc get pods -n rhsso
 oc logs -n rhsso -l app=keycloak
 oc get routes -n rhsso
 ----
+====
 
 == Summary
 

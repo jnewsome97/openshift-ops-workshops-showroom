@@ -542,11 +542,12 @@ image::images/histogram.png[Log histogram]
 It may take 1-2 minutes for logs to start appearing after the collector pods are running. If you see "No datapoints found", wait a moment and refresh.
 ====
 
-== Troubleshooting
-
+.Troubleshooting (click to expand)
+[%collapsible]
+====
 If logs are not appearing, check the following:
 
-=== Verify Collector Pods
+**Verify Collector Pods**
 
 [source,bash,role="execute"]
 ----
@@ -555,7 +556,7 @@ oc get pods -n openshift-logging -l app.kubernetes.io/component=collector
 
 All collector pods should be `Running`.
 
-=== Check Collector Logs
+**Check Collector Logs**
 
 [source,bash,role="execute"]
 ----
@@ -567,7 +568,7 @@ Common issues:
 * `certificate verify failed` - The TLS CA configmap name is incorrect in the ClusterLogForwarder
 * `429 Too Many Requests` - Rate limiting from Loki during initial ingestion (this is normal and will clear up)
 
-=== Verify ClusterLogForwarder Status
+**Verify ClusterLogForwarder Status**
 
 [source,bash,role="execute"]
 ----
@@ -576,7 +577,7 @@ oc get clusterlogforwarder collector -n openshift-logging -o jsonpath='{.status.
 
 You should see `Authorized` and `Valid` conditions with status `True`.
 
-=== Check LokiStack Status
+**Check LokiStack Status**
 
 [source,bash,role="execute"]
 ----
@@ -584,6 +585,7 @@ oc get lokistack logging-loki -n openshift-logging -o jsonpath='{.status.conditi
 ----
 
 The LokiStack should show `Ready` status.
+====
 
 == Summary
 
