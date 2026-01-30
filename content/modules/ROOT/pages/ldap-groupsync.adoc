@@ -252,9 +252,9 @@ Notice the user was **automatically created** on first login. Log back in as adm
 
 **Log back in as cluster admin:**
 
-[source,bash,role="execute",subs="attributes"]
+[source,bash,role="execute"]
 ----
-oc login -u kubeadmin -p {kubeadmin_password}
+oc login --token=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token) --server=https://kubernetes.default.svc --insecure-skip-tls-verify
 ----
 
 **View the auto-created user:**
@@ -391,9 +391,9 @@ oc whoami --show-context
 
 Log back in as cluster admin:
 
-[source,bash,role="execute",subs="attributes"]
+[source,bash,role="execute"]
 ----
-oc login -u kubeadmin -p {kubeadmin_password}
+oc login --token=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token) --server=https://kubernetes.default.svc --insecure-skip-tls-verify
 ----
 
 Create a typical SDLC project structure:
@@ -544,9 +544,9 @@ Filter by project to see who has access to what.
 
 **Remove kubeadmin after configuring identity provider:**
 
-[source,bash,role="execute",subs="attributes"]
+[source,bash,role="execute"]
 ----
-oc login -u kubeadmin -p {kubeadmin_password}
+oc login --token=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token) --server=https://kubernetes.default.svc --insecure-skip-tls-verify
 ----
 
 First, grant cluster-admin to a real user:
@@ -691,9 +691,9 @@ Check for degraded conditions and follow remediation steps.
 
 **Log back in as cluster admin to continue:**
 
-[source,bash,role="execute",subs="attributes"]
+[source,bash,role="execute"]
 ----
-oc login -u kubeadmin -p {kubeadmin_password}
+oc login --token=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token) --server=https://kubernetes.default.svc --insecure-skip-tls-verify
 ----
 
 **Next Module:** You'll learn application management basics including deployments, services, and routes.
