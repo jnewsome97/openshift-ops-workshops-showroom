@@ -301,18 +301,11 @@ Both pods should show `Running` before continuing.
 
 === Test Default Connectivity (Should Work)
 
-Get the backend pod IP:
-
-[source,bash,role="execute"]
-----
-BACKEND_IP=$(oc get pod -n netpol-backend -l deployment=backend -o jsonpath='{.items[0].status.podIP}')
-echo "Backend IP: $BACKEND_IP"
-----
-
 Test connectivity from frontend to backend:
 
 [source,bash,role="execute"]
 ----
+BACKEND_IP=$(oc get pod -n netpol-backend -l deployment=backend -o jsonpath='{.items[0].status.podIP}')
 oc exec -n netpol-frontend deployment/frontend -- curl -s --connect-timeout 5 http://${BACKEND_IP}:8080
 ----
 
@@ -341,6 +334,7 @@ This blocks all incoming traffic to pods in `netpol-backend`.
 
 [source,bash,role="execute"]
 ----
+BACKEND_IP=$(oc get pod -n netpol-backend -l deployment=backend -o jsonpath='{.items[0].status.podIP}')
 oc exec -n netpol-frontend deployment/frontend -- curl -s --connect-timeout 5 http://${BACKEND_IP}:8080
 ----
 
@@ -380,6 +374,7 @@ EOF
 
 [source,bash,role="execute"]
 ----
+BACKEND_IP=$(oc get pod -n netpol-backend -l deployment=backend -o jsonpath='{.items[0].status.podIP}')
 oc exec -n netpol-frontend deployment/frontend -- curl -s --connect-timeout 5 http://${BACKEND_IP}:8080
 ----
 
