@@ -518,7 +518,7 @@ First returns: `no`, second returns: `yes` (view role)
 oc login -u kubeadmin -p {kubeadmin_password}
 ----
 
-.**&#9658; Optional: Test Group Updates** (click to expand)
+.**Optional: Test Group Updates** (click to expand)
 [%collapsible]
 ====
 This demonstrates how OIDC groups update automatically when membership changes in Keycloak.
@@ -587,7 +587,7 @@ This demonstrates automatic group sync - no manual `oc adm groups sync` command 
    - Document group-to-role mappings
    - Regular access reviews in identity provider
 
-.**&#9658; Troubleshooting** (click to expand)
+.**Troubleshooting** (click to expand)
 [%collapsible]
 ====
 **Issue: Users not appearing in groups**

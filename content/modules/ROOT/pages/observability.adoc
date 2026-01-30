@@ -542,7 +542,7 @@ image::images/histogram.png[Log histogram]
 It may take 1-2 minutes for logs to start appearing after the collector pods are running. If you see "No datapoints found", wait a moment and refresh.
 ====
 
-.**&#9658; Troubleshooting** (click to expand)
+.**Troubleshooting** (click to expand)
 [%collapsible]
 ====
 If logs are not appearing, check the following:
