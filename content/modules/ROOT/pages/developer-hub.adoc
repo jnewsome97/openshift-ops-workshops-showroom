@@ -372,7 +372,7 @@ RHDH uses plugins to integrate with your infrastructure:
 
 Plugins are configured via the app-config and require appropriate RBAC permissions.
 
-.Troubleshooting RHDH (click to expand)
+.**&#9658; Troubleshooting RHDH** (click to expand)
 [%collapsible]
 ====
 Common issues and how to diagnose them:
