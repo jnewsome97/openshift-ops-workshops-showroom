@@ -475,6 +475,8 @@ oc whoami --show-console
 3. Click **rhsso** and log in as `developer1` / `OpenShift123!`
 4. Click your username (top-right) → **Copy login command** → **Display Token**
 5. Copy and paste the `oc login --token=...` command into your terminal
++
+NOTE: If prompted to accept the certificate, type `y` and press Enter.
 
 **Verify developer1 can edit in development:**
 
