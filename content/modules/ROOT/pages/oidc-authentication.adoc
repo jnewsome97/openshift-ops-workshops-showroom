@@ -503,14 +503,16 @@ First returns: `no`, second returns: `yes` (view role)
 
 **OIDC groups automatically control RBAC** - developer1's membership in `ocp-developers` grants the configured permissions.
 
-**Log out to restore cluster admin access:**
+**Restore cluster admin access:**
+
+Log back in using the terminal's service account token:
 
 [source,bash,role="execute"]
 ----
-oc logout
+oc login --token=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token) --server=https://kubernetes.default.svc --insecure-skip-tls-verify
 ----
 
-The terminal automatically uses a service account with cluster-admin permissions.
+This restores cluster-admin permissions via the terminal's service account.
 
 '''
 
