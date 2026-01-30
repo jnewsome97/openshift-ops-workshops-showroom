@@ -343,6 +343,8 @@ image::oidc-login-options.png[OpenShift login page showing kube:admin and rhsso 
 7. Log in with: `developer1` / `OpenShift123!`
 8. You'll be redirected back to OpenShift console
 9. You're now logged in via OIDC!
++
+image::oidc-logged-in-console.png[OpenShift console after OIDC login]
 
 **Verify the login worked:**
 
