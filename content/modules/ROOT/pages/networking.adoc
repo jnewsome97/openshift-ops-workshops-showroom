@@ -285,14 +285,19 @@ oc new-app --name=frontend --image=quay.io/openshifttest/hello-openshift:1.2.0 -
 oc new-app --name=backend --image=quay.io/openshifttest/hello-openshift:1.2.0 -n netpol-backend
 ----
 
-Wait for pods:
+Wait for pods in both namespaces:
 
 [source,bash,role="execute"]
 ----
-oc get pods -n netpol-frontend -w
+oc get pods -n netpol-frontend
 ----
 
-Press Ctrl+C when running.
+[source,bash,role="execute"]
+----
+oc get pods -n netpol-backend
+----
+
+Both pods should show `Running` before continuing.
 
 === Test Default Connectivity (Should Work)
 
