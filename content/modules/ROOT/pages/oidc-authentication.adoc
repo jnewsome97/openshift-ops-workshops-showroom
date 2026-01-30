@@ -200,11 +200,12 @@ bash /showroom/repo/.workshop/setup-keycloak-oidc.sh
 ----
 
 This script creates:
-- OpenShift realm in Keycloak
-- Three users: admin1, developer1, viewer1 (password: OpenShift123!)
-- Three groups: ocp-admins, ocp-developers, ocp-viewers
-- OIDC client with groups protocol mapper
-- User-to-group assignments
+
+* OpenShift realm in Keycloak
+* Three users: admin1, developer1, viewer1 (password: `OpenShift123!`)
+* Three groups: ocp-admins, ocp-developers, ocp-viewers
+* OIDC client with groups protocol mapper
+* User-to-group assignments
 
 .Option B: Manual setup via Keycloak admin console (click to expand)
 [%collapsible]
