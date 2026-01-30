@@ -21,7 +21,7 @@ For some commands in this module, you'll need full cluster administrator access.
 
 [source,bash,role="execute",subs="attributes"]
 ----
-ssh -l {ssh_username} bastion.{guid}.{route_subdomain} -o ServerAliveInterval=120
+ssh -l {ssh_username} {bastion_fqdn} -o ServerAliveInterval=120
 ----
 
 When prompted to confirm the host key, type:
