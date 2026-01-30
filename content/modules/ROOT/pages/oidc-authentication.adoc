@@ -480,7 +480,7 @@ NOTE: If prompted to accept the certificate, type `y` and press Enter.
 
 **Verify developer1 can edit in development:**
 
-[source,bash,role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc auth can-i create deployment -n app-development
 ----
@@ -489,9 +489,13 @@ Returns: `yes` (edit role from ocp-developers group)
 
 **Verify developer1 is view-only in production:**
 
-[source,bash,role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc auth can-i create deployment -n app-production
+----
+
+[source,bash,role="execute"]
+----
 oc auth can-i get pods -n app-production
 ----
 
