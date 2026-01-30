@@ -22,7 +22,12 @@ asciidoc:
     # Show all modules in GitHub Pages preview
     module_virt: ''
     module_acm: ''
-    module_backup: ''
+    module_oadp: ''
     module_devhub: ''
     module_ols: ''
     module_security: ''
+    module_oidc: ''
+    module_ldap: ''
+    module_observability: ''
+    module_performance: ''
+    module_cloud_infra: ''
