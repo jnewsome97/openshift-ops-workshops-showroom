@@ -382,16 +382,19 @@ This is where OIDC shines - groups automatically sync from token claims without 
 oc get groups
 ----
 
-You should see:
+You should see at least:
 
 ```
 NAME             USERS
-ocp-admins       admin1
 ocp-developers   developer1
-ocp-viewers      viewer1
 ```
 
-**These groups were created automatically** when users logged in! Compare this to LDAP:
+[NOTE]
+====
+OIDC groups are created **on first login**. Since you only logged in as `developer1`, you'll only see `ocp-developers`. If you log in as `admin1` or `viewer1`, those groups will appear automatically.
+====
+
+**The group was created automatically** when the user logged in! Compare this to LDAP:
 
 **LDAP (Manual Sync):**
 ```bash
