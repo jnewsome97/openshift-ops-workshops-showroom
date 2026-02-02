@@ -685,7 +685,7 @@ oc get route weathernow -n app-management -o jsonpath='{.metadata.annotations}' 
 '''
 
 .**Optional: Hands-on AWS WAF Integration** (click to expand)
-[%collapsible]
+[%collapsible%closed]
 ====
 **Duration:** 10-15 minutes +
 **Prerequisites:** AWS CLI is pre-configured in your terminal
