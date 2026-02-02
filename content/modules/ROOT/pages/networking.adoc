@@ -684,17 +684,16 @@ oc get route weathernow -n app-management -o jsonpath='{.metadata.annotations}' 
 
 '''
 
-.**Optional: Hands-on AWS WAF Integration** (click to expand)
-[%collapsible%closed]
-====
-**Duration:** 10-15 minutes +
-**Prerequisites:** AWS CLI is pre-configured in your terminal
+=== Optional: Hands-on AWS WAF Integration
 
-This exercise deploys a fully functional AWS WAF protecting an OpenShift application. You'll see WAF block SQL injection and XSS attacks in real-time.
-
-[NOTE]
+[TIP]
 ====
-AWS CLI and credentials are pre-configured in your workshop terminal. Verify with:
+**Duration:** 10-15 minutes | **Prerequisites:** AWS CLI is pre-configured in your terminal
+
+This exercise deploys a fully functional AWS WAF protecting an OpenShift application. You'll see WAF block SQL injection and XSS attacks in real-time. *Skip this section if you don't have time.*
+====
+
+First, verify AWS CLI credentials are configured:
 
 [source,bash,role="execute"]
 ----
@@ -702,7 +701,6 @@ aws sts get-caller-identity
 ----
 
 You should see your AWS account information.
-====
 
 ==== Step 1: Install AWS Load Balancer Operator
 
@@ -929,7 +927,6 @@ WAF_ID=$(aws wafv2 list-web-acls --scope REGIONAL --region us-east-2 --query "We
 LOCK_TOKEN=$(aws wafv2 list-web-acls --scope REGIONAL --region us-east-2 --query "WebACLs[?Name=='openshift-waf'].LockToken" --output text)
 aws wafv2 delete-web-acl --name openshift-waf --scope REGIONAL --id $WAF_ID --lock-token $LOCK_TOKEN --region us-east-2
 ----
-====
 
 == Network Troubleshooting
 
