@@ -684,14 +684,12 @@ oc get route weathernow -n app-management -o jsonpath='{.metadata.annotations}' 
 
 '''
 
-=== Optional: Hands-on AWS WAF Integration
+.Optional: Hands-on AWS WAF Integration (10-15 minutes)
+[%collapsible]
+======
+*Prerequisites:* AWS CLI is pre-configured in your terminal
 
-[TIP]
-====
-**Duration:** 10-15 minutes | **Prerequisites:** AWS CLI is pre-configured in your terminal
-
-This exercise deploys a fully functional AWS WAF protecting an OpenShift application. You'll see WAF block SQL injection and XSS attacks in real-time. *Skip this section if you don't have time.*
-====
+This exercise deploys a fully functional AWS WAF protecting an OpenShift application. You'll see WAF block SQL injection and XSS attacks in real-time.
 
 First, verify AWS CLI credentials are configured:
 
@@ -702,7 +700,7 @@ aws sts get-caller-identity
 
 You should see your AWS account information.
 
-==== Step 1: Install AWS Load Balancer Operator
+*Step 1: Install AWS Load Balancer Operator**
 
 [source,bash,role="execute"]
 ----
@@ -730,7 +728,7 @@ oc get csv -n openshift-operators -w | grep aws-load-balancer
 
 Press Ctrl+C when you see `Succeeded`.
 
-==== Step 2: Create AWS Load Balancer Controller
+*Step 2: Create AWS Load Balancer Controller*
 
 [source,bash,role="execute"]
 ----
@@ -761,7 +759,7 @@ oc get pods -n openshift-operators -l app.kubernetes.io/name=aws-load-balancer-o
 
 Press Ctrl+C when you see `Running`.
 
-==== Step 3: Create ALB-backed Ingress
+*Step 3: Create ALB-backed Ingress*
 
 Make sure the weathernow service is NodePort (required for ALB instance target type):
 
@@ -807,7 +805,7 @@ oc get ingress weathernow-alb -n app-management -w
 
 Press Ctrl+C when you see a hostname in the ADDRESS column.
 
-==== Step 4: Create WAF WebACL
+*Step 4: Create WAF WebACL*
 
 Create a WAF WebACL with AWS managed rule sets for SQL injection and common attacks:
 
@@ -855,7 +853,7 @@ aws wafv2 create-web-acl \
   ]'
 ----
 
-==== Step 5: Associate WAF with ALB
+*Step 5: Associate WAF with ALB*
 
 Get the WAF ARN and annotate the Ingress:
 
@@ -874,7 +872,7 @@ oc get ingress weathernow-alb -n app-management -o jsonpath='{.metadata.annotati
 echo
 ----
 
-==== Step 6: Test WAF Protection
+*Step 6: Test WAF Protection*
 
 Get the ALB DNS name:
 
@@ -913,7 +911,7 @@ Expected: `403 Forbidden`
 
 **Congratulations!** You've successfully deployed AWS WAF protecting an OpenShift application. The WAF is blocking SQL injection and XSS attacks using AWS managed rule sets.
 
-==== Cleanup (Optional)
+*Cleanup (Optional)*
 
 To remove the WAF resources:
 
@@ -927,6 +925,7 @@ WAF_ID=$(aws wafv2 list-web-acls --scope REGIONAL --region us-east-2 --query "We
 LOCK_TOKEN=$(aws wafv2 list-web-acls --scope REGIONAL --region us-east-2 --query "WebACLs[?Name=='openshift-waf'].LockToken" --output text)
 aws wafv2 delete-web-acl --name openshift-waf --scope REGIONAL --id $WAF_ID --lock-token $LOCK_TOKEN --region us-east-2
 ----
+======
 
 == Network Troubleshooting
 
