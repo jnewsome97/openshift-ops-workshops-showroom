@@ -346,6 +346,13 @@ image::oidc-login-options.png[OpenShift login page showing kube:admin and rhsso 
 +
 image::oidc-logged-in-console.png[OpenShift console after OIDC login]
 
+[NOTE]
+====
+You may see an error message like: `clusterserviceversions.operators.coreos.com is forbidden: User "developer1" cannot list resource...`
+
+This is **expected behavior** - `developer1` is a regular user without cluster-admin permissions. The console is trying to display operator information that requires elevated privileges. You'll configure RBAC permissions for OIDC groups in Step 7.
+====
+
 TIP: If you want to use the CLI with your OIDC login, click your username in the top-right corner and select "Copy login command" to get a token.
 
 **Verify OIDC users from admin perspective:**
@@ -462,19 +469,12 @@ oc adm policy add-role-to-group view ocp-developers -n app-production
 
 == Step 8: Test OIDC-Based RBAC
 
-Test that RBAC works with OIDC groups by logging in as `developer1`:
+Test that RBAC works with OIDC groups. You should still be logged in as `developer1` from Step 5.
 
-1. Get the console URL:
-+
-[source,bash,role="execute"]
-----
-oc whoami --show-console
-----
+**Get a CLI token to test permissions from the terminal:**
 
-2. Open the URL in your browser
-3. Click **rhsso** and log in as `developer1` / `OpenShift123!`
-4. Click your username (top-right) → **Copy login command** → **Display Token**
-5. Copy and paste the `oc login --token=...` command into your terminal
+1. In the OpenShift console (logged in as `developer1`), click your username (top-right) → **Copy login command** → **Display Token**
+2. Copy and paste the `oc login --token=...` command into your terminal
 +
 NOTE: If prompted to accept the certificate, type `y` and press Enter.
 
@@ -636,6 +636,40 @@ oc get pods -n rhsso
 oc logs -n rhsso -l app=keycloak
 oc get routes -n rhsso
 ----
+====
+
+== Cleanup
+
+To reset the cluster to its original state (recommended before proceeding to other authentication modules like LDAP), run the cleanup command:
+
+[source,bash,role="execute"]
+----
+# Remove OIDC identity provider from OAuth
+oc patch oauth cluster --type=json -p='[{"op": "remove", "path": "/spec/identityProviders"}]'
+
+# Delete Red Hat SSO namespace (removes operator and Keycloak)
+oc delete namespace rhsso --ignore-not-found
+
+# Delete client secret
+oc delete secret rhsso-client-secret -n openshift-config --ignore-not-found
+
+# Delete OIDC users, identities, and groups
+oc delete user developer1 admin1 viewer1 --ignore-not-found
+oc delete group ocp-admins ocp-developers ocp-viewers --ignore-not-found
+
+# Delete test projects
+oc delete project app-development app-staging app-production --ignore-not-found
+
+# Wait for OAuth rollout and verify
+oc rollout status deployment/oauth-openshift -n openshift-authentication
+oc get oauth cluster -o jsonpath='{.spec}' && echo
+----
+
+You should see an empty spec: `{}`
+
+[NOTE]
+====
+This cleanup ensures the cluster is ready for other authentication modules. The LDAP module expects no identity providers to be configured.
 ====
 
 == Summary

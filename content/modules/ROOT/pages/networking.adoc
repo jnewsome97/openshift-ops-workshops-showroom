@@ -140,16 +140,14 @@ oc new-app --name=weathernow --image=quay.io/openshifttest/hello-openshift:1.2.0
 ----
 
 Wait for the pod to be ready before continuing.
-====
 
-=== Create an Edge Route with TLS
-
-First, let's create a route with edge TLS termination:
+**Create an Edge Route with TLS:**
 
 [source,bash,role="execute"]
 ----
 oc create route edge weathernow --service=weathernow 2>/dev/null || echo "Route already exists"
 ----
+====
 
 === View the Route Configuration
 
@@ -309,7 +307,7 @@ BACKEND_IP=$(oc get pod -n netpol-backend -l deployment=backend -o jsonpath='{.i
 oc exec -n netpol-frontend deployment/frontend -- curl -s --connect-timeout 5 http://${BACKEND_IP}:8080
 ----
 
-Expected: `Hello OpenShift!` - connectivity works by default.
+Expected: HTML output from the app - connectivity works by default.
 
 === Apply Deny-All NetworkPolicy
 
@@ -378,7 +376,7 @@ BACKEND_IP=$(oc get pod -n netpol-backend -l deployment=backend -o jsonpath='{.i
 oc exec -n netpol-frontend deployment/frontend -- curl -s --connect-timeout 5 http://${BACKEND_IP}:8080
 ----
 
-Expected: `Hello OpenShift!` - the allow policy takes effect.
+Expected: HTML output from the app - the allow policy takes effect.
 
 === View NetworkPolicies
 
@@ -796,14 +794,31 @@ spec:
 EOF
 ----
 
-Wait for the ALB to provision (2-3 minutes):
+Wait for the ALB to provision (2-3 minutes). First, get the ALB hostname:
 
 [source,bash,role="execute"]
 ----
-oc get ingress weathernow-alb -n app-management -w
+oc get ingress weathernow-alb -n app-management
 ----
 
-Press Ctrl+C when you see a hostname in the ADDRESS column.
+You'll see output like:
+
+----
+NAME             CLASS   HOSTS   ADDRESS                                              PORTS   AGE
+weathernow-alb   alb     *       k8s-appmanag-weathern-xxxxx.us-east-2.elb.amazonaws.com   80      2m
+----
+
+NOTE: The `HOSTS` column showing `*` is expected (wildcard matching). The `ADDRESS` column contains your ALB hostname.
+
+Verify the ALB is ready by testing the endpoint:
+
+[source,bash,role="execute"]
+----
+ALB_HOST=$(oc get ingress weathernow-alb -n app-management -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+curl -s http://$ALB_HOST | head -20
+----
+
+When you see HTML output from the WeatherNow app, the ALB is ready.
 
 *Step 4: Create WAF WebACL*
 
@@ -889,7 +904,7 @@ Test normal request (should succeed):
 curl -s http://$ALB_DNS
 ----
 
-Expected: `Hello OpenShift!`
+Expected: HTML output from the WeatherNow app (starts with `<!DOCTYPE html>`)
 
 Test SQL injection attack (should be blocked):
 
@@ -927,9 +942,10 @@ aws wafv2 delete-web-acl --name openshift-waf --scope REGIONAL --id $WAF_ID --lo
 ----
 ======
 
-== Network Troubleshooting
-
-=== Check Pod Connectivity
+.Network Troubleshooting (click to expand)
+[%collapsible]
+====
+**Check Pod Connectivity:**
 
 [source,bash,role="execute"]
 ----
@@ -937,25 +953,52 @@ aws wafv2 delete-web-acl --name openshift-waf --scope REGIONAL --id $WAF_ID --lo
 oc get pods -A -o wide | grep Running | head -5
 ----
 
-=== Check Network Operator Logs
+**Check Network Operator Logs:**
 
 [source,bash,role="copypaste"]
 ----
 oc logs -n openshift-network-operator deployment/network-operator --tail=50
 ----
 
-=== Check OVN Controller Logs
+**Check OVN Controller Logs:**
 
 [source,bash,role="copypaste"]
 ----
 oc logs -n openshift-ovn-kubernetes ds/ovnkube-node -c ovnkube-controller --tail=30
 ----
 
-=== Verify NetworkPolicy is Applied
+**Verify NetworkPolicy is Applied:**
 
 [source,bash,role="copypaste"]
 ----
 oc describe networkpolicy <policy-name> -n <namespace>
+----
+====
+
+== Cleanup
+
+To clean up all resources created in this module, run:
+
+[source,bash,role="execute"]
+----
+# Delete network policy test namespaces
+oc delete namespace netpol-frontend netpol-backend --ignore-not-found
+
+# Delete weathernow ALB ingress
+oc delete ingress weathernow-alb -n app-management --ignore-not-found
+
+# Delete WAF WebACL (if created)
+WAF_ID=$(aws wafv2 list-web-acls --scope REGIONAL --region us-east-2 --query "WebACLs[?Name=='openshift-waf'].Id" --output text 2>/dev/null)
+if [ -n "$WAF_ID" ]; then
+  LOCK_TOKEN=$(aws wafv2 get-web-acl --name openshift-waf --scope REGIONAL --id $WAF_ID --region us-east-2 --query "LockToken" --output text)
+  aws wafv2 delete-web-acl --name openshift-waf --scope REGIONAL --id $WAF_ID --lock-token $LOCK_TOKEN --region us-east-2
+  echo "WAF WebACL deleted"
+fi
+
+# Delete egress firewall (if created)
+oc delete egressfirewall default -n app-management --ignore-not-found
+
+echo "Cleanup complete"
 ----
 
 == Summary

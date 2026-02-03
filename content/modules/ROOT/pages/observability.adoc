@@ -196,53 +196,23 @@ All operators should show `Succeeded` in the status.
 
 LokiStack requires object storage for log data. We'll use AWS S3.
 
-=== Configure AWS Credentials
+=== Verify AWS Credentials
 
-You should have received AWS credentials on your workshop credentials page. Use the `aws configure` command to set up your S3 bucket access:
-
-[source,bash,role="execute"]
-----
-aws configure
-----
-
-Fill out the prompts with your credentials:
-
-----
-AWS Access Key ID [None]: <YOUR_ACCESS_KEY_ID>
-AWS Secret Access Key [None]: <YOUR_SECRET_ACCESS_KEY>
-Default region name [None]: us-east-1
-Default output format [None]: json
-----
-
-[NOTE]
-====
-Replace the example values with your actual AWS credentials from the workshop credentials page.
-====
-
-=== Verify AWS Configuration
-
-Check that the configuration was saved:
+AWS credentials are automatically configured in your terminal. Verify they're working:
 
 [source,bash,role="execute"]
 ----
-ls ~/.aws
+aws sts get-caller-identity
 ----
 
-You should see `config` and `credentials` files.
-
-Verify the credentials are correct:
-
-[source,bash,role="execute"]
-----
-cat ~/.aws/credentials
-----
-
-You should see output like:
+You should see your AWS account information:
 
 ----
-[default]
-aws_access_key_id = AKIAEXAMPLE12345
-aws_secret_access_key = wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+{
+    "UserId": "AIDA...",
+    "Account": "123456789012",
+    "Arn": "arn:aws:iam::123456789012:user/student"
+}
 ----
 
 === Create the S3 Bucket
@@ -251,7 +221,7 @@ We'll use your cluster GUID as the bucket name to ensure uniqueness:
 
 [source,bash,role="execute"]
 ----
-export GUID=$(hostname | cut -d. -f2)
+export GUID=$(oc get dns cluster -o jsonpath='{.spec.baseDomain}' | cut -d. -f2)
 echo "Your GUID is: $GUID"
 ----
 
@@ -284,6 +254,11 @@ The LokiStack needs credentials to access the S3 bucket. Create a secret with yo
 [IMPORTANT]
 ====
 Replace the placeholder values below with your actual AWS credentials and bucket name.
+====
+
+[TIP]
+====
+You can also create this secret via the OpenShift console: **Workloads → Secrets → Create → Key/value secret**. Select namespace `openshift-logging`, name it `lokistack-dev-s3`, and add the five key/value pairs (access_key_id, access_key_secret, bucketnames, endpoint, region).
 ====
 
 [source,bash,role="execute"]
@@ -344,19 +319,14 @@ spec:
 EOF
 ----
 
-Wait for the LokiStack to become ready (this may take 1-2 minutes):
+Wait for the LokiStack pods to become ready (this may take 2-3 minutes):
 
 [source,bash,role="execute"]
 ----
-oc get lokistack logging-loki -n openshift-logging -w
+oc get pods -n openshift-logging -l app.kubernetes.io/instance=logging-loki -w
 ----
 
-Press `Ctrl+C` when you see `Ready` in the status. You can also check the pods:
-
-[source,bash,role="execute"]
-----
-oc get pods -n openshift-logging -l app.kubernetes.io/instance=logging-loki
-----
+Press `Ctrl+C` when you see all pods showing `Running` and `1/1` or `2/2` ready.
 
 You should see pods for: compactor, distributor, gateway, index-gateway, ingester, querier, and query-frontend.
 
@@ -490,7 +460,7 @@ The `collector-*` pods are critical - these are the Vector pods that collect and
 
 After the UIPlugin is created, you may see a notification in the console:
 
-image::images/Loki_refresh.png[Web console update notification]
+image::Loki_refresh.png[Web console update notification]
 
 Click **Refresh** to reload the console with the new Logs view.
 
@@ -504,7 +474,7 @@ Click **Refresh** to reload the console with the new Logs view.
 * **Infrastructure** - Logs from OpenShift components
 * **Audit** - Kubernetes API audit logs
 
-image::images/appinfraaudit.png[Log type selector]
+image::appinfraaudit.png[Log type selector]
 
 === Filtering Logs
 
@@ -515,7 +485,7 @@ You can filter logs by:
 * **Pods** - Filter by pod name
 * **Containers** - Filter by container name
 
-image::images/filterlogs.png[Log filters]
+image::filterlogs.png[Log filters]
 
 === Severity Levels
 
@@ -529,13 +499,13 @@ Use the Severity dropdown to filter by log level:
 * Trace
 * Unknown
 
-image::images/severity.png[Severity filter]
+image::severity.png[Severity filter]
 
 === Log Histogram
 
 The histogram provides a visual view of log volume over time:
 
-image::images/histogram.png[Log histogram]
+image::histogram.png[Log histogram]
 
 [NOTE]
 ====

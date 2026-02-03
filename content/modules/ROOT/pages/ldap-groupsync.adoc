@@ -67,7 +67,7 @@ Check the current OAuth configuration:
 oc get oauth cluster -o yaml
 ----
 
-You'll see mostly empty spec:
+The key thing to look for is an empty `spec: {}`:
 
 [source,yaml]
 ----
@@ -75,14 +75,20 @@ apiVersion: config.openshift.io/v1
 kind: OAuth
 metadata:
   name: cluster
+  # ... additional metadata and annotations can be ignored
 spec: {}
 ----
+
+[NOTE]
+====
+You may see additional metadata and annotations (like `kubectl.kubernetes.io/last-applied-configuration`). These are historical records and don't affect authentication. The important thing is that `spec: {}` is empty, meaning no identity providers are currently configured.
+====
 
 **How does `kubeadmin` work then?**
 
 OpenShift looks for a special Secret in `kube-system`. If present, you can view it with:
 
-[source,bash,role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc get secret -n kube-system kubeadmin -o yaml
 ----
@@ -123,6 +129,7 @@ oc create secret generic ldap-secret \
 
 [source,bash,role="execute"]
 ----
+mkdir -p $HOME/support
 wget https://certs.godaddy.com/repository/gd-class2-root.crt -O $HOME/support/ca.crt
 ----
 
@@ -135,19 +142,11 @@ oc create configmap ca-config-map \
   -n openshift-config
 ----
 
-**Apply the OAuth configuration:**
+**Create the OAuth configuration file:**
 
 [source,bash,role="execute"]
 ----
-oc apply -f $HOME/support/oauth-cluster.yaml
-----
-
-**Understanding the OAuth configuration:**
-
-The `oauth-cluster.yaml` file configures the LDAP identity provider. Key elements:
-
-[source,yaml]
-----
+cat <<EOF > $HOME/support/oauth-cluster.yaml
 apiVersion: config.openshift.io/v1
 kind: OAuth
 metadata:
@@ -172,7 +171,19 @@ spec:
       url: "ldaps://ldap.jumpcloud.com/ou=Users,o=5e615ba46b812e7da02e93b5,dc=jumpcloud,dc=com?uid?sub?(memberOf=cn=ose-user,ou=Users,o=5e615ba46b812e7da02e93b5,dc=jumpcloud,dc=com)"
   tokenConfig:
     accessTokenMaxAgeSeconds: 86400
+EOF
 ----
+
+**Apply the OAuth configuration:**
+
+[source,bash,role="execute"]
+----
+oc apply -f $HOME/support/oauth-cluster.yaml
+----
+
+**Understanding the OAuth configuration:**
+
+The `oauth-cluster.yaml` file configures the LDAP identity provider. Key elements:
 
 **Key parameters:**
 
@@ -269,6 +280,35 @@ You'll see `normaluser1` was automatically created on first login.
 == Step 5: Sync LDAP Groups to OpenShift
 
 LDAP group synchronization imports LDAP groups as OpenShift Groups, making RBAC management easier.
+
+**Create the group sync configuration:**
+
+[source,bash,role="execute"]
+----
+cat <<EOF > $HOME/support/groupsync.yaml
+kind: LDAPSyncConfig
+apiVersion: v1
+url: ldaps://ldap.jumpcloud.com
+bindDN: uid=openshiftworkshop,ou=Users,o=5e615ba46b812e7da02e93b5,dc=jumpcloud,dc=com
+bindPassword: b1ndP^ssword
+rfc2307:
+  groupsQuery:
+    baseDN: ou=Users,o=5e615ba46b812e7da02e93b5,dc=jumpcloud,dc=com
+    derefAliases: never
+    filter: '(|(cn=ose-*))'
+  groupUIDAttribute: dn
+  groupNameAttributes:
+  - cn
+  groupMembershipAttributes:
+  - member
+  usersQuery:
+    baseDN: ou=Users,o=5e615ba46b812e7da02e93b5,dc=jumpcloud,dc=com
+    derefAliases: never
+  userUIDAttribute: dn
+  userNameAttributes:
+  - uid
+EOF
+----
 
 **View the group sync configuration:**
 
@@ -516,6 +556,11 @@ Both return: `yes` (view role allows read operations)
 
 The web console provides a graphical interface for user and group management.
 
+[IMPORTANT]
+====
+Make sure you're logged into the OpenShift console as **kubeadmin** (not an LDAP user) to access User Management. Regular users don't have permission to view cluster-wide user and group information.
+====
+
 **View users in console:**
 
 Navigate to: **User Management → Users**
@@ -586,13 +631,14 @@ For complete implementation details, see the link:https://docs.redhat.com/en/doc
 
 **For this lab, manual group sync is sufficient** for learning purposes.
 
-== Step 12: Troubleshooting Common Issues
-
+.Troubleshooting Common Issues (click to expand)
+[%collapsible]
+====
 **Issue: Kubeadmin login no longer works (401 Unauthorized)**
 
 In production environments where kubeadmin has been removed, you would log in with your LDAP admin account instead:
 
-[source,bash,role="execute"]
+[source,bash,role="copypaste"]
 ----
 export OCP_SERVER=$(oc whoami --show-server)
 oc login -u fancyuser1 -p 'Op#nSh1ft' $OCP_SERVER --insecure-skip-tls-verify
@@ -657,6 +703,7 @@ oc describe clusteroperator authentication
 ----
 
 Check for degraded conditions and follow remediation steps.
+====
 
 == Summary
 
