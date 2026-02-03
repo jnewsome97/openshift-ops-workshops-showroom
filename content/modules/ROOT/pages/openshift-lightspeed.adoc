@@ -192,7 +192,17 @@ Once attached, try asking:
 [quote]
 What's wrong in this pod?
 
-OpenShift Lightspeed will analyze the pod specification to identify the issue — in this case, an invalid node selector. Additionally, it will likely propose a solution to help you fix the problem. 
+OpenShift Lightspeed will analyze the pod specification to identify the issue — in this case, an invalid node selector. Additionally, it will likely propose a solution to help you fix the problem.
+
+== OpenShift Lightspeed Beyond Containers
+
+Throughout this module, we've seen how OpenShift Lightspeed can assist with container-based workloads such as Pods, Deployments, Routes, Services, etc. However, the OpenShift platform extends well beyond containers.
+
+OpenShift Virtualization allows you to run virtual machines on the same platform as your containers. Since VMs in OpenShift are managed as custom resources, OpenShift Lightspeed can assist with them just as effectively. From understanding VM networking concepts to troubleshooting startup issues or generating virtual machine configurations, OpenShift Lightspeed is ready to help.
+
+The same applies to Red Hat Advanced Cluster Management (ACM). When working across multiple clusters, resources like ManagedCluster or ManagedClusterInfo follow the same custom resource pattern, making them accessible to OpenShift Lightspeed for queries and guidance.
+
+This module concludes here, but the OpenShift Lightspeed operator will stay active for the remainder of the workshop. Feel free to continue using it as you progress through the upcoming modules — whether to clarify concepts, generate resource definitions, or assist with virtualization and multi-cluster tasks, if applicable.
 
 == Summary
 
