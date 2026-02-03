@@ -110,7 +110,7 @@ We'll deploy real applications with realistic misconfigurations - the kind of is
 
 [source,bash,role="execute"]
 ----
-oc apply -f https://raw.githubusercontent.com/jnewsome97/openshift-days-ops-track-showroom/main/manifests/debugging/broken-apps.yaml
+oc apply -f https://raw.githubusercontent.com/jnewsome97/openshift-ops-workshops-showroom/main/support/broken-apps.yaml
 ----
 
 This deploys 5 broken applications:
