@@ -144,7 +144,7 @@ This deploys 5 broken applications:
 
 [source,bash,role="execute"]
 ----
-oc apply -f https://raw.githubusercontent.com/jnewsome97/openshift-days-ops-track-showroom/main/manifests/debugging/working-app.yaml
+oc apply -f https://raw.githubusercontent.com/jnewsome97/openshift-ops-workshops-showroom/main/support/working-app.yaml
 ----
 
 === Create Routes

@@ -29,7 +29,7 @@ oc new-project performance-demo
 
 [source,bash,role="execute"]
 ----
-oc apply -f https://raw.githubusercontent.com/jnewsome97/openshift-days-ops-track-showroom/main/manifests/performance/memory-hog.yaml
+oc apply -f https://raw.githubusercontent.com/jnewsome97/openshift-ops-workshops-showroom/main/support/memory-hog.yaml
 ----
 
 Wait for it to run:
@@ -76,7 +76,7 @@ If not installed:
 
 [source,bash,role="execute"]
 ----
-oc apply -f https://raw.githubusercontent.com/jnewsome97/openshift-days-ops-track-showroom/main/manifests/performance/vpa-operator.yaml
+oc apply -f https://raw.githubusercontent.com/jnewsome97/openshift-ops-workshops-showroom/main/support/vpa-operator.yaml
 ----
 
 Wait for the operator (~1 minute):
@@ -92,7 +92,7 @@ Press `Ctrl+C` when you see `Succeeded`.
 
 [source,bash,role="execute"]
 ----
-oc apply -f https://raw.githubusercontent.com/jnewsome97/openshift-days-ops-track-showroom/main/manifests/performance/vpa-memory-hog.yaml
+oc apply -f https://raw.githubusercontent.com/jnewsome97/openshift-ops-workshops-showroom/main/support/vpa-memory-hog.yaml
 ----
 
 Wait for VPA to analyze the pod:
@@ -140,7 +140,7 @@ Now let's deploy an application that needs to scale horizontally based on traffi
 
 [source,bash,role="execute"]
 ----
-oc apply -f https://raw.githubusercontent.com/jnewsome97/openshift-days-ops-track-showroom/main/manifests/performance/demo-app.yaml
+oc apply -f https://raw.githubusercontent.com/jnewsome97/openshift-ops-workshops-showroom/main/support/demo-app.yaml
 ----
 
 Wait for it to be ready:
