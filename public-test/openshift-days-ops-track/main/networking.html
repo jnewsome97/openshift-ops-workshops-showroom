@@ -1,0 +1,1590 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Networking &amp; Ingress :: OpenShift Days - Ops Track</title>
+    <link rel="canonical" href="http://localhost:8080/openshift-days-ops-track/main/networking.html">
+    <link rel="prev" href="app-mgmt-basics.html">
+    <link rel="next" href="observability.html">
+    <meta name="generator" content="Antora 3.1.14">
+    <link rel="stylesheet" href="../../_/css/site.css">
+<link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://demo.redhat.com" target="_blank" style="margin-left: 5%;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1508.5 178.739" style="width: 278px;"><g fill="#fff"><path d="M316.6 63.2v-56H342a21.279 21.279 0 0 1 7.8 1.3 18.111 18.111 0 0 1 5.9 3.5 15.577 15.577 0 0 1 5 11.8 15.051 15.051 0 0 1-3.1 9.5 16.836 16.836 0 0 1-8.4 5.8l12.5 24.1h-9.3l-11.6-23H325v23Zm24.7-48.6H325v18.7h16.3q5.25 0 8.1-2.7a8.7 8.7 0 0 0 2.8-6.6 8.7 8.7 0 0 0-2.8-6.6c-1.8-1.9-4.5-2.8-8.1-2.8ZM364.1 42.8a20.674 20.674 0 0 1 1.6-8.2 20.288 20.288 0 0 1 4.3-6.7 19.92 19.92 0 0 1 6.5-4.5 19.718 19.718 0 0 1 8-1.6 18.463 18.463 0 0 1 7.8 1.6 18.677 18.677 0 0 1 6.2 4.5 20.927 20.927 0 0 1 4.1 6.8 23.2 23.2 0 0 1 1.5 8.4v2.3H372a13.822 13.822 0 0 0 4.6 8.4 13.6 13.6 0 0 0 9.1 3.3 15.553 15.553 0 0 0 5.7-1 12.858 12.858 0 0 0 4.6-2.6l5.1 5a25.983 25.983 0 0 1-7.4 4.1 24.69 24.69 0 0 1-8.4 1.3 21.306 21.306 0 0 1-8.4-1.6 22.763 22.763 0 0 1-6.8-4.4 20.788 20.788 0 0 1-4.5-6.7 23.2 23.2 0 0 1-1.5-8.4Zm20.2-14.2a11.527 11.527 0 0 0-8 3 13.046 13.046 0 0 0-4.2 7.8h24.2a13.091 13.091 0 0 0-4.2-7.8 11.106 11.106 0 0 0-7.8-3ZM443.1 63.2v-3.8a19.448 19.448 0 0 1-5.8 3.3 18.924 18.924 0 0 1-6.7 1.2 19.824 19.824 0 0 1-14.6-6.1 22.268 22.268 0 0 1-4.4-6.7 21.812 21.812 0 0 1 0-16.4A20.534 20.534 0 0 1 416 28a19.335 19.335 0 0 1 6.6-4.5 20.334 20.334 0 0 1 8.2-1.6 20.7 20.7 0 0 1 6.6 1 19.415 19.415 0 0 1 5.7 3V7.2l8-1.8v57.8Zm-25.2-20.4a13.718 13.718 0 0 0 4 10.1 13.45 13.45 0 0 0 9.8 4.1 14.956 14.956 0 0 0 6.4-1.3 15.954 15.954 0 0 0 4.9-3.6V33.6a14.988 14.988 0 0 0-4.9-3.5 15.271 15.271 0 0 0-6.4-1.3 13.423 13.423 0 0 0-9.9 4 13.806 13.806 0 0 0-3.9 10ZM478.1 63.2v-56h8.4v24h29.8v-24h8.4v56h-8.4V38.8h-29.8v24.4ZM547.2 64a16.483 16.483 0 0 1-10.8-3.5 11.037 11.037 0 0 1-4.2-8.9 10.375 10.375 0 0 1 4.7-9.2 20.76 20.76 0 0 1 11.8-3.2 27.841 27.841 0 0 1 5.8.6 27.374 27.374 0 0 1 5.3 1.6v-4.3a8.143 8.143 0 0 0-2.6-6.5 11.452 11.452 0 0 0-7.4-2.2 20.788 20.788 0 0 0-6 .9 34.616 34.616 0 0 0-6.6 2.6l-3-6a54.169 54.169 0 0 1 8.4-3.1 33.18 33.18 0 0 1 8.3-1.1c5.2 0 9.3 1.3 12.2 3.8s4.4 6.1 4.4 10.8v27h-7.8v-3.5a19.441 19.441 0 0 1-5.8 3.2 23.54 23.54 0 0 1-6.7 1Zm-7.3-12.6a5.646 5.646 0 0 0 2.6 4.8 11.193 11.193 0 0 0 6.6 1.8 16.256 16.256 0 0 0 5.9-1 14.449 14.449 0 0 0 4.9-2.9V47a19.778 19.778 0 0 0-4.8-1.8 24.933 24.933 0 0 0-5.7-.6 11.859 11.859 0 0 0-6.8 1.8 5.728 5.728 0 0 0-2.7 5ZM580.6 53.2v-24H572v-6.7h8.6V12.1l7.9-1.9v12.3h12v6.7h-12v22.1a5.94 5.94 0 0 0 1.4 4.4c.9.9 2.5 1.3 4.6 1.3a23.637 23.637 0 0 0 3-.2 10.857 10.857 0 0 0 2.8-.8v6.7a19.28 19.28 0 0 1-3.8.9 27.484 27.484 0 0 1-3.8.3c-3.9 0-7-.9-9-2.8-2-1.7-3.1-4.4-3.1-7.9Z"></path></g><path d="M127 90.2c12.5 0 30.6-2.6 30.6-17.5a12.678 12.678 0 0 0-.3-3.4L149.8 37c-1.7-7.1-3.2-10.3-15.7-16.6-9.7-5-30.8-13.1-37.1-13.1-5.8 0-7.5 7.5-14.4 7.5-6.7 0-11.6-5.6-17.9-5.6-6 0-9.9 4.1-12.9 12.5 0 0-8.4 23.7-9.5 27.2a4.216 4.216 0 0 0-.3 1.9c0 9.2 36.3 39.4 85 39.4Zm32.5-11.4c1.7 8.2 1.7 9.1 1.7 10.1 0 14-15.7 21.8-36.4 21.8-46.8 0-87.7-27.4-87.7-45.5a17.535 17.535 0 0 1 1.5-7.3C21.8 58.8 0 61.8 0 81c0 31.5 74.6 70.3 133.7 70.3 45.3 0 56.7-20.5 56.7-36.6-.1-12.8-11-27.3-30.9-35.9Z" fill="#e00"></path><path d="M159.5 78.8c1.7 8.2 1.7 9.1 1.7 10.1 0 14-15.7 21.8-36.4 21.8-46.8 0-87.7-27.4-87.7-45.5a17.535 17.535 0 0 1 1.5-7.3l3.7-9.1a4.877 4.877 0 0 0-.3 2c0 9.2 36.3 39.4 85 39.4 12.5 0 30.6-2.6 30.6-17.5a12.678 12.678 0 0 0-.3-3.4Z"></path><path d="M253.5 158.7a2.22 2.22 0 0 1-2.2-2.2V2.2a2.2 2.2 0 0 1 4.4 0v154.2a2.242 2.242 0 0 1-2.2 2.3Z" fill="#fff"></path><text data-name="Demo Platform" transform="translate(1186 149)" fill="#fff" font-size="82" font-family="'RedHatDisplay', 'Overpass', overpass, helvetica, arial, sans-serif" font-weight="700"><tspan x="-877.892" y="0">Demo Platform</tspan></text></svg>
+      </a>
+      <a class="navbar-item site-title" target="__blank" style="color: #fff !important;" href="http://localhost:8080">OpenShift Days - Ops Track</a>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="openshift-days-ops-track" data-version="main">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="index.html" class=" query-params-link">OpenShift Days - Ops Track</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="index.html">Environment Setup</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Phase 1: Platform Foundation</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="ocp-concepts.html">OpenShift Platform Overview</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="installation.html">Installation &amp; Verification</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="oidc-authentication.html">Identity &amp; Users - OIDC</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="ldap-groupsync.html">Identity &amp; Users - LDAP</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="app-mgmt-basics.html">Application Management Basics</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Phase 2: Networking</span>
+<ul class="nav-list">
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="networking.html">Networking &amp; Ingress</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Phase 3: Day 2 Operations</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="observability.html">Observability</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="debugging-troubleshooting.html">Debugging &amp; Troubleshooting</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="performance-tuning.html">Performance Tuning</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="backup-restore.html">Backup &amp; Restore - OADP</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="openshift-lightspeed.html">OpenShift Lightspeed</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Phase 4: Workloads &amp; Architecture</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="virtualization.html">Virtualization</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="acm-multicluster.html">ACM - Multi-Cluster Management</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="hosted-control-planes.html">Advanced Architecture - HCP</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Phase 5: Security</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="security.html">Security - Secrets, Certs &amp; ACS</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Phase 6: Platform Engineering</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="cloud-infrastructure.html">Cloud Integration &amp; Infrastructure</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="developer-hub.html">Developer Hub</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <span class="title">OpenShift Days - Ops Track</span>
+      <ul class="versions">
+        <li class="version is-current">
+          <a href="index.html">main</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">OpenShift Days - Ops Track</a></li>
+    <li>Phase 2: Networking</li>
+    <li><a href="networking.html">Networking &amp; Ingress</a></li>
+  </ul>
+</nav>
+</div>
+  <div class="content">
+<article class="doc">
+<h1 class="page">Networking &amp; Ingress</h1>
+<div class="sect1">
+<h2 id="_module_overview"><a class="anchor" href="#_module_overview"></a>Module Overview</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>Duration:</strong> 45 minutes<br>
+<strong>Format:</strong> Hands-on networking configuration<br>
+<strong>Audience:</strong> Platform Engineers, Network Administrators, Operations Teams</p>
+</div>
+<div class="paragraph">
+<p><strong>Narrative Context:</strong></p>
+</div>
+<div class="paragraph">
+<p>Your cluster is running applications. Now you need to understand:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>How traffic flows inside the cluster</p>
+</li>
+<li>
+<p>How external traffic reaches your applications</p>
+</li>
+<li>
+<p>How to secure network communication</p>
+</li>
+<li>
+<p>How to control egress traffic to external systems</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_learning_objectives"><a class="anchor" href="#_learning_objectives"></a>Learning Objectives</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>By the end of this module, you will be able to:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Understand OpenShift&#8217;s OVN-Kubernetes software-defined network</p>
+</li>
+<li>
+<p>Configure and troubleshoot the Ingress Controller</p>
+</li>
+<li>
+<p>Create Routes with different TLS termination strategies</p>
+</li>
+<li>
+<p>Implement NetworkPolicy for pod-to-pod security</p>
+</li>
+<li>
+<p>Configure EgressFirewall to control outbound traffic</p>
+</li>
+<li>
+<p>Use EgressIP for predictable source IPs</p>
+</li>
+<li>
+<p>Understand load balancing options</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_openshift_networking_architecture"><a class="anchor" href="#_openshift_networking_architecture"></a>OpenShift Networking Architecture</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>OpenShift 4.x uses <strong>OVN-Kubernetes</strong> as the default Container Network Interface (CNI) plugin. OVN-Kubernetes replaced the legacy OpenShift SDN in OpenShift 4.12.</p>
+</div>
+<div class="paragraph">
+<p><strong>What OVN-Kubernetes provides:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Pod-to-pod networking across nodes</p>
+</li>
+<li>
+<p>Network isolation with NetworkPolicy</p>
+</li>
+<li>
+<p>Egress traffic control (EgressFirewall, EgressIP)</p>
+</li>
+<li>
+<p>IPsec encryption (optional)</p>
+</li>
+<li>
+<p>Hardware offloading support</p>
+</li>
+<li>
+<p>Integration with cloud provider load balancers</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="_view_cluster_network_configuration"><a class="anchor" href="#_view_cluster_network_configuration"></a>View Cluster Network Configuration</h3>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get network.config cluster -o yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Key fields:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>networkType: OVNKubernetes</code> - Confirms OVN-Kubernetes is active</p>
+</li>
+<li>
+<p><code>clusterNetwork</code> - IP range for pod networking (typically 10.128.0.0/14)</p>
+</li>
+<li>
+<p><code>serviceNetwork</code> - IP range for Services (typically 172.30.0.0/16)</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_verify_network_operator_health"><a class="anchor" href="#_verify_network_operator_health"></a>Verify Network Operator Health</h3>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get clusteroperator network</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The network operator should show <code>AVAILABLE: True</code> and <code>DEGRADED: False</code>.</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -n openshift-ovn-kubernetes</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You&#8217;ll see OVN pods running on every node: <code>ovnkube-node</code>, <code>ovnkube-controller</code>, and <code>ovs-daemon</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_ingress_controller_load_balancing"><a class="anchor" href="#_ingress_controller_load_balancing"></a>Ingress Controller &amp; Load Balancing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <strong>Ingress Controller</strong> (based on HAProxy) handles external traffic entering the cluster. It&#8217;s how users reach your applications.</p>
+</div>
+<div class="sect2">
+<h3 id="_view_ingress_controller_configuration"><a class="anchor" href="#_view_ingress_controller_configuration"></a>View Ingress Controller Configuration</h3>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get ingresscontroller default -n openshift-ingress-operator -o yaml | head -60</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Key configuration options:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>replicas</code> - Number of router pods (default: 2 for HA)</p>
+</li>
+<li>
+<p><code>routeAdmission.wildcardPolicy</code> - Whether wildcard routes are allowed</p>
+</li>
+<li>
+<p><code>defaultCertificate</code> - TLS certificate for *.apps domain</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_view_router_pods"><a class="anchor" href="#_view_router_pods"></a>View Router Pods</h3>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -n openshift-ingress -o wide</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Router pods run on worker nodes and handle incoming HTTP/HTTPS traffic.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_view_ingress_service"><a class="anchor" href="#_view_ingress_service"></a>View Ingress Service</h3>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get svc -n openshift-ingress</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>router-default</code> service exposes the ingress controller:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>On cloud platforms: <code>LoadBalancer</code> type with external IP</p>
+</li>
+<li>
+<p>On bare metal: Typically <code>NodePort</code> or MetalLB <code>LoadBalancer</code></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_routes_openshifts_ingress_resource"><a class="anchor" href="#_routes_openshifts_ingress_resource"></a>Routes: OpenShift&#8217;s Ingress Resource</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>OpenShift <strong>Routes</strong> expose services externally. They&#8217;re more feature-rich than Kubernetes Ingress.</p>
+</div>
+<div class="sect2">
+<h3 id="_use_the_application_from_app_management"><a class="anchor" href="#_use_the_application_from_app_management"></a>Use the Application from App Management</h3>
+<div class="paragraph">
+<p>In the previous module, you deployed the <code>weathernow</code> application. Let&#8217;s examine its networking.</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc project app-management</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p><strong>Skipped the App Management module?</strong></p>
+</div>
+<div class="paragraph">
+<p>Check if the weathernow app exists:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -n app-management -l deployment=weathernow</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If no pods are found, deploy the app now:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc new-project app-management 2&gt;/dev/null || oc project app-management
+oc new-app --name=weathernow --image=quay.io/openshifttest/hello-openshift:1.2.0</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Wait for the pod to be ready before continuing.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_create_an_edge_route_with_tls"><a class="anchor" href="#_create_an_edge_route_with_tls"></a>Create an Edge Route with TLS</h3>
+<div class="paragraph">
+<p>First, let&#8217;s create a route with edge TLS termination:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc create route edge weathernow --service=weathernow 2&gt;/dev/null || echo "Route already exists"</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_view_the_route_configuration"><a class="anchor" href="#_view_the_route_configuration"></a>View the Route Configuration</h3>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get route weathernow -o yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Key route fields:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>spec.host</code> - The external hostname</p>
+</li>
+<li>
+<p><code>spec.to.name</code> - The backend Service</p>
+</li>
+<li>
+<p><code>spec.tls.termination</code> - TLS termination type (edge in this case)</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_test_the_route"><a class="anchor" href="#_test_the_route"></a>Test the Route</h3>
+<div class="paragraph">
+<p>Test with HTTP first:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -s http://$(oc get route weathernow -o jsonpath='{.spec.host}') | head -5</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Test with HTTPS (edge TLS):</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -sk https://$(oc get route weathernow -o jsonpath='{.spec.host}') | head -5</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This request flows: <strong>Client → Load Balancer → Ingress Controller → Service → Pod</strong></p>
+</div>
+<div class="paragraph">
+<p>You should see the WeatherNow HTML page returned.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_tls_termination_strategies"><a class="anchor" href="#_tls_termination_strategies"></a>TLS Termination Strategies</h3>
+<div class="paragraph">
+<p>OpenShift Routes support three TLS termination types:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 40%;">
+<col style="width: 40%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>edge</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TLS terminates at the router, traffic to pod is HTTP</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Most common. Router handles certificates.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>passthrough</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TLS passes through to the pod unchanged</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Application manages its own certificates</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>reencrypt</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TLS terminates at router, new TLS to pod</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">End-to-end encryption with router certificate validation</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_examine_tls_configuration"><a class="anchor" href="#_examine_tls_configuration"></a>Examine TLS Configuration</h3>
+<div class="paragraph">
+<p>View the TLS settings on the edge route:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get route weathernow -o jsonpath='{.spec.tls}' | python3 -m json.tool</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If the route has edge termination, you&#8217;ll see:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+    "termination": "edge"
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Edge termination means:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>TLS terminates at the Ingress Controller (HAProxy)</p>
+</li>
+<li>
+<p>Traffic from router to pod is unencrypted HTTP</p>
+</li>
+<li>
+<p>The router uses the cluster&#8217;s wildcard certificate</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_create_a_route_with_custom_tls"><a class="anchor" href="#_create_a_route_with_custom_tls"></a>Create a Route with Custom TLS</h3>
+<div class="paragraph">
+<p>For applications needing custom certificates, you can specify them:</p>
+</div>
+<div class="listingblock copypaste">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Example: Create route with custom certificate (not executed)
+oc create route edge myapp \
+  --service=myapp \
+  --cert=tls.crt \
+  --key=tls.key \
+  --ca-cert=ca.crt</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_route_annotations_for_advanced_features"><a class="anchor" href="#_route_annotations_for_advanced_features"></a>Route Annotations for Advanced Features</h3>
+<div class="paragraph">
+<p>Routes support annotations for rate limiting, timeouts, and more:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># View available route annotations
+oc explain route.metadata.annotations</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Common annotations:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>haproxy.router.openshift.io/timeout</code> - Backend timeout</p>
+</li>
+<li>
+<p><code>haproxy.router.openshift.io/rate-limit-connections</code> - Connection rate limiting</p>
+</li>
+<li>
+<p><code>haproxy.router.openshift.io/ip-whitelist</code> - IP-based access control</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_view_existing_routes_across_cluster"><a class="anchor" href="#_view_existing_routes_across_cluster"></a>View Existing Routes Across Cluster</h3>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get routes -A | head -20</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Notice different termination types: <code>edge</code>, <code>passthrough</code>, <code>reencrypt</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_networkpolicy_pod_to_pod_security"><a class="anchor" href="#_networkpolicy_pod_to_pod_security"></a>NetworkPolicy: Pod-to-Pod Security</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>By default, all pods can communicate with all other pods. <strong>NetworkPolicy</strong> restricts this.</p>
+</div>
+<div class="sect2">
+<h3 id="_create_test_projects"><a class="anchor" href="#_create_test_projects"></a>Create Test Projects</h3>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Create two projects for testing network isolation
+oc new-project netpol-frontend
+oc new-project netpol-backend
+
+# Deploy apps in each
+oc new-app --name=frontend --image=quay.io/openshifttest/hello-openshift:1.2.0 -n netpol-frontend
+oc new-app --name=backend --image=quay.io/openshifttest/hello-openshift:1.2.0 -n netpol-backend</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Wait for pods in both namespaces:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -n netpol-frontend</code></pre>
+</div>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -n netpol-backend</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Both pods should show <code>Running</code> before continuing.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_test_default_connectivity_should_work"><a class="anchor" href="#_test_default_connectivity_should_work"></a>Test Default Connectivity (Should Work)</h3>
+<div class="paragraph">
+<p>Test connectivity from frontend to backend:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">BACKEND_IP=$(oc get pod -n netpol-backend -l deployment=backend -o jsonpath='{.items[0].status.podIP}')
+oc exec -n netpol-frontend deployment/frontend -- curl -s --connect-timeout 5 http://${BACKEND_IP}:8080</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Expected: <code>Hello OpenShift!</code> - connectivity works by default.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_apply_deny_all_networkpolicy"><a class="anchor" href="#_apply_deny_all_networkpolicy"></a>Apply Deny-All NetworkPolicy</h3>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cat &lt;&lt;EOF | oc apply -n netpol-backend -f -
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: deny-all
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  ingress: []
+EOF</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This blocks all incoming traffic to pods in <code>netpol-backend</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_test_connectivity_again_should_fail"><a class="anchor" href="#_test_connectivity_again_should_fail"></a>Test Connectivity Again (Should Fail)</h3>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">BACKEND_IP=$(oc get pod -n netpol-backend -l deployment=backend -o jsonpath='{.items[0].status.podIP}')
+oc exec -n netpol-frontend deployment/frontend -- curl -s --connect-timeout 5 http://${BACKEND_IP}:8080</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Expected: Connection times out (no output after 5 seconds). The NetworkPolicy blocked it.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_allow_traffic_from_specific_namespace"><a class="anchor" href="#_allow_traffic_from_specific_namespace"></a>Allow Traffic from Specific Namespace</h3>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># First, label the frontend namespace
+oc label namespace netpol-frontend app-tier=frontend
+
+# Create NetworkPolicy allowing traffic from frontend namespace
+cat &lt;&lt;EOF | oc apply -n netpol-backend -f -
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-from-frontend
+spec:
+  podSelector:
+    matchLabels:
+      deployment: backend
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          app-tier: frontend
+    ports:
+    - protocol: TCP
+      port: 8080
+EOF</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_test_connectivity_should_work_again"><a class="anchor" href="#_test_connectivity_should_work_again"></a>Test Connectivity (Should Work Again)</h3>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">BACKEND_IP=$(oc get pod -n netpol-backend -l deployment=backend -o jsonpath='{.items[0].status.podIP}')
+oc exec -n netpol-frontend deployment/frontend -- curl -s --connect-timeout 5 http://${BACKEND_IP}:8080</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Expected: <code>Hello OpenShift!</code> - the allow policy takes effect.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_view_networkpolicies"><a class="anchor" href="#_view_networkpolicies"></a>View NetworkPolicies</h3>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get networkpolicy -n netpol-backend</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You should see both <code>deny-all</code> and <code>allow-from-frontend</code> policies.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_egressfirewall_controlling_outbound_traffic"><a class="anchor" href="#_egressfirewall_controlling_outbound_traffic"></a>EgressFirewall: Controlling Outbound Traffic</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>EgressFirewall</strong> controls which external IPs/domains pods can reach. This is an OVN-Kubernetes feature.</p>
+</div>
+<div class="sect2">
+<h3 id="_understanding_egressfirewall"><a class="anchor" href="#_understanding_egressfirewall"></a>Understanding EgressFirewall</h3>
+<div class="paragraph">
+<p>EgressFirewall applies per-namespace and evaluates rules in order. Traffic not matching any rule is <strong>allowed</strong> by default.</p>
+</div>
+<div class="paragraph">
+<p>View the API:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc explain egressfirewall.spec</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_create_an_egressfirewall"><a class="anchor" href="#_create_an_egressfirewall"></a>Create an EgressFirewall</h3>
+<div class="paragraph">
+<p>Block traffic to a specific CIDR (example: block 1.1.1.0/24):</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cat &lt;&lt;EOF | oc apply -n netpol-frontend -f -
+apiVersion: k8s.ovn.org/v1
+kind: EgressFirewall
+metadata:
+  name: default
+spec:
+  egress:
+  - type: Deny
+    to:
+      cidrSelector: 1.1.1.0/24
+  - type: Allow
+    to:
+      cidrSelector: 0.0.0.0/0
+EOF</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This blocks egress to 1.1.1.0/24 but allows all other traffic.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_test_egressfirewall"><a class="anchor" href="#_test_egressfirewall"></a>Test EgressFirewall</h3>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># This should fail (blocked)
+oc exec -n netpol-frontend deployment/frontend -- curl -s --connect-timeout 3 http://1.1.1.1 || echo "Blocked!"
+
+# This should work (allowed)
+oc exec -n netpol-frontend deployment/frontend -- curl -s --connect-timeout 3 -I http://google.com | head -1</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_view_egressfirewall"><a class="anchor" href="#_view_egressfirewall"></a>View EgressFirewall</h3>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get egressfirewall -n netpol-frontend -o yaml</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_dns_based_egressfirewall"><a class="anchor" href="#_dns_based_egressfirewall"></a>DNS-Based EgressFirewall</h3>
+<div class="paragraph">
+<p>You can also use DNS names (OVN resolves them):</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cat &lt;&lt;EOF | oc apply -n netpol-backend -f -
+apiVersion: k8s.ovn.org/v1
+kind: EgressFirewall
+metadata:
+  name: default
+spec:
+  egress:
+  - type: Allow
+    to:
+      dnsName: "*.redhat.com"
+  - type: Allow
+    to:
+      dnsName: "quay.io"
+  - type: Deny
+    to:
+      cidrSelector: 0.0.0.0/0
+EOF</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This allows only RedHat and Quay traffic, blocking everything else.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_egressip_predictable_source_ips"><a class="anchor" href="#_egressip_predictable_source_ips"></a>EgressIP: Predictable Source IPs</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>EgressIP</strong> assigns a fixed source IP for egress traffic from specific pods. Useful when external firewalls need to allowlist your cluster.</p>
+</div>
+<div class="sect2">
+<h3 id="_understanding_egressip"><a class="anchor" href="#_understanding_egressip"></a>Understanding EgressIP</h3>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc explain egressip</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>EgressIP requires:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Nodes labeled for hosting egress IPs</p>
+</li>
+<li>
+<p>Available IPs on the node&#8217;s network</p>
+</li>
+<li>
+<p>EgressIP CR referencing namespace/pod selectors</p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_view_egressip_capability"><a class="anchor" href="#_view_egressip_capability"></a>View EgressIP Capability</h3>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get nodes -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.metadata.annotations.k8s\.ovn\.org/node-egress-label}{"\n"}{end}'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Nodes need the annotation <code>k8s.ovn.org/node-egress-label</code> or the label <code>k8s.ovn.org/egress-assignable</code> to host EgressIPs.</p>
+</div>
+<div class="paragraph">
+<p><strong>Note:</strong> EgressIP configuration requires network planning and is typically done during cluster setup.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_services_internal_load_balancing"><a class="anchor" href="#_services_internal_load_balancing"></a>Services: Internal Load Balancing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>OpenShift Services provide internal load balancing and service discovery.</p>
+</div>
+<div class="sect2">
+<h3 id="_service_types"><a class="anchor" href="#_service_types"></a>Service Types</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 40%;">
+<col style="width: 40%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Access</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>ClusterIP</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Internal IP only</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Inside cluster only</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>NodePort</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Port on every node</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">External via node IP:port</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>LoadBalancer</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cloud/MetalLB external IP</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">External via dedicated IP</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_view_service_details"><a class="anchor" href="#_view_service_details"></a>View Service Details</h3>
+<div class="paragraph">
+<p>View the services in the app-management namespace:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get svc -n app-management</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_view_the_ingress_loadbalancer_service"><a class="anchor" href="#_view_the_ingress_loadbalancer_service"></a>View the Ingress LoadBalancer Service</h3>
+<div class="paragraph">
+<p>The ingress controller itself uses a LoadBalancer service:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get svc router-default -n openshift-ingress</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>On AWS, this is typically a Network Load Balancer (NLB). On bare metal, MetalLB can provide LoadBalancer functionality.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_dns_and_service_discovery"><a class="anchor" href="#_dns_and_service_discovery"></a>DNS and Service Discovery</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>OpenShift provides automatic DNS for services.</p>
+</div>
+<div class="sect2">
+<h3 id="_dns_format"><a class="anchor" href="#_dns_format"></a>DNS Format</h3>
+<div class="paragraph">
+<p>Services are accessible at:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>&lt;service-name&gt;.&lt;namespace&gt;.svc.cluster.local</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_test_dns_resolution"><a class="anchor" href="#_test_dns_resolution"></a>Test DNS Resolution</h3>
+<div class="paragraph">
+<p>Test DNS resolution from any pod. During the NetworkPolicy exercise, you can test:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -n netpol-frontend deployment/frontend -- nslookup backend.netpol-backend.svc.cluster.local</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Or test from a debug pod:</p>
+</div>
+<div class="listingblock copypaste">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc debug -n app-management deployment/weathernow -- nslookup weathernow.app-management.svc.cluster.local</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_view_cluster_dns_configuration"><a class="anchor" href="#_view_cluster_dns_configuration"></a>View Cluster DNS Configuration</h3>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get dns cluster -o yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Shows:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>baseDomain</code> - Cluster&#8217;s base DNS domain</p>
+</li>
+<li>
+<p><code>publicZone</code> - External DNS zone</p>
+</li>
+<li>
+<p><code>privateZone</code> - Internal DNS zone</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_ingress_controller_scaling_and_customization"><a class="anchor" href="#_ingress_controller_scaling_and_customization"></a>Ingress Controller Scaling and Customization</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_scale_ingress_controller"><a class="anchor" href="#_scale_ingress_controller"></a>Scale Ingress Controller</h3>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc patch ingresscontroller default -n openshift-ingress-operator --type=merge -p '{"spec":{"replicas":3}}'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Watch the new router pod come up:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -n openshift-ingress -w</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Press Ctrl+C when you see 3 pods running.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_view_ingress_controller_metrics"><a class="anchor" href="#_view_ingress_controller_metrics"></a>View Ingress Controller Metrics</h3>
+<div class="paragraph">
+<p>The router exposes metrics on port 1936, which are scraped by Prometheus. View them in the OpenShift console:</p>
+</div>
+<div class="paragraph">
+<p><strong>Observe → Metrics</strong> and query for <code>haproxy_</code> metrics.</p>
+</div>
+<div class="paragraph">
+<p>Or check router status:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get ingresscontroller default -n openshift-ingress-operator -o jsonpath='{.status.conditions}' | python3 -m json.tool</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_cleanup"><a class="anchor" href="#_cleanup"></a>Cleanup</h2>
+<div class="sectionbody">
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc delete project netpol-frontend netpol-backend</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_aws_waf_integration"><a class="anchor" href="#_aws_waf_integration"></a>AWS WAF Integration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>OpenShift on AWS can integrate with <strong>AWS WAF</strong> (Web Application Firewall) for advanced threat protection against OWASP Top 10 vulnerabilities including SQL injection, cross-site scripting (XSS), and other common attacks.</p>
+</div>
+<div class="paragraph">
+<p><strong>Architecture:</strong> AWS WAF attaches to an Application Load Balancer (ALB), which sits in front of your OpenShift workloads:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Client → AWS ALB + WAF → OpenShift Service → Pods</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>By default, OpenShift uses a Network Load Balancer (NLB) for ingress. To use WAF, you need the <strong>AWS Load Balancer Operator</strong> to create ALB-based ingress resources.</p>
+</div>
+<div class="sect2">
+<h3 id="_when_to_use_what"><a class="anchor" href="#_when_to_use_what"></a>When to Use What</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 40%;">
+<col style="width: 40%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Scenario</th>
+<th class="tableblock halign-left valign-top">Solution</th>
+<th class="tableblock halign-left valign-top">Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Basic rate limiting</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Route annotations</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Built-in, no extra cost</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">IP-based blocking</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Route annotations or NetworkPolicy</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Built-in</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OWASP protection (SQLi, XSS)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AWS WAF + ALB</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Requires ALB, extra cost</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DDoS protection</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AWS Shield + CloudFront</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Enterprise feature</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">API security</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3scale API Management</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Full API gateway</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_built_in_protection_no_aws_waf"><a class="anchor" href="#_built_in_protection_no_aws_waf"></a>Built-in Protection (No AWS WAF)</h3>
+<div class="paragraph">
+<p>Even without AWS WAF, OpenShift provides protection via route annotations:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc annotate route weathernow -n app-management \
+  haproxy.router.openshift.io/rate-limit-connections=true \
+  haproxy.router.openshift.io/rate-limit-connections.concurrent-tcp=50 \
+  haproxy.router.openshift.io/rate-limit-connections.rate-http=100 \
+  --overwrite</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Verify the annotations were applied:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get route weathernow -n app-management -o jsonpath='{.metadata.annotations}' | python3 -m json.tool | grep rate</code></pre>
+</div>
+</div>
+<hr>
+<details>
+<summary class="title"><strong>Optional: Hands-on AWS WAF Integration</strong> (click to expand)</summary>
+<div class="content">
+<div class="paragraph">
+<p><strong>Duration:</strong> 10-15 minutes<br>
+<strong>Prerequisites:</strong> AWS CLI is pre-configured in your terminal</p>
+</div>
+<div class="paragraph">
+<p>This exercise deploys a fully functional AWS WAF protecting an OpenShift application. You&#8217;ll see WAF block SQL injection and XSS attacks in real-time.</p>
+</div>
+</div>
+</details>
+<div class="paragraph">
+<p>AWS CLI and credentials are pre-configured in your workshop terminal. Verify with:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">aws sts get-caller-identity</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You should see your AWS account information.</p>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>==== Step 1: Install AWS Load Balancer Operator</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cat &lt;&lt;EOF | oc apply -f -
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: aws-load-balancer-operator
+  namespace: openshift-operators
+spec:
+  channel: stable-v1
+  installPlanApproval: Automatic
+  name: aws-load-balancer-operator
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
+EOF</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Wait for the operator to install:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get csv -n openshift-operators -w | grep aws-load-balancer</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Press Ctrl+C when you see <code>Succeeded</code>.</p>
+</div>
+<div class="paragraph">
+<p>==== Step 2: Create AWS Load Balancer Controller</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cat &lt;&lt;EOF | oc apply -f -
+apiVersion: networking.olm.openshift.io/v1
+kind: AWSLoadBalancerController
+metadata:
+  name: cluster
+spec:
+  subnetTagging: Auto
+  additionalResourceTags:
+    - key: Environment
+      value: workshop
+  ingressClass: alb
+  config:
+    replicas: 1
+  enabledAddons:
+    - AWSWAFv2
+EOF</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Wait for the controller pod:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -n openshift-operators -l app.kubernetes.io/name=aws-load-balancer-operator -w</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Press Ctrl+C when you see <code>Running</code>.</p>
+</div>
+<div class="paragraph">
+<p>==== Step 3: Create ALB-backed Ingress</p>
+</div>
+<div class="paragraph">
+<p>Make sure the weathernow service is NodePort (required for ALB instance target type):</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc patch svc weathernow -n app-management -p '{"spec":{"type":"NodePort"}}'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create the Ingress:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cat &lt;&lt;EOF | oc apply -f -
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: weathernow-alb
+  namespace: app-management
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: instance
+spec:
+  ingressClassName: alb
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: weathernow
+            port:
+              number: 8080
+EOF</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Wait for the ALB to provision (2-3 minutes):</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get ingress weathernow-alb -n app-management -w</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Press Ctrl+C when you see a hostname in the ADDRESS column.</p>
+</div>
+<div class="paragraph">
+<p>==== Step 4: Create WAF WebACL</p>
+</div>
+<div class="paragraph">
+<p>Create a WAF WebACL with AWS managed rule sets for SQL injection and common attacks:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">aws wafv2 create-web-acl \
+  --name openshift-waf \
+  --scope REGIONAL \
+  --region us-east-2 \
+  --default-action Allow={} \
+  --visibility-config SampledRequestsEnabled=true,CloudWatchMetricsEnabled=true,MetricName=openshift-waf-metrics \
+  --rules '[
+    {
+      "Name": "AWS-AWSManagedRulesCommonRuleSet",
+      "Priority": 1,
+      "Statement": {
+        "ManagedRuleGroupStatement": {
+          "VendorName": "AWS",
+          "Name": "AWSManagedRulesCommonRuleSet"
+        }
+      },
+      "OverrideAction": {"None": {}},
+      "VisibilityConfig": {
+        "SampledRequestsEnabled": true,
+        "CloudWatchMetricsEnabled": true,
+        "MetricName": "CommonRuleSet"
+      }
+    },
+    {
+      "Name": "AWS-AWSManagedRulesSQLiRuleSet",
+      "Priority": 2,
+      "Statement": {
+        "ManagedRuleGroupStatement": {
+          "VendorName": "AWS",
+          "Name": "AWSManagedRulesSQLiRuleSet"
+        }
+      },
+      "OverrideAction": {"None": {}},
+      "VisibilityConfig": {
+        "SampledRequestsEnabled": true,
+        "CloudWatchMetricsEnabled": true,
+        "MetricName": "SQLiRuleSet"
+      }
+    }
+  ]'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>==== Step 5: Associate WAF with ALB</p>
+</div>
+<div class="paragraph">
+<p>Get the WAF ARN and annotate the Ingress:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">WAF_ARN=$(aws wafv2 list-web-acls --scope REGIONAL --region us-east-2 --query "WebACLs[?Name=='openshift-waf'].ARN" --output text)
+echo "WAF ARN: $WAF_ARN"
+oc annotate ingress weathernow-alb -n app-management alb.ingress.kubernetes.io/wafv2-acl-arn="$WAF_ARN" --overwrite</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Verify the annotation:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get ingress weathernow-alb -n app-management -o jsonpath='{.metadata.annotations.alb\.ingress\.kubernetes\.io/wafv2-acl-arn}'
+echo</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>==== Step 6: Test WAF Protection</p>
+</div>
+<div class="paragraph">
+<p>Get the ALB DNS name:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">ALB_DNS=$(oc get ingress weathernow-alb -n app-management -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+echo "ALB URL: http://$ALB_DNS"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Test normal request (should succeed):</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -s http://$ALB_DNS</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Expected: <code>Hello OpenShift!</code></p>
+</div>
+<div class="paragraph">
+<p>Test SQL injection attack (should be blocked):</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -s "http://$ALB_DNS/?id=1%20OR%201=1"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Expected: <code>403 Forbidden</code></p>
+</div>
+<div class="paragraph">
+<p>Test XSS attack (should be blocked):</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -s "http://$ALB_DNS/?search=&lt;script&gt;alert(1)&lt;/script&gt;"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Expected: <code>403 Forbidden</code></p>
+</div>
+<div class="paragraph">
+<p><strong>Congratulations!</strong> You&#8217;ve successfully deployed AWS WAF protecting an OpenShift application. The WAF is blocking SQL injection and XSS attacks using AWS managed rule sets.</p>
+</div>
+<div class="paragraph">
+<p>==== Cleanup (Optional)</p>
+</div>
+<div class="paragraph">
+<p>To remove the WAF resources:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Delete the Ingress
+oc delete ingress weathernow-alb -n app-management
+
+# Delete the WAF WebACL (must have no associations first)
+WAF_ID=$(aws wafv2 list-web-acls --scope REGIONAL --region us-east-2 --query "WebACLs[?Name=='openshift-waf'].Id" --output text)
+LOCK_TOKEN=$(aws wafv2 list-web-acls --scope REGIONAL --region us-east-2 --query "WebACLs[?Name=='openshift-waf'].LockToken" --output text)
+aws wafv2 delete-web-acl --name openshift-waf --scope REGIONAL --id $WAF_ID --lock-token $LOCK_TOKEN --region us-east-2</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_network_troubleshooting"><a class="anchor" href="#_network_troubleshooting"></a>Network Troubleshooting</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_check_pod_connectivity"><a class="anchor" href="#_check_pod_connectivity"></a>Check Pod Connectivity</h3>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Get pod IPs
+oc get pods -A -o wide | grep Running | head -5</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_check_network_operator_logs"><a class="anchor" href="#_check_network_operator_logs"></a>Check Network Operator Logs</h3>
+<div class="listingblock copypaste">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc logs -n openshift-network-operator deployment/network-operator --tail=50</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_check_ovn_controller_logs"><a class="anchor" href="#_check_ovn_controller_logs"></a>Check OVN Controller Logs</h3>
+<div class="listingblock copypaste">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc logs -n openshift-ovn-kubernetes ds/ovnkube-node -c ovnkube-controller --tail=30</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_verify_networkpolicy_is_applied"><a class="anchor" href="#_verify_networkpolicy_is_applied"></a>Verify NetworkPolicy is Applied</h3>
+<div class="listingblock copypaste">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc describe networkpolicy &lt;policy-name&gt; -n &lt;namespace&gt;</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_summary"><a class="anchor" href="#_summary"></a>Summary</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>What you learned:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>OpenShift uses OVN-Kubernetes as the default SDN</p>
+</li>
+<li>
+<p>The Ingress Controller (HAProxy) handles external traffic</p>
+</li>
+<li>
+<p>Routes expose services with TLS termination options</p>
+</li>
+<li>
+<p>NetworkPolicy controls pod-to-pod communication</p>
+</li>
+<li>
+<p>EgressFirewall controls outbound traffic to external destinations</p>
+</li>
+<li>
+<p>EgressIP provides predictable source IPs for egress</p>
+</li>
+<li>
+<p>Services provide internal load balancing and DNS discovery</p>
+</li>
+<li>
+<p>AWS WAF can be integrated via ALB for advanced threat protection</p>
+</li>
+<li>
+<p>Built-in rate limiting and IP whitelisting via route annotations</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Key operational commands:</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># View network configuration
+oc get network.config cluster -o yaml
+
+# Check ingress controller
+oc get ingresscontroller -n openshift-ingress-operator
+
+# View routes
+oc get routes -A
+
+# View network policies
+oc get networkpolicy -A
+
+# View egress firewalls
+oc get egressfirewall -A</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_additional_resources"><a class="anchor" href="#_additional_resources"></a>Additional Resources</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><strong>OVN-Kubernetes:</strong> <a href="https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/ovn-kubernetes_network_plugin/index">OVN-Kubernetes network plugin</a></p>
+</li>
+<li>
+<p><strong>Ingress Controller:</strong> <a href="https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/networking/configuring-ingress-cluster-traffic">Configuring ingress cluster traffic</a></p>
+</li>
+<li>
+<p><strong>NetworkPolicy:</strong> <a href="https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/networking/network-policy">About network policy</a></p>
+</li>
+<li>
+<p><strong>EgressFirewall:</strong> <a href="https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/networking/configuring-egress-firewall-ovn">Configuring an egress firewall for a project</a></p>
+</li>
+<li>
+<p><strong>EgressIP:</strong> <a href="https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/networking/configuring-egress-ips-ovn">Configuring an egress IP address</a></p>
+</li>
+<li>
+<p><strong>AWS Load Balancer Operator:</strong> <a href="https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/networking/aws-load-balancer-operator">AWS Load Balancer Operator</a></p>
+</li>
+<li>
+<p><strong>Route Annotations:</strong> <a href="https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/networking/configuring-ingress-cluster-traffic#nw-route-specific-annotations_route-configuration">Route-specific annotations</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="app-mgmt-basics.html" class="query-params-link">Application Management Basics</a></span>
+  <span class="next"><a href="observability.html" class="query-params-link">Observability</a></span>
+</nav>
+</article>
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>  </div>
+</main>
+</div>
+<footer class="footer">
+  <a href="https://demo.redhat.com" target="_blank" class="poweredBy"><p>Powered by</p><div class="labInfo_poweredBy" style="display: block; width: 260px;"><svg class="labInfo_poweredByLogo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1508.5 178.739"><g fill="#111"><path d="M316.6 63.2v-56H342a21.279 21.279 0 0 1 7.8 1.3 18.111 18.111 0 0 1 5.9 3.5 15.577 15.577 0 0 1 5 11.8 15.051 15.051 0 0 1-3.1 9.5 16.836 16.836 0 0 1-8.4 5.8l12.5 24.1h-9.3l-11.6-23H325v23Zm24.7-48.6H325v18.7h16.3q5.25 0 8.1-2.7a8.7 8.7 0 0 0 2.8-6.6 8.7 8.7 0 0 0-2.8-6.6c-1.8-1.9-4.5-2.8-8.1-2.8ZM364.1 42.8a20.674 20.674 0 0 1 1.6-8.2 20.288 20.288 0 0 1 4.3-6.7 19.92 19.92 0 0 1 6.5-4.5 19.718 19.718 0 0 1 8-1.6 18.463 18.463 0 0 1 7.8 1.6 18.677 18.677 0 0 1 6.2 4.5 20.927 20.927 0 0 1 4.1 6.8 23.2 23.2 0 0 1 1.5 8.4v2.3H372a13.822 13.822 0 0 0 4.6 8.4 13.6 13.6 0 0 0 9.1 3.3 15.553 15.553 0 0 0 5.7-1 12.858 12.858 0 0 0 4.6-2.6l5.1 5a25.983 25.983 0 0 1-7.4 4.1 24.69 24.69 0 0 1-8.4 1.3 21.306 21.306 0 0 1-8.4-1.6 22.763 22.763 0 0 1-6.8-4.4 20.788 20.788 0 0 1-4.5-6.7 23.2 23.2 0 0 1-1.5-8.4Zm20.2-14.2a11.527 11.527 0 0 0-8 3 13.046 13.046 0 0 0-4.2 7.8h24.2a13.091 13.091 0 0 0-4.2-7.8 11.106 11.106 0 0 0-7.8-3ZM443.1 63.2v-3.8a19.448 19.448 0 0 1-5.8 3.3 18.924 18.924 0 0 1-6.7 1.2 19.824 19.824 0 0 1-14.6-6.1 22.268 22.268 0 0 1-4.4-6.7 21.812 21.812 0 0 1 0-16.4A20.534 20.534 0 0 1 416 28a19.335 19.335 0 0 1 6.6-4.5 20.334 20.334 0 0 1 8.2-1.6 20.7 20.7 0 0 1 6.6 1 19.415 19.415 0 0 1 5.7 3V7.2l8-1.8v57.8Zm-25.2-20.4a13.718 13.718 0 0 0 4 10.1 13.45 13.45 0 0 0 9.8 4.1 14.956 14.956 0 0 0 6.4-1.3 15.954 15.954 0 0 0 4.9-3.6V33.6a14.988 14.988 0 0 0-4.9-3.5 15.271 15.271 0 0 0-6.4-1.3 13.423 13.423 0 0 0-9.9 4 13.806 13.806 0 0 0-3.9 10ZM478.1 63.2v-56h8.4v24h29.8v-24h8.4v56h-8.4V38.8h-29.8v24.4ZM547.2 64a16.483 16.483 0 0 1-10.8-3.5 11.037 11.037 0 0 1-4.2-8.9 10.375 10.375 0 0 1 4.7-9.2 20.76 20.76 0 0 1 11.8-3.2 27.841 27.841 0 0 1 5.8.6 27.374 27.374 0 0 1 5.3 1.6v-4.3a8.143 8.143 0 0 0-2.6-6.5 11.452 11.452 0 0 0-7.4-2.2 20.788 20.788 0 0 0-6 .9 34.616 34.616 0 0 0-6.6 2.6l-3-6a54.169 54.169 0 0 1 8.4-3.1 33.18 33.18 0 0 1 8.3-1.1c5.2 0 9.3 1.3 12.2 3.8s4.4 6.1 4.4 10.8v27h-7.8v-3.5a19.441 19.441 0 0 1-5.8 3.2 23.54 23.54 0 0 1-6.7 1Zm-7.3-12.6a5.646 5.646 0 0 0 2.6 4.8 11.193 11.193 0 0 0 6.6 1.8 16.256 16.256 0 0 0 5.9-1 14.449 14.449 0 0 0 4.9-2.9V47a19.778 19.778 0 0 0-4.8-1.8 24.933 24.933 0 0 0-5.7-.6 11.859 11.859 0 0 0-6.8 1.8 5.728 5.728 0 0 0-2.7 5ZM580.6 53.2v-24H572v-6.7h8.6V12.1l7.9-1.9v12.3h12v6.7h-12v22.1a5.94 5.94 0 0 0 1.4 4.4c.9.9 2.5 1.3 4.6 1.3a23.637 23.637 0 0 0 3-.2 10.857 10.857 0 0 0 2.8-.8v6.7a19.28 19.28 0 0 1-3.8.9 27.484 27.484 0 0 1-3.8.3c-3.9 0-7-.9-9-2.8-2-1.7-3.1-4.4-3.1-7.9Z"></path></g><path d="M127 90.2c12.5 0 30.6-2.6 30.6-17.5a12.678 12.678 0 0 0-.3-3.4L149.8 37c-1.7-7.1-3.2-10.3-15.7-16.6-9.7-5-30.8-13.1-37.1-13.1-5.8 0-7.5 7.5-14.4 7.5-6.7 0-11.6-5.6-17.9-5.6-6 0-9.9 4.1-12.9 12.5 0 0-8.4 23.7-9.5 27.2a4.216 4.216 0 0 0-.3 1.9c0 9.2 36.3 39.4 85 39.4Zm32.5-11.4c1.7 8.2 1.7 9.1 1.7 10.1 0 14-15.7 21.8-36.4 21.8-46.8 0-87.7-27.4-87.7-45.5a17.535 17.535 0 0 1 1.5-7.3C21.8 58.8 0 61.8 0 81c0 31.5 74.6 70.3 133.7 70.3 45.3 0 56.7-20.5 56.7-36.6-.1-12.8-11-27.3-30.9-35.9Z" fill="#e00"></path><path d="M159.5 78.8c1.7 8.2 1.7 9.1 1.7 10.1 0 14-15.7 21.8-36.4 21.8-46.8 0-87.7-27.4-87.7-45.5a17.535 17.535 0 0 1 1.5-7.3l3.7-9.1a4.877 4.877 0 0 0-.3 2c0 9.2 36.3 39.4 85 39.4 12.5 0 30.6-2.6 30.6-17.5a12.678 12.678 0 0 0-.3-3.4Z"></path><path d="M253.5 158.7a2.22 2.22 0 0 1-2.2-2.2V2.2a2.2 2.2 0 0 1 4.4 0v154.2a2.242 2.242 0 0 1-2.2 2.3Z" fill="#111"></path><text data-name="Demo Platform" transform="translate(1186 149)" fill="#111" font-size="82" font-family="'RedHatDisplay', 'Overpass', overpass, helvetica, arial, sans-serif" font-weight="700"><tspan x="-877.892" y="0">Demo Platform</tspan></text></svg></div></div>
+</footer>
+<script src="../../_/js/vendor/clipboard.js"></script>
+<script src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>

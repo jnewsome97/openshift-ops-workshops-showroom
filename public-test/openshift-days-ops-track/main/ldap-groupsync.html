@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Identity &amp; Users :: OpenShift Days - Ops Track</title>
+    <link rel="canonical" href="http://localhost:8080/openshift-days-ops-track/main/ldap-groupsync.html">
+    <link rel="prev" href="oidc-authentication.html">
+    <link rel="next" href="app-mgmt-basics.html">
+    <meta name="generator" content="Antora 3.1.14">
+    <link rel="stylesheet" href="../../_/css/site.css">
+<link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://demo.redhat.com" target="_blank" style="margin-left: 5%;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1508.5 178.739" style="width: 278px;"><g fill="#fff"><path d="M316.6 63.2v-56H342a21.279 21.279 0 0 1 7.8 1.3 18.111 18.111 0 0 1 5.9 3.5 15.577 15.577 0 0 1 5 11.8 15.051 15.051 0 0 1-3.1 9.5 16.836 16.836 0 0 1-8.4 5.8l12.5 24.1h-9.3l-11.6-23H325v23Zm24.7-48.6H325v18.7h16.3q5.25 0 8.1-2.7a8.7 8.7 0 0 0 2.8-6.6 8.7 8.7 0 0 0-2.8-6.6c-1.8-1.9-4.5-2.8-8.1-2.8ZM364.1 42.8a20.674 20.674 0 0 1 1.6-8.2 20.288 20.288 0 0 1 4.3-6.7 19.92 19.92 0 0 1 6.5-4.5 19.718 19.718 0 0 1 8-1.6 18.463 18.463 0 0 1 7.8 1.6 18.677 18.677 0 0 1 6.2 4.5 20.927 20.927 0 0 1 4.1 6.8 23.2 23.2 0 0 1 1.5 8.4v2.3H372a13.822 13.822 0 0 0 4.6 8.4 13.6 13.6 0 0 0 9.1 3.3 15.553 15.553 0 0 0 5.7-1 12.858 12.858 0 0 0 4.6-2.6l5.1 5a25.983 25.983 0 0 1-7.4 4.1 24.69 24.69 0 0 1-8.4 1.3 21.306 21.306 0 0 1-8.4-1.6 22.763 22.763 0 0 1-6.8-4.4 20.788 20.788 0 0 1-4.5-6.7 23.2 23.2 0 0 1-1.5-8.4Zm20.2-14.2a11.527 11.527 0 0 0-8 3 13.046 13.046 0 0 0-4.2 7.8h24.2a13.091 13.091 0 0 0-4.2-7.8 11.106 11.106 0 0 0-7.8-3ZM443.1 63.2v-3.8a19.448 19.448 0 0 1-5.8 3.3 18.924 18.924 0 0 1-6.7 1.2 19.824 19.824 0 0 1-14.6-6.1 22.268 22.268 0 0 1-4.4-6.7 21.812 21.812 0 0 1 0-16.4A20.534 20.534 0 0 1 416 28a19.335 19.335 0 0 1 6.6-4.5 20.334 20.334 0 0 1 8.2-1.6 20.7 20.7 0 0 1 6.6 1 19.415 19.415 0 0 1 5.7 3V7.2l8-1.8v57.8Zm-25.2-20.4a13.718 13.718 0 0 0 4 10.1 13.45 13.45 0 0 0 9.8 4.1 14.956 14.956 0 0 0 6.4-1.3 15.954 15.954 0 0 0 4.9-3.6V33.6a14.988 14.988 0 0 0-4.9-3.5 15.271 15.271 0 0 0-6.4-1.3 13.423 13.423 0 0 0-9.9 4 13.806 13.806 0 0 0-3.9 10ZM478.1 63.2v-56h8.4v24h29.8v-24h8.4v56h-8.4V38.8h-29.8v24.4ZM547.2 64a16.483 16.483 0 0 1-10.8-3.5 11.037 11.037 0 0 1-4.2-8.9 10.375 10.375 0 0 1 4.7-9.2 20.76 20.76 0 0 1 11.8-3.2 27.841 27.841 0 0 1 5.8.6 27.374 27.374 0 0 1 5.3 1.6v-4.3a8.143 8.143 0 0 0-2.6-6.5 11.452 11.452 0 0 0-7.4-2.2 20.788 20.788 0 0 0-6 .9 34.616 34.616 0 0 0-6.6 2.6l-3-6a54.169 54.169 0 0 1 8.4-3.1 33.18 33.18 0 0 1 8.3-1.1c5.2 0 9.3 1.3 12.2 3.8s4.4 6.1 4.4 10.8v27h-7.8v-3.5a19.441 19.441 0 0 1-5.8 3.2 23.54 23.54 0 0 1-6.7 1Zm-7.3-12.6a5.646 5.646 0 0 0 2.6 4.8 11.193 11.193 0 0 0 6.6 1.8 16.256 16.256 0 0 0 5.9-1 14.449 14.449 0 0 0 4.9-2.9V47a19.778 19.778 0 0 0-4.8-1.8 24.933 24.933 0 0 0-5.7-.6 11.859 11.859 0 0 0-6.8 1.8 5.728 5.728 0 0 0-2.7 5ZM580.6 53.2v-24H572v-6.7h8.6V12.1l7.9-1.9v12.3h12v6.7h-12v22.1a5.94 5.94 0 0 0 1.4 4.4c.9.9 2.5 1.3 4.6 1.3a23.637 23.637 0 0 0 3-.2 10.857 10.857 0 0 0 2.8-.8v6.7a19.28 19.28 0 0 1-3.8.9 27.484 27.484 0 0 1-3.8.3c-3.9 0-7-.9-9-2.8-2-1.7-3.1-4.4-3.1-7.9Z"></path></g><path d="M127 90.2c12.5 0 30.6-2.6 30.6-17.5a12.678 12.678 0 0 0-.3-3.4L149.8 37c-1.7-7.1-3.2-10.3-15.7-16.6-9.7-5-30.8-13.1-37.1-13.1-5.8 0-7.5 7.5-14.4 7.5-6.7 0-11.6-5.6-17.9-5.6-6 0-9.9 4.1-12.9 12.5 0 0-8.4 23.7-9.5 27.2a4.216 4.216 0 0 0-.3 1.9c0 9.2 36.3 39.4 85 39.4Zm32.5-11.4c1.7 8.2 1.7 9.1 1.7 10.1 0 14-15.7 21.8-36.4 21.8-46.8 0-87.7-27.4-87.7-45.5a17.535 17.535 0 0 1 1.5-7.3C21.8 58.8 0 61.8 0 81c0 31.5 74.6 70.3 133.7 70.3 45.3 0 56.7-20.5 56.7-36.6-.1-12.8-11-27.3-30.9-35.9Z" fill="#e00"></path><path d="M159.5 78.8c1.7 8.2 1.7 9.1 1.7 10.1 0 14-15.7 21.8-36.4 21.8-46.8 0-87.7-27.4-87.7-45.5a17.535 17.535 0 0 1 1.5-7.3l3.7-9.1a4.877 4.877 0 0 0-.3 2c0 9.2 36.3 39.4 85 39.4 12.5 0 30.6-2.6 30.6-17.5a12.678 12.678 0 0 0-.3-3.4Z"></path><path d="M253.5 158.7a2.22 2.22 0 0 1-2.2-2.2V2.2a2.2 2.2 0 0 1 4.4 0v154.2a2.242 2.242 0 0 1-2.2 2.3Z" fill="#fff"></path><text data-name="Demo Platform" transform="translate(1186 149)" fill="#fff" font-size="82" font-family="'RedHatDisplay', 'Overpass', overpass, helvetica, arial, sans-serif" font-weight="700"><tspan x="-877.892" y="0">Demo Platform</tspan></text></svg>
+      </a>
+      <a class="navbar-item site-title" target="__blank" style="color: #fff !important;" href="http://localhost:8080">OpenShift Days - Ops Track</a>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="openshift-days-ops-track" data-version="main">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="index.html" class=" query-params-link">OpenShift Days - Ops Track</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="index.html">Environment Setup</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Phase 1: Platform Foundation</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="ocp-concepts.html">OpenShift Platform Overview</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="installation.html">Installation &amp; Verification</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="oidc-authentication.html">Identity &amp; Users - OIDC</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="ldap-groupsync.html">Identity &amp; Users - LDAP</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="app-mgmt-basics.html">Application Management Basics</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Phase 2: Networking</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="networking.html">Networking &amp; Ingress</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Phase 3: Day 2 Operations</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="observability.html">Observability</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="debugging-troubleshooting.html">Debugging &amp; Troubleshooting</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="performance-tuning.html">Performance Tuning</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="backup-restore.html">Backup &amp; Restore - OADP</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="openshift-lightspeed.html">OpenShift Lightspeed</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Phase 4: Workloads &amp; Architecture</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="virtualization.html">Virtualization</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="acm-multicluster.html">ACM - Multi-Cluster Management</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="hosted-control-planes.html">Advanced Architecture - HCP</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Phase 5: Security</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="security.html">Security - Secrets, Certs &amp; ACS</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Phase 6: Platform Engineering</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="cloud-infrastructure.html">Cloud Integration &amp; Infrastructure</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="developer-hub.html">Developer Hub</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <span class="title">OpenShift Days - Ops Track</span>
+      <ul class="versions">
+        <li class="version is-current">
+          <a href="index.html">main</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">OpenShift Days - Ops Track</a></li>
+    <li>Phase 1: Platform Foundation</li>
+    <li><a href="ldap-groupsync.html">Identity &amp; Users - LDAP</a></li>
+  </ul>
+</nav>
+</div>
+  <div class="content">
+<article class="doc">
+<h1 class="page">Identity &amp; Users</h1>
+<div class="sect1">
+<h2 id="_module_overview"><a class="anchor" href="#_module_overview"></a>Module Overview</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>Duration:</strong> 20 minutes<br>
+<strong>Format:</strong> Hands-on identity provider configuration<br>
+<strong>Audience:</strong> Platform Engineers, Operations Teams, Security Administrators</p>
+</div>
+<div class="paragraph">
+<p><strong>Narrative Context:</strong></p>
+</div>
+<div class="paragraph">
+<p>You&#8217;ve verified the cluster is healthy. Now let&#8217;s replace the temporary <code>kubeadmin</code> account with <strong>enterprise user authentication</strong>.</p>
+</div>
+<div class="paragraph">
+<p>As an operations team, you need to:
+- Integrate with existing identity management systems
+- Configure group-based access control
+- Manage user permissions across projects
+- Remove default administrative accounts for security</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_learning_objectives"><a class="anchor" href="#_learning_objectives"></a>Learning Objectives</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>By the end of this module, you will be able to:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Understand OpenShift identity provider options (LDAP, OIDC, SAML, GitHub)</p>
+</li>
+<li>
+<p>Configure LDAP authentication with OAuth</p>
+</li>
+<li>
+<p>Sync LDAP groups to OpenShift groups</p>
+</li>
+<li>
+<p>Implement role-based access control (RBAC)</p>
+</li>
+<li>
+<p>Test user authentication and permissions</p>
+</li>
+<li>
+<p>Manage users and groups via CLI and console</p>
+</li>
+<li>
+<p>Follow security best practices for production authentication</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_understanding_openshift_authentication"><a class="anchor" href="#_understanding_openshift_authentication"></a>Understanding OpenShift Authentication</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>OpenShift uses an <strong>OAuth server</strong> for authentication. The OAuth server validates user credentials against configured identity providers and issues access tokens for API and console access.</p>
+</div>
+<div class="paragraph">
+<p><strong>Supported Identity Providers (OpenShift 4.20):</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>LDAP</strong> - Validate usernames and passwords against LDAPv3 servers (Active Directory, OpenLDAP, Red Hat Directory Server)</p>
+</li>
+<li>
+<p><strong>HTPasswd</strong> - Validate usernames and passwords against flat file using htpasswd</p>
+</li>
+<li>
+<p><strong>Keystone</strong> - Integrate OpenStack Keystone v3 server</p>
+</li>
+<li>
+<p><strong>GitHub</strong> - OAuth authentication with GitHub or GitHub Enterprise</p>
+</li>
+<li>
+<p><strong>GitLab</strong> - OAuth authentication with GitLab</p>
+</li>
+<li>
+<p><strong>Google</strong> - OAuth authentication with Google accounts</p>
+</li>
+<li>
+<p><strong>OpenID Connect</strong> - Integrate with OpenID Connect identity providers (Azure AD, Okta, Keycloak, Red Hat SSO)</p>
+</li>
+<li>
+<p><strong>Request header</strong> - Proxy authentication for enterprise SSO systems</p>
+</li>
+<li>
+<p><strong>Basic authentication (deprecated)</strong> - Remote Basic authentication (not recommended)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>When to use each:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>LDAP</strong> - Existing LDAP/Active Directory infrastructure (most common enterprise auth)</p>
+</li>
+<li>
+<p><strong>OpenID Connect</strong> - Modern SSO, cloud identity providers, SAML bridges</p>
+</li>
+<li>
+<p><strong>Request header</strong> - Front-end proxy doing authentication (Apache mod_auth_mellon, Keycloak Gatekeeper)</p>
+</li>
+<li>
+<p><strong>GitHub/GitLab</strong> - Developer self-service, public repositories</p>
+</li>
+<li>
+<p><strong>Google</strong> - Developer workstations, Google Workspace integration</p>
+</li>
+<li>
+<p><strong>HTPasswd</strong> - Demos, testing, proof-of-concept only</p>
+</li>
+<li>
+<p><strong>Keystone</strong> - OpenStack platform integration</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>This workshop uses LDAP</strong> as the hands-on example - it&#8217;s the most common enterprise authentication method and demonstrates group synchronization.</p>
+</div>
+<div class="paragraph">
+<p>For complete identity provider details, see <a href="https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/authentication_and_authorization/understanding-identity-provider">Understanding identity providers</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_step_1_examine_default_authentication"><a class="anchor" href="#_step_1_examine_default_authentication"></a>Step 1: Examine Default Authentication</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Check the current OAuth configuration:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get oauth cluster -o yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You&#8217;ll see mostly empty spec:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">apiVersion: config.openshift.io/v1
+kind: OAuth
+metadata:
+  name: cluster
+spec: {}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>How does <code>kubeadmin</code> work then?</strong></p>
+</div>
+<div class="paragraph">
+<p>OpenShift looks for a special Secret in <code>kube-system</code>. If present, you can view it with:</p>
+</div>
+<div class="listingblock copypaste">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get secret -n kube-system kubeadmin -o yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This Secret contains the hashed <code>kubeadmin</code> password. <strong>Security note:</strong> This account bypasses identity providers and should be removed after configuring real authentication.</p>
+</div>
+<div class="paragraph">
+<p><strong>Note:</strong> If the secret doesn&#8217;t exist, it means kubeadmin has already been removed (which is correct for production security).</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_step_2_understand_ldap_structure"><a class="anchor" href="#_step_2_understand_ldap_structure"></a>Step 2: Understand LDAP Structure</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This lab environment provides LDAP with the following groups:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>ose-user</strong>: Users with OpenShift access (all users must be in this group)</p>
+</li>
+<li>
+<p><strong>ose-normal-dev</strong>: Regular developers (normaluser1, teamuser1, teamuser2)</p>
+</li>
+<li>
+<p><strong>ose-fancy-dev</strong>: Senior developers with elevated privileges (fancyuser1, fancyuser2)</p>
+</li>
+<li>
+<p><strong>ose-teamed-app</strong>: Project collaboration team (teamuser1, teamuser2)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>LDAP user credentials:</strong> All users have password <code>Op#nSh1ft</code></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_step_3_configure_ldap_identity_provider"><a class="anchor" href="#_step_3_configure_ldap_identity_provider"></a>Step 3: Configure LDAP Identity Provider</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To configure LDAP authentication, we need:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Secret</strong> containing the LDAP bind password</p>
+</li>
+<li>
+<p><strong>ConfigMap</strong> containing the LDAP server CA certificate</p>
+</li>
+<li>
+<p><strong>OAuth configuration</strong> defining the LDAP identity provider</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><strong>Create the LDAP bind password Secret:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc create secret generic ldap-secret \
+  --from-literal=bindPassword='b1ndP^ssword' \
+  -n openshift-config</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Download and store the CA certificate:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">wget https://certs.godaddy.com/repository/gd-class2-root.crt -O $HOME/support/ca.crt</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Create ConfigMap with CA certificate:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc create configmap ca-config-map \
+  --from-file=ca.crt=$HOME/support/ca.crt \
+  -n openshift-config</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Apply the OAuth configuration:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc apply -f $HOME/support/oauth-cluster.yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Understanding the OAuth configuration:</strong></p>
+</div>
+<div class="paragraph">
+<p>The <code>oauth-cluster.yaml</code> file configures the LDAP identity provider. Key elements:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">apiVersion: config.openshift.io/v1
+kind: OAuth
+metadata:
+  name: cluster
+spec:
+  identityProviders:
+  - name: ldap
+    mappingMethod: claim
+    type: LDAP
+    ldap:
+      attributes:
+        id: [dn]
+        email: [mail]
+        name: [cn]
+        preferredUsername: [uid]
+      bindDN: "uid=openshiftworkshop,ou=Users,o=5e615ba46b812e7da02e93b5,dc=jumpcloud,dc=com"
+      bindPassword:
+        name: ldap-secret
+      ca:
+        name: ca-config-map
+      insecure: false
+      url: "ldaps://ldap.jumpcloud.com/ou=Users,o=5e615ba46b812e7da02e93b5,dc=jumpcloud,dc=com?uid?sub?(memberOf=cn=ose-user,ou=Users,o=5e615ba46b812e7da02e93b5,dc=jumpcloud,dc=com)"
+  tokenConfig:
+    accessTokenMaxAgeSeconds: 86400</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Key parameters:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>name</strong>: Unique identifier for this identity provider (can have multiple)</p>
+</li>
+<li>
+<p><strong>mappingMethod: claim</strong>: How usernames are assigned (first identity provider wins)</p>
+</li>
+<li>
+<p><strong>attributes</strong>: Maps LDAP fields to OpenShift user attributes</p>
+</li>
+<li>
+<p><strong>bindDN/bindPassword</strong>: Credentials for LDAP searches</p>
+</li>
+<li>
+<p><strong>ca</strong>: Certificate to validate LDAP server SSL</p>
+</li>
+<li>
+<p><strong>url</strong>: LDAP server location and search filter</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For detailed LDAP configuration, see <a href="https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/authentication_and_authorization/configuring-ldap-identity-provider">Configuring an LDAP identity provider</a>.</p>
+</div>
+<div class="paragraph">
+<p><strong>Monitor the OAuth operator rollout:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc rollout status deployment/oauth-openshift -n openshift-authentication</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Wait for: <code>deployment "oauth-openshift" successfully rolled out</code></p>
+</div>
+<div class="paragraph">
+<p><strong>Verify OAuth pods are running:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -n openshift-authentication</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>All oauth-openshift pods should be <code>Running</code> and <code>Ready 1/1</code>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_step_4_test_ldap_authentication"><a class="anchor" href="#_step_4_test_ldap_authentication"></a>Step 4: Test LDAP Authentication</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>First, capture the API server URL for login commands:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">export OCP_SERVER=$(oc whoami --show-server)
+echo "API Server: $OCP_SERVER"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Try logging in as a regular user:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc login -u normaluser1 -p 'Op#nSh1ft' $OCP_SERVER --insecure-skip-tls-verify</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You should see:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Login successful.
+
+You don't have any projects. You can try to create a new project, by running
+
+    oc new-project &lt;projectname&gt;</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Check your identity:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc whoami</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Output: <code>normaluser1</code></p>
+</div>
+<div class="paragraph">
+<p><strong>Check what you can do:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc auth can-i create project</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Output: <code>no</code> (project self-provisioning is disabled in this environment - you&#8217;ll learn about this in the Governance module)</p>
+</div>
+<div class="paragraph">
+<p>Notice the user was <strong>automatically created</strong> on first login. Log back in as admin to view the user object.</p>
+</div>
+<div class="paragraph">
+<p><strong>Log back in as cluster admin:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc login --token=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token) --server=https://kubernetes.default.svc --insecure-skip-tls-verify</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>View the auto-created user:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get users</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You&#8217;ll see <code>normaluser1</code> was automatically created on first login.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_step_5_sync_ldap_groups_to_openshift"><a class="anchor" href="#_step_5_sync_ldap_groups_to_openshift"></a>Step 5: Sync LDAP Groups to OpenShift</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>LDAP group synchronization imports LDAP groups as OpenShift Groups, making RBAC management easier.</p>
+</div>
+<div class="paragraph">
+<p><strong>View the group sync configuration:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cat $HOME/support/groupsync.yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The configuration:
+- Searches for LDAP groups matching <code>ose-*</code> pattern
+- Creates OpenShift Groups with matching names
+- Populates group membership from LDAP</p>
+</div>
+<div class="paragraph">
+<p><strong>Run the group sync:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc adm groups sync --sync-config=$HOME/support/groupsync.yaml --confirm</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Output shows created groups:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>group/ose-fancy-dev
+group/ose-user
+group/ose-normal-dev
+group/ose-teamed-app</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>View the synced groups:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get groups</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You&#8217;ll see:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>NAME             USERS
+ose-fancy-dev    fancyuser1, fancyuser2
+ose-normal-dev   normaluser1, teamuser1, teamuser2
+ose-teamed-app   teamuser1, teamuser2
+ose-user         fancyuser1, fancyuser2, normaluser1, teamuser1, teamuser2</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Examine a specific group:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get group ose-fancy-dev -o yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The group includes:
+- LDAP metadata (sync time, LDAP DN, LDAP server)
+- List of users in the group</p>
+</div>
+<div class="paragraph">
+<p><strong>Check existing users:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get users</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You&#8217;ll only see <code>normaluser1</code> because <strong>users are created on first login</strong>, not during group sync. The group membership is a placeholder until users authenticate.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_step_6_configure_rbac_with_groups"><a class="anchor" href="#_step_6_configure_rbac_with_groups"></a>Step 6: Configure RBAC with Groups</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Grant the <code>ose-fancy-dev</code> group <strong>cluster-reader</strong> privileges to view cluster-wide resources:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc adm policy add-cluster-role-to-group cluster-reader ose-fancy-dev</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>What is cluster-reader?</strong> A role that allows viewing administrative information (all projects, nodes, cluster settings) without edit permissions.</p>
+</div>
+<div class="paragraph">
+<p>For more on roles, see <a href="https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/authentication_and_authorization/using-rbac">Using RBAC to define and apply permissions</a>.</p>
+</div>
+<div class="paragraph">
+<p><strong>Test as a regular user:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc login -u normaluser1 -p 'Op#nSh1ft' $OCP_SERVER --insecure-skip-tls-verify
+oc get projects</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Result: <code>No resources found.</code> (Regular users can&#8217;t see all projects)</p>
+</div>
+<div class="paragraph">
+<p><strong>Test as a fancy developer:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc login -u fancyuser1 -p 'Op#nSh1ft' $OCP_SERVER --insecure-skip-tls-verify
+oc get projects</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now you see <strong>all projects</strong> in the cluster:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>NAME                                     STATUS
+default                                  Active
+kube-system                              Active
+openshift-authentication                 Active
+openshift-monitoring                     Active
+...</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This demonstrates group-based RBAC working correctly.</p>
+</div>
+<div class="paragraph">
+<p><strong>Check current user and groups:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc whoami
+oc whoami --show-context</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_step_7_create_projects_for_collaboration"><a class="anchor" href="#_step_7_create_projects_for_collaboration"></a>Step 7: Create Projects for Collaboration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Log back in as cluster admin:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc login --token=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token) --server=https://kubernetes.default.svc --insecure-skip-tls-verify</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create a typical SDLC project structure:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc adm new-project app-dev --display-name="Application Development"
+oc adm new-project app-test --display-name="Application Testing"
+oc adm new-project app-prod --display-name="Application Production"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Verify projects were created:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get projects | grep app-</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_step_8_map_groups_to_projects"><a class="anchor" href="#_step_8_map_groups_to_projects"></a>Step 8: Map Groups to Projects</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Grant the <code>ose-teamed-app</code> group <strong>edit</strong> access to dev and test:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc adm policy add-role-to-group edit ose-teamed-app -n app-dev
+oc adm policy add-role-to-group edit ose-teamed-app -n app-test</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Grant <strong>view</strong> access to production:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc adm policy add-role-to-group view ose-teamed-app -n app-prod</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Grant <code>ose-fancy-dev</code> group <strong>edit</strong> access to production:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc adm policy add-role-to-group edit ose-fancy-dev -n app-prod</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>View role bindings for a project:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get rolebindings -n app-dev</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Describe a specific role binding:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc describe rolebinding -n app-dev | grep -A 5 ose-teamed-app</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_step_9_test_project_permissions"><a class="anchor" href="#_step_9_test_project_permissions"></a>Step 9: Test Project Permissions</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>Test as normaluser1 (no group access):</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc login -u normaluser1 -p 'Op#nSh1ft' $OCP_SERVER --insecure-skip-tls-verify
+oc get projects</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Result: <code>No resources found.</code> (Not in any project-specific groups)</p>
+</div>
+<div class="paragraph">
+<p><strong>Test as teamuser1 (ose-teamed-app member):</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc login -u teamuser1 -p 'Op#nSh1ft' $OCP_SERVER --insecure-skip-tls-verify
+oc get projects</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now you see:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>NAME       DISPLAY NAME              STATUS
+app-dev    Application Development   Active
+app-prod   Application Production    Active
+app-test   Application Testing       Active</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Verify permissions in development (edit access):</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc auth can-i create deployment -n app-dev
+oc auth can-i create pod -n app-dev
+oc auth can-i create service -n app-dev</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>All should return: <code>yes</code> (teamuser1 has <strong>edit</strong> role in app-dev)</p>
+</div>
+<div class="paragraph">
+<p><strong>Verify permissions in production (view-only access):</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc auth can-i create deployment -n app-prod
+oc auth can-i create pod -n app-prod</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Both should return: <code>no</code> (teamuser1 only has <strong>view</strong> role in app-prod)</p>
+</div>
+<div class="paragraph">
+<p><strong>Check what view access allows:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc auth can-i get pods -n app-prod
+oc auth can-i list deployments -n app-prod</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Both return: <code>yes</code> (view role allows read operations)</p>
+</div>
+<div class="paragraph">
+<p><strong>Perfect!</strong> This demonstrates how operations teams verify RBAC is correctly configured without creating test resources.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_step_10_manage_users_and_groups_in_console"><a class="anchor" href="#_step_10_manage_users_and_groups_in_console"></a>Step 10: Manage Users and Groups in Console</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The web console provides a graphical interface for user and group management.</p>
+</div>
+<div class="paragraph">
+<p><strong>View users in console:</strong></p>
+</div>
+<div class="paragraph">
+<p>Navigate to: <strong>User Management → Users</strong></p>
+</div>
+<div class="paragraph">
+<p>You&#8217;ll see all users who have logged in, their identities, and associated groups.</p>
+</div>
+<div class="paragraph">
+<p><strong>View groups in console:</strong></p>
+</div>
+<div class="paragraph">
+<p>Navigate to: <strong>User Management → Groups</strong></p>
+</div>
+<div class="paragraph">
+<p>Shows all synced LDAP groups and their members.</p>
+</div>
+<div class="paragraph">
+<p><strong>View role bindings in console:</strong></p>
+</div>
+<div class="paragraph">
+<p>Navigate to: <strong>User Management → RoleBindings</strong></p>
+</div>
+<div class="paragraph">
+<p>Filter by project to see who has access to what.</p>
+</div>
+<div class="paragraph">
+<p><strong>Console advantages:</strong>
+- Visual overview of all users/groups
+- Easy role binding management
+- Quick access review
+- No need to remember YAML syntax</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_step_11_security_best_practices"><a class="anchor" href="#_step_11_security_best_practices"></a>Step 11: Security Best Practices</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>Remove kubeadmin after configuring identity provider:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc login --token=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token) --server=https://kubernetes.default.svc --insecure-skip-tls-verify</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>First, grant cluster-admin to a real user:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc adm policy add-cluster-role-to-user cluster-admin fancyuser1</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Verify it works:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc login -u fancyuser1 -p 'Op#nSh1ft' $OCP_SERVER --insecure-skip-tls-verify
+oc auth can-i '*' '*'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Output: <code>yes</code></p>
+</div>
+<div class="paragraph">
+<p><strong>In production, you would remove kubeadmin:</strong></p>
+</div>
+<div class="paragraph">
+<p>After verifying your identity provider works and granting cluster-admin to at least one LDAP/OIDC user, you would delete the kubeadmin secret from the <code>kube-system</code> namespace. This removes the default administrative account and ensures all cluster access goes through your enterprise identity provider.</p>
+</div>
+<div class="paragraph">
+<p><strong>For this lab, we will NOT delete kubeadmin</strong> to ensure you maintain access to the cluster throughout the workshop.</p>
+</div>
+<div class="paragraph">
+<p><strong>Automate LDAP group sync with CronJob:</strong></p>
+</div>
+<div class="paragraph">
+<p>Instead of running group sync manually, production environments typically create a Kubernetes CronJob that runs the sync operation automatically (for example, every hour). This ensures LDAP group membership changes are reflected in OpenShift without manual intervention.</p>
+</div>
+<div class="paragraph">
+<p>The CronJob would:
+- Run on a regular schedule (e.g., <code>*/60 * * * *</code> for hourly)
+- Use a service account with appropriate permissions
+- Mount the group sync configuration from a ConfigMap
+- Execute <code>oc adm groups sync</code> with the <code>--confirm</code> flag</p>
+</div>
+<div class="paragraph">
+<p>For complete implementation details, see the <a href="https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/authentication_and_authorization/ldap-syncing#ldap-syncing-running-all-ldap-sync_configuring-ldap-syncing">official documentation on automating LDAP sync</a>.</p>
+</div>
+<div class="paragraph">
+<p><strong>For this lab, manual group sync is sufficient</strong> for learning purposes.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_step_12_troubleshooting_common_issues"><a class="anchor" href="#_step_12_troubleshooting_common_issues"></a>Step 12: Troubleshooting Common Issues</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>Issue: Kubeadmin login no longer works (401 Unauthorized)</strong></p>
+</div>
+<div class="paragraph">
+<p>In production environments where kubeadmin has been removed, you would log in with your LDAP admin account instead:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">export OCP_SERVER=$(oc whoami --show-server)
+oc login -u fancyuser1 -p 'Op#nSh1ft' $OCP_SERVER --insecure-skip-tls-verify</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Since you granted cluster-admin to <code>fancyuser1</code> in Step 11, this account has full administrative privileges and can be used for all cluster administration tasks.</p>
+</div>
+<div class="paragraph">
+<p><strong>Production best practice:</strong> Remove kubeadmin after verifying enterprise authentication works and granting cluster-admin to appropriate LDAP/OIDC users.</p>
+</div>
+<div class="paragraph">
+<p><strong>Issue: LDAP users can&#8217;t log in</strong></p>
+</div>
+<div class="paragraph">
+<p>Check OAuth pods are running:</p>
+</div>
+<div class="listingblock copypaste">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -n openshift-authentication
+oc logs -n openshift-authentication -l app=oauth-openshift</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Common causes:
+- LDAP server unreachable
+- Incorrect bind credentials
+- Certificate validation failure
+- User not in required LDAP group (ose-user)</p>
+</div>
+<div class="paragraph">
+<p><strong>Issue: Group sync fails</strong></p>
+</div>
+<div class="listingblock copypaste">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc adm groups sync --sync-config=$HOME/support/groupsync.yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Look for errors about:
+- LDAP search base incorrect
+- Bind DN doesn&#8217;t have permission to search groups
+- LDAP filter syntax errors</p>
+</div>
+<div class="paragraph">
+<p><strong>Issue: User has wrong permissions</strong></p>
+</div>
+<div class="paragraph">
+<p>Check group membership (replace <code>&lt;username&gt;</code> with actual username):</p>
+</div>
+<div class="listingblock copypaste">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get groups | grep &lt;username&gt;
+oc describe user &lt;username&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Check role bindings (replace <code>&lt;projectname&gt;</code> and <code>&lt;bindingname&gt;</code>):</p>
+</div>
+<div class="listingblock copypaste">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get rolebindings -n &lt;projectname&gt;
+oc describe rolebinding &lt;bindingname&gt; -n &lt;projectname&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Issue: OAuth operator not rolling out</strong></p>
+</div>
+<div class="listingblock copypaste">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get clusteroperator authentication
+oc describe clusteroperator authentication</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Check for degraded conditions and follow remediation steps.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_summary"><a class="anchor" href="#_summary"></a>Summary</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>What you configured:</strong></p>
+</div>
+<div class="paragraph">
+<p>✅ <strong>LDAP Identity Provider</strong> - Integrated enterprise LDAP authentication<br>
+✅ <strong>Group Synchronization</strong> - Imported LDAP groups to OpenShift<br>
+✅ <strong>RBAC with Groups</strong> - Granted cluster-reader and project-specific roles<br>
+✅ <strong>Project Collaboration</strong> - Created dev/test/prod projects with team access<br>
+✅ <strong>Permission Testing</strong> - Verified users have correct access levels<br>
+✅ <strong>Security Hardening</strong> - Learned to remove kubeadmin and automate group sync</p>
+</div>
+<div class="paragraph">
+<p><strong>Key takeaway:</strong> OpenShift authentication integrates with existing identity management (LDAP, OIDC, SAML) and uses group-based RBAC for scalable permission management.</p>
+</div>
+<div class="paragraph">
+<p><strong>Production recommendations:</strong>
+1. Use LDAP/OIDC, never HTPasswd
+2. Remove kubeadmin after configuring real identity provider
+3. Automate group sync with CronJob
+4. Use groups for RBAC, not individual users
+5. Follow least-privilege principle (view over edit, edit over admin)
+6. Regular access reviews using console User Management</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_additional_resources"><a class="anchor" href="#_additional_resources"></a>Additional Resources</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Authentication and Authorization Guide:</strong> <a href="https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/authentication_and_authorization/index">Official documentation</a></p>
+</li>
+<li>
+<p><strong>Identity Providers Overview:</strong> <a href="https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/authentication_and_authorization/understanding-identity-provider">Understanding identity providers</a></p>
+</li>
+<li>
+<p><strong>LDAP Configuration:</strong> <a href="https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/authentication_and_authorization/configuring-ldap-identity-provider">Configuring LDAP identity provider</a></p>
+</li>
+<li>
+<p><strong>RBAC Documentation:</strong> <a href="https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/authentication_and_authorization/using-rbac">Using RBAC</a></p>
+</li>
+<li>
+<p><strong>Group Sync:</strong> <a href="https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/authentication_and_authorization/ldap-syncing">Syncing LDAP groups</a></p>
+</li>
+</ul>
+</div>
+<hr>
+<div class="paragraph">
+<p><strong>Log back in as cluster admin to continue:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc login --token=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token) --server=https://kubernetes.default.svc --insecure-skip-tls-verify</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Next Module:</strong> You&#8217;ll learn application management basics including deployments, services, and routes.</p>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="oidc-authentication.html" class="query-params-link">Identity &amp; Users - OIDC</a></span>
+  <span class="next"><a href="app-mgmt-basics.html" class="query-params-link">Application Management Basics</a></span>
+</nav>
+</article>
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>  </div>
+</main>
+</div>
+<footer class="footer">
+  <a href="https://demo.redhat.com" target="_blank" class="poweredBy"><p>Powered by</p><div class="labInfo_poweredBy" style="display: block; width: 260px;"><svg class="labInfo_poweredByLogo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1508.5 178.739"><g fill="#111"><path d="M316.6 63.2v-56H342a21.279 21.279 0 0 1 7.8 1.3 18.111 18.111 0 0 1 5.9 3.5 15.577 15.577 0 0 1 5 11.8 15.051 15.051 0 0 1-3.1 9.5 16.836 16.836 0 0 1-8.4 5.8l12.5 24.1h-9.3l-11.6-23H325v23Zm24.7-48.6H325v18.7h16.3q5.25 0 8.1-2.7a8.7 8.7 0 0 0 2.8-6.6 8.7 8.7 0 0 0-2.8-6.6c-1.8-1.9-4.5-2.8-8.1-2.8ZM364.1 42.8a20.674 20.674 0 0 1 1.6-8.2 20.288 20.288 0 0 1 4.3-6.7 19.92 19.92 0 0 1 6.5-4.5 19.718 19.718 0 0 1 8-1.6 18.463 18.463 0 0 1 7.8 1.6 18.677 18.677 0 0 1 6.2 4.5 20.927 20.927 0 0 1 4.1 6.8 23.2 23.2 0 0 1 1.5 8.4v2.3H372a13.822 13.822 0 0 0 4.6 8.4 13.6 13.6 0 0 0 9.1 3.3 15.553 15.553 0 0 0 5.7-1 12.858 12.858 0 0 0 4.6-2.6l5.1 5a25.983 25.983 0 0 1-7.4 4.1 24.69 24.69 0 0 1-8.4 1.3 21.306 21.306 0 0 1-8.4-1.6 22.763 22.763 0 0 1-6.8-4.4 20.788 20.788 0 0 1-4.5-6.7 23.2 23.2 0 0 1-1.5-8.4Zm20.2-14.2a11.527 11.527 0 0 0-8 3 13.046 13.046 0 0 0-4.2 7.8h24.2a13.091 13.091 0 0 0-4.2-7.8 11.106 11.106 0 0 0-7.8-3ZM443.1 63.2v-3.8a19.448 19.448 0 0 1-5.8 3.3 18.924 18.924 0 0 1-6.7 1.2 19.824 19.824 0 0 1-14.6-6.1 22.268 22.268 0 0 1-4.4-6.7 21.812 21.812 0 0 1 0-16.4A20.534 20.534 0 0 1 416 28a19.335 19.335 0 0 1 6.6-4.5 20.334 20.334 0 0 1 8.2-1.6 20.7 20.7 0 0 1 6.6 1 19.415 19.415 0 0 1 5.7 3V7.2l8-1.8v57.8Zm-25.2-20.4a13.718 13.718 0 0 0 4 10.1 13.45 13.45 0 0 0 9.8 4.1 14.956 14.956 0 0 0 6.4-1.3 15.954 15.954 0 0 0 4.9-3.6V33.6a14.988 14.988 0 0 0-4.9-3.5 15.271 15.271 0 0 0-6.4-1.3 13.423 13.423 0 0 0-9.9 4 13.806 13.806 0 0 0-3.9 10ZM478.1 63.2v-56h8.4v24h29.8v-24h8.4v56h-8.4V38.8h-29.8v24.4ZM547.2 64a16.483 16.483 0 0 1-10.8-3.5 11.037 11.037 0 0 1-4.2-8.9 10.375 10.375 0 0 1 4.7-9.2 20.76 20.76 0 0 1 11.8-3.2 27.841 27.841 0 0 1 5.8.6 27.374 27.374 0 0 1 5.3 1.6v-4.3a8.143 8.143 0 0 0-2.6-6.5 11.452 11.452 0 0 0-7.4-2.2 20.788 20.788 0 0 0-6 .9 34.616 34.616 0 0 0-6.6 2.6l-3-6a54.169 54.169 0 0 1 8.4-3.1 33.18 33.18 0 0 1 8.3-1.1c5.2 0 9.3 1.3 12.2 3.8s4.4 6.1 4.4 10.8v27h-7.8v-3.5a19.441 19.441 0 0 1-5.8 3.2 23.54 23.54 0 0 1-6.7 1Zm-7.3-12.6a5.646 5.646 0 0 0 2.6 4.8 11.193 11.193 0 0 0 6.6 1.8 16.256 16.256 0 0 0 5.9-1 14.449 14.449 0 0 0 4.9-2.9V47a19.778 19.778 0 0 0-4.8-1.8 24.933 24.933 0 0 0-5.7-.6 11.859 11.859 0 0 0-6.8 1.8 5.728 5.728 0 0 0-2.7 5ZM580.6 53.2v-24H572v-6.7h8.6V12.1l7.9-1.9v12.3h12v6.7h-12v22.1a5.94 5.94 0 0 0 1.4 4.4c.9.9 2.5 1.3 4.6 1.3a23.637 23.637 0 0 0 3-.2 10.857 10.857 0 0 0 2.8-.8v6.7a19.28 19.28 0 0 1-3.8.9 27.484 27.484 0 0 1-3.8.3c-3.9 0-7-.9-9-2.8-2-1.7-3.1-4.4-3.1-7.9Z"></path></g><path d="M127 90.2c12.5 0 30.6-2.6 30.6-17.5a12.678 12.678 0 0 0-.3-3.4L149.8 37c-1.7-7.1-3.2-10.3-15.7-16.6-9.7-5-30.8-13.1-37.1-13.1-5.8 0-7.5 7.5-14.4 7.5-6.7 0-11.6-5.6-17.9-5.6-6 0-9.9 4.1-12.9 12.5 0 0-8.4 23.7-9.5 27.2a4.216 4.216 0 0 0-.3 1.9c0 9.2 36.3 39.4 85 39.4Zm32.5-11.4c1.7 8.2 1.7 9.1 1.7 10.1 0 14-15.7 21.8-36.4 21.8-46.8 0-87.7-27.4-87.7-45.5a17.535 17.535 0 0 1 1.5-7.3C21.8 58.8 0 61.8 0 81c0 31.5 74.6 70.3 133.7 70.3 45.3 0 56.7-20.5 56.7-36.6-.1-12.8-11-27.3-30.9-35.9Z" fill="#e00"></path><path d="M159.5 78.8c1.7 8.2 1.7 9.1 1.7 10.1 0 14-15.7 21.8-36.4 21.8-46.8 0-87.7-27.4-87.7-45.5a17.535 17.535 0 0 1 1.5-7.3l3.7-9.1a4.877 4.877 0 0 0-.3 2c0 9.2 36.3 39.4 85 39.4 12.5 0 30.6-2.6 30.6-17.5a12.678 12.678 0 0 0-.3-3.4Z"></path><path d="M253.5 158.7a2.22 2.22 0 0 1-2.2-2.2V2.2a2.2 2.2 0 0 1 4.4 0v154.2a2.242 2.242 0 0 1-2.2 2.3Z" fill="#111"></path><text data-name="Demo Platform" transform="translate(1186 149)" fill="#111" font-size="82" font-family="'RedHatDisplay', 'Overpass', overpass, helvetica, arial, sans-serif" font-weight="700"><tspan x="-877.892" y="0">Demo Platform</tspan></text></svg></div></div>
+</footer>
+<script src="../../_/js/vendor/clipboard.js"></script>
+<script src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>

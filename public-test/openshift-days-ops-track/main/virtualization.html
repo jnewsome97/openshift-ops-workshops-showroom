@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>OpenShift Virtualization :: OpenShift Days - Ops Track</title>
+    <link rel="canonical" href="http://localhost:8080/openshift-days-ops-track/main/virtualization.html">
+    <link rel="prev" href="openshift-lightspeed.html">
+    <link rel="next" href="acm-multicluster.html">
+    <meta name="generator" content="Antora 3.1.14">
+    <link rel="stylesheet" href="../../_/css/site.css">
+<link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://demo.redhat.com" target="_blank" style="margin-left: 5%;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1508.5 178.739" style="width: 278px;"><g fill="#fff"><path d="M316.6 63.2v-56H342a21.279 21.279 0 0 1 7.8 1.3 18.111 18.111 0 0 1 5.9 3.5 15.577 15.577 0 0 1 5 11.8 15.051 15.051 0 0 1-3.1 9.5 16.836 16.836 0 0 1-8.4 5.8l12.5 24.1h-9.3l-11.6-23H325v23Zm24.7-48.6H325v18.7h16.3q5.25 0 8.1-2.7a8.7 8.7 0 0 0 2.8-6.6 8.7 8.7 0 0 0-2.8-6.6c-1.8-1.9-4.5-2.8-8.1-2.8ZM364.1 42.8a20.674 20.674 0 0 1 1.6-8.2 20.288 20.288 0 0 1 4.3-6.7 19.92 19.92 0 0 1 6.5-4.5 19.718 19.718 0 0 1 8-1.6 18.463 18.463 0 0 1 7.8 1.6 18.677 18.677 0 0 1 6.2 4.5 20.927 20.927 0 0 1 4.1 6.8 23.2 23.2 0 0 1 1.5 8.4v2.3H372a13.822 13.822 0 0 0 4.6 8.4 13.6 13.6 0 0 0 9.1 3.3 15.553 15.553 0 0 0 5.7-1 12.858 12.858 0 0 0 4.6-2.6l5.1 5a25.983 25.983 0 0 1-7.4 4.1 24.69 24.69 0 0 1-8.4 1.3 21.306 21.306 0 0 1-8.4-1.6 22.763 22.763 0 0 1-6.8-4.4 20.788 20.788 0 0 1-4.5-6.7 23.2 23.2 0 0 1-1.5-8.4Zm20.2-14.2a11.527 11.527 0 0 0-8 3 13.046 13.046 0 0 0-4.2 7.8h24.2a13.091 13.091 0 0 0-4.2-7.8 11.106 11.106 0 0 0-7.8-3ZM443.1 63.2v-3.8a19.448 19.448 0 0 1-5.8 3.3 18.924 18.924 0 0 1-6.7 1.2 19.824 19.824 0 0 1-14.6-6.1 22.268 22.268 0 0 1-4.4-6.7 21.812 21.812 0 0 1 0-16.4A20.534 20.534 0 0 1 416 28a19.335 19.335 0 0 1 6.6-4.5 20.334 20.334 0 0 1 8.2-1.6 20.7 20.7 0 0 1 6.6 1 19.415 19.415 0 0 1 5.7 3V7.2l8-1.8v57.8Zm-25.2-20.4a13.718 13.718 0 0 0 4 10.1 13.45 13.45 0 0 0 9.8 4.1 14.956 14.956 0 0 0 6.4-1.3 15.954 15.954 0 0 0 4.9-3.6V33.6a14.988 14.988 0 0 0-4.9-3.5 15.271 15.271 0 0 0-6.4-1.3 13.423 13.423 0 0 0-9.9 4 13.806 13.806 0 0 0-3.9 10ZM478.1 63.2v-56h8.4v24h29.8v-24h8.4v56h-8.4V38.8h-29.8v24.4ZM547.2 64a16.483 16.483 0 0 1-10.8-3.5 11.037 11.037 0 0 1-4.2-8.9 10.375 10.375 0 0 1 4.7-9.2 20.76 20.76 0 0 1 11.8-3.2 27.841 27.841 0 0 1 5.8.6 27.374 27.374 0 0 1 5.3 1.6v-4.3a8.143 8.143 0 0 0-2.6-6.5 11.452 11.452 0 0 0-7.4-2.2 20.788 20.788 0 0 0-6 .9 34.616 34.616 0 0 0-6.6 2.6l-3-6a54.169 54.169 0 0 1 8.4-3.1 33.18 33.18 0 0 1 8.3-1.1c5.2 0 9.3 1.3 12.2 3.8s4.4 6.1 4.4 10.8v27h-7.8v-3.5a19.441 19.441 0 0 1-5.8 3.2 23.54 23.54 0 0 1-6.7 1Zm-7.3-12.6a5.646 5.646 0 0 0 2.6 4.8 11.193 11.193 0 0 0 6.6 1.8 16.256 16.256 0 0 0 5.9-1 14.449 14.449 0 0 0 4.9-2.9V47a19.778 19.778 0 0 0-4.8-1.8 24.933 24.933 0 0 0-5.7-.6 11.859 11.859 0 0 0-6.8 1.8 5.728 5.728 0 0 0-2.7 5ZM580.6 53.2v-24H572v-6.7h8.6V12.1l7.9-1.9v12.3h12v6.7h-12v22.1a5.94 5.94 0 0 0 1.4 4.4c.9.9 2.5 1.3 4.6 1.3a23.637 23.637 0 0 0 3-.2 10.857 10.857 0 0 0 2.8-.8v6.7a19.28 19.28 0 0 1-3.8.9 27.484 27.484 0 0 1-3.8.3c-3.9 0-7-.9-9-2.8-2-1.7-3.1-4.4-3.1-7.9Z"></path></g><path d="M127 90.2c12.5 0 30.6-2.6 30.6-17.5a12.678 12.678 0 0 0-.3-3.4L149.8 37c-1.7-7.1-3.2-10.3-15.7-16.6-9.7-5-30.8-13.1-37.1-13.1-5.8 0-7.5 7.5-14.4 7.5-6.7 0-11.6-5.6-17.9-5.6-6 0-9.9 4.1-12.9 12.5 0 0-8.4 23.7-9.5 27.2a4.216 4.216 0 0 0-.3 1.9c0 9.2 36.3 39.4 85 39.4Zm32.5-11.4c1.7 8.2 1.7 9.1 1.7 10.1 0 14-15.7 21.8-36.4 21.8-46.8 0-87.7-27.4-87.7-45.5a17.535 17.535 0 0 1 1.5-7.3C21.8 58.8 0 61.8 0 81c0 31.5 74.6 70.3 133.7 70.3 45.3 0 56.7-20.5 56.7-36.6-.1-12.8-11-27.3-30.9-35.9Z" fill="#e00"></path><path d="M159.5 78.8c1.7 8.2 1.7 9.1 1.7 10.1 0 14-15.7 21.8-36.4 21.8-46.8 0-87.7-27.4-87.7-45.5a17.535 17.535 0 0 1 1.5-7.3l3.7-9.1a4.877 4.877 0 0 0-.3 2c0 9.2 36.3 39.4 85 39.4 12.5 0 30.6-2.6 30.6-17.5a12.678 12.678 0 0 0-.3-3.4Z"></path><path d="M253.5 158.7a2.22 2.22 0 0 1-2.2-2.2V2.2a2.2 2.2 0 0 1 4.4 0v154.2a2.242 2.242 0 0 1-2.2 2.3Z" fill="#fff"></path><text data-name="Demo Platform" transform="translate(1186 149)" fill="#fff" font-size="82" font-family="'RedHatDisplay', 'Overpass', overpass, helvetica, arial, sans-serif" font-weight="700"><tspan x="-877.892" y="0">Demo Platform</tspan></text></svg>
+      </a>
+      <a class="navbar-item site-title" target="__blank" style="color: #fff !important;" href="http://localhost:8080">OpenShift Days - Ops Track</a>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="openshift-days-ops-track" data-version="main">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="index.html" class=" query-params-link">OpenShift Days - Ops Track</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="index.html">Environment Setup</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Phase 1: Platform Foundation</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="ocp-concepts.html">OpenShift Platform Overview</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="installation.html">Installation &amp; Verification</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="oidc-authentication.html">Identity &amp; Users - OIDC</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="ldap-groupsync.html">Identity &amp; Users - LDAP</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="app-mgmt-basics.html">Application Management Basics</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Phase 2: Networking</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="networking.html">Networking &amp; Ingress</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Phase 3: Day 2 Operations</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="observability.html">Observability</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="debugging-troubleshooting.html">Debugging &amp; Troubleshooting</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="performance-tuning.html">Performance Tuning</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="backup-restore.html">Backup &amp; Restore - OADP</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="openshift-lightspeed.html">OpenShift Lightspeed</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Phase 4: Workloads &amp; Architecture</span>
+<ul class="nav-list">
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="virtualization.html">Virtualization</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="acm-multicluster.html">ACM - Multi-Cluster Management</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="hosted-control-planes.html">Advanced Architecture - HCP</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Phase 5: Security</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="security.html">Security - Secrets, Certs &amp; ACS</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Phase 6: Platform Engineering</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="cloud-infrastructure.html">Cloud Integration &amp; Infrastructure</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="developer-hub.html">Developer Hub</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <span class="title">OpenShift Days - Ops Track</span>
+      <ul class="versions">
+        <li class="version is-current">
+          <a href="index.html">main</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">OpenShift Days - Ops Track</a></li>
+    <li>Phase 4: Workloads &amp; Architecture</li>
+    <li><a href="virtualization.html">Virtualization</a></li>
+  </ul>
+</nav>
+</div>
+  <div class="content">
+<article class="doc">
+<h1 class="page">OpenShift Virtualization</h1>
+<div class="sect1">
+<h2 id="_module_overview"><a class="anchor" href="#_module_overview"></a>Module Overview</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>Duration:</strong> 20-25 minutes<br>
+<strong>Audience:</strong> Infrastructure Architects, IT Operations</p>
+</div>
+<div class="paragraph">
+<p><strong>The Scenario:</strong> Your organization has legacy applications running on VMs that can&#8217;t be containerized yet. You need to run VMs and containers on the same platform.</p>
+</div>
+<div class="paragraph">
+<p><strong>In this module:</strong> You&#8217;ll create a VM, access it, and perform common ops tasks - all using the same tools you use for containers.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_learning_objectives"><a class="anchor" href="#_learning_objectives"></a>Learning Objectives</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Create and start a virtual machine</p>
+</li>
+<li>
+<p>Access VMs via console and SSH</p>
+</li>
+<li>
+<p>Monitor VM resource usage</p>
+</li>
+<li>
+<p>Take snapshots for backup/rollback</p>
+</li>
+<li>
+<p>Understand how VMs integrate with OpenShift</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_prerequisites_check"><a class="anchor" href="#_prerequisites_check"></a>Prerequisites Check</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>OpenShift Virtualization should already be installed. Verify:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get csv -n openshift-cnv | grep kubevirt</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Expected output shows <code>Succeeded</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>kubevirt-hyperconverged-operator.v4.20.x   OpenShift Virtualization   4.20.x   Succeeded</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Check that virtualization pods are running:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -n openshift-cnv | grep -E "virt-api|virt-controller|virt-handler" | head -5</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_part_1_create_your_first_vm"><a class="anchor" href="#_part_1_create_your_first_vm"></a>Part 1: Create Your First VM</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_create_a_project_for_vms"><a class="anchor" href="#_create_a_project_for_vms"></a>Create a Project for VMs</h3>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc new-project vm-demo</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_deploy_a_rhel_9_vm"><a class="anchor" href="#_deploy_a_rhel_9_vm"></a>Deploy a RHEL 9 VM</h3>
+<div class="paragraph">
+<p>Your cluster has pre-cached RHEL images ready to use. Let&#8217;s create a RHEL 9 VM:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cat &lt;&lt;EOF | oc apply -f -
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: rhel9-vm
+  namespace: vm-demo
+spec:
+  runStrategy: Always
+  dataVolumeTemplates:
+  - metadata:
+      name: rhel9-vm-disk
+    spec:
+      sourceRef:
+        kind: DataSource
+        name: rhel9
+        namespace: openshift-virtualization-os-images
+      storage:
+        resources:
+          requests:
+            storage: 30Gi
+  template:
+    metadata:
+      labels:
+        kubevirt.io/vm: rhel9-vm
+    spec:
+      domain:
+        cpu:
+          cores: 1
+        devices:
+          disks:
+          - name: rootdisk
+            disk:
+              bus: virtio
+          - name: cloudinitdisk
+            disk:
+              bus: virtio
+        resources:
+          requests:
+            memory: 2Gi
+      volumes:
+      - name: rootdisk
+        dataVolume:
+          name: rhel9-vm-disk
+      - name: cloudinitdisk
+        cloudInitNoCloud:
+          userData: |
+            #cloud-config
+            user: cloud-user
+            password: redhat
+            chpasswd:
+              expire: false
+EOF</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The VM will take 1-2 minutes to start as it clones the RHEL 9 image.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_watch_the_vm_start_cli"><a class="anchor" href="#_watch_the_vm_start_cli"></a>Watch the VM Start (CLI)</h3>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get vms -w</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Wait until STATUS shows <code>Running</code>, then press <code>Ctrl+C</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_watch_the_vm_start_web_console"><a class="anchor" href="#_watch_the_vm_start_web_console"></a>Watch the VM Start (Web Console)</h3>
+<div class="paragraph">
+<p>While the VM is starting, let&#8217;s view it in the OpenShift console:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>In the OpenShift web console, look at the dropdown in the top-left (it may say "Administrator" or another perspective)</p>
+</li>
+<li>
+<p>Click the dropdown and select <strong>Fleet Virtualization</strong></p>
+</li>
+</ol>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/virt-fleet-dropdown.png" alt="Fleet Virtualization dropdown">
+</div>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>In the left navigation, click <strong>Fleet Virtualization</strong></p>
+</li>
+<li>
+<p>You&#8217;ll see your <code>rhel9-vm</code> in the list with status <strong>Starting</strong></p>
+</li>
+</ol>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/virt-rhel9-vm-starting.png" alt="rhel9-vm showing in Fleet Virtualization">
+</div>
+</div>
+<div class="paragraph">
+<p>The summary panel shows:
+- <strong>Virtual Machines (1)</strong> - Your VM count
+- <strong>Usage</strong> - CPU, Memory, Storage metrics
+- <strong>Status</strong> - Error, Running, Stopped, Paused counts</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_verify_the_vm_instance"><a class="anchor" href="#_verify_the_vm_instance"></a>Verify the VM Instance</h3>
+<div class="paragraph">
+<p>Once the VM shows <strong>Running</strong>, verify via CLI:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get vmi</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You&#8217;ll see the running VM instance with its IP address:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>NAME        AGE   PHASE     IP            NODENAME
+rhel9-vm   1m    Running   10.x.x.x      worker-1</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_part_2_access_the_vm"><a class="anchor" href="#_part_2_access_the_vm"></a>Part 2: Access the VM</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_option_1_fleet_virtualization_console"><a class="anchor" href="#_option_1_fleet_virtualization_console"></a>Option 1: Fleet Virtualization Console</h3>
+<div class="paragraph">
+<p>The easiest way to access your VM is through the Fleet Virtualization console:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>In <strong>Fleet Virtualization</strong>, click on <strong>rhel9-vm</strong> in the VM list</p>
+</li>
+<li>
+<p>You&#8217;ll see the VM details page with status, resources, and actions</p>
+</li>
+</ol>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/virt-rhel9-vm-details.png" alt="rhel9-vm details page">
+</div>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Click the <strong>Open Web Console</strong> button</p>
+</li>
+<li>
+<p>A new browser tab opens with the VM&#8217;s graphical console</p>
+</li>
+</ol>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/virt-rhel9-vm-console.png" alt="rhel9-vm web console">
+</div>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Login with: <code>cloud-user</code> / <code>redhat</code></p>
+</li>
+</ol>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/virt-rhel9-vm-logged-in.png" alt="Successfully logged into rhel9-vm">
+</div>
+</div>
+<div class="paragraph">
+<p>You now have a shell prompt on a full RHEL 9 VM - running on OpenShift!</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Click the fullscreen icon in the console toolbar for a better view.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+You may see a message like "PMU virtualization is disabled" in the console output. This is normal for nested virtualization environments and doesn&#8217;t affect VM functionality.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_option_2_vnc_console_tab"><a class="anchor" href="#_option_2_vnc_console_tab"></a>Option 2: VNC Console Tab</h3>
+<div class="paragraph">
+<p>Alternatively, from the VM details page:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Click the <strong>Console</strong> tab</p>
+</li>
+<li>
+<p>Select <strong>VNC Console</strong> from the dropdown</p>
+</li>
+<li>
+<p>Login with: <code>cloud-user</code> / <code>redhat</code></p>
+</li>
+</ol>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_option_3_serial_console_cli"><a class="anchor" href="#_option_3_serial_console_cli"></a>Option 3: Serial Console (CLI)</h3>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get vmi rhel9-vm -o jsonpath='{.status.interfaces[0].ipAddress}'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Use virtctl for console access:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">virtctl console rhel9-vm</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Login with <code>cloud-user</code> / <code>redhat</code>. Type <code>exit</code> or press <code>Ctrl+]</code> to disconnect.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_part_3_vm_operations"><a class="anchor" href="#_part_3_vm_operations"></a>Part 3: VM Operations</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_stop_and_start"><a class="anchor" href="#_stop_and_start"></a>Stop and Start</h3>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Stop the VM
+virtctl stop rhel9-vm
+
+# Check status
+oc get vms</code></pre>
+</div>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Start the VM
+virtctl start rhel9-vm
+
+# Watch it come back up
+oc get vmi -w</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Press <code>Ctrl+C</code> when running.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_restart"><a class="anchor" href="#_restart"></a>Restart</h3>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">virtctl restart rhel9-vm</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_part_4_monitor_vm_resources"><a class="anchor" href="#_part_4_monitor_vm_resources"></a>Part 4: Monitor VM Resources</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_check_vm_status"><a class="anchor" href="#_check_vm_status"></a>Check VM Status</h3>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get vms rhel9-vm -o wide</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_view_resource_usage"><a class="anchor" href="#_view_resource_usage"></a>View Resource Usage</h3>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc describe vmi rhel9-vm | grep -A5 "Resources:"</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_check_events"><a class="anchor" href="#_check_events"></a>Check Events</h3>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get events --field-selector involvedObject.name=rhel9-vm</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_web_console_metrics"><a class="anchor" href="#_web_console_metrics"></a>Web Console Metrics</h3>
+<div class="paragraph">
+<p>Navigate to <strong>Virtualization → VirtualMachines → rhel9-vm → Metrics</strong> to see:
+- CPU usage over time
+- Memory consumption
+- Network I/O</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_part_5_vm_snapshots"><a class="anchor" href="#_part_5_vm_snapshots"></a>Part 5: VM Snapshots</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Snapshots let you capture VM state before risky changes (patches, upgrades).</p>
+</div>
+<div class="sect2">
+<h3 id="_create_a_snapshot"><a class="anchor" href="#_create_a_snapshot"></a>Create a Snapshot</h3>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cat &lt;&lt;EOF | oc apply -f -
+apiVersion: snapshot.kubevirt.io/v1beta1
+kind: VirtualMachineSnapshot
+metadata:
+  name: rhel9-vm-snap-1
+  namespace: vm-demo
+spec:
+  source:
+    apiGroup: kubevirt.io
+    kind: VirtualMachine
+    name: rhel9-vm
+EOF</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_check_snapshot_status"><a class="anchor" href="#_check_snapshot_status"></a>Check Snapshot Status</h3>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get vmsnapshot</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Wait for <code>readyToUse: true</code>:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get vmsnapshot rhel9-vm-snap-1 -o jsonpath='{.status.readyToUse}'</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_restore_from_snapshot_if_needed"><a class="anchor" href="#_restore_from_snapshot_if_needed"></a>Restore from Snapshot (if needed)</h3>
+<div class="paragraph">
+<p>First stop the VM:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">virtctl stop rhel9-vm</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then restore:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cat &lt;&lt;EOF | oc apply -f -
+apiVersion: snapshot.kubevirt.io/v1beta1
+kind: VirtualMachineRestore
+metadata:
+  name: restore-rhel9-vm
+  namespace: vm-demo
+spec:
+  target:
+    apiGroup: kubevirt.io
+    kind: VirtualMachine
+    name: rhel9-vm
+  virtualMachineSnapshotName: rhel9-vm-snap-1
+EOF</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Check restore status:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get vmrestore</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_part_6_vms_and_containers_together"><a class="anchor" href="#_part_6_vms_and_containers_together"></a>Part 6: VMs and Containers Together</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_see_unified_resources"><a class="anchor" href="#_see_unified_resources"></a>See Unified Resources</h3>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># VMs in your project
+oc get vms
+
+# Regular pods (you could have both)
+oc get pods
+
+# All compute resources
+oc get vms,pods</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_same_storage_model"><a class="anchor" href="#_same_storage_model"></a>Same Storage Model</h3>
+<div class="paragraph">
+<p>VMs use the same PersistentVolumeClaims as containers:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pvc</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_same_networking"><a class="anchor" href="#_same_networking"></a>Same Networking</h3>
+<div class="paragraph">
+<p>VMs get IPs from the same pod network:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get vmi rhel9-vm -o jsonpath='{.status.interfaces[0].ipAddress}'</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_clean_up"><a class="anchor" href="#_clean_up"></a>Clean Up</h2>
+<div class="sectionbody">
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc delete project vm-demo</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_key_takeaways"><a class="anchor" href="#_key_takeaways"></a>Key Takeaways</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>| Feature | Benefit |
+|---------|---------|
+| <strong>Container Disks</strong> | Spin up VMs in seconds from registry images |
+| <strong>Same CLI</strong> | Use <code>oc</code> for VMs just like pods |
+| <strong>Snapshots</strong> | Quick backup before changes |
+| <strong>Unified Platform</strong> | VMs and containers share storage, networking, monitoring |
+| <strong>virtctl</strong> | VM-specific operations (start, stop, console) |</p>
+</div>
+<div class="paragraph">
+<p><strong>The value:</strong> Run legacy VMs and modern containers side-by-side. One platform, one set of tools, gradual migration path.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_next_module"><a class="anchor" href="#_next_module"></a>Next Module</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Continue to <strong>Multi-Cluster Management with ACM</strong> to manage multiple OpenShift clusters.</p>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="openshift-lightspeed.html" class="query-params-link">OpenShift Lightspeed</a></span>
+  <span class="next"><a href="acm-multicluster.html" class="query-params-link">ACM - Multi-Cluster Management</a></span>
+</nav>
+</article>
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>  </div>
+</main>
+</div>
+<footer class="footer">
+  <a href="https://demo.redhat.com" target="_blank" class="poweredBy"><p>Powered by</p><div class="labInfo_poweredBy" style="display: block; width: 260px;"><svg class="labInfo_poweredByLogo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1508.5 178.739"><g fill="#111"><path d="M316.6 63.2v-56H342a21.279 21.279 0 0 1 7.8 1.3 18.111 18.111 0 0 1 5.9 3.5 15.577 15.577 0 0 1 5 11.8 15.051 15.051 0 0 1-3.1 9.5 16.836 16.836 0 0 1-8.4 5.8l12.5 24.1h-9.3l-11.6-23H325v23Zm24.7-48.6H325v18.7h16.3q5.25 0 8.1-2.7a8.7 8.7 0 0 0 2.8-6.6 8.7 8.7 0 0 0-2.8-6.6c-1.8-1.9-4.5-2.8-8.1-2.8ZM364.1 42.8a20.674 20.674 0 0 1 1.6-8.2 20.288 20.288 0 0 1 4.3-6.7 19.92 19.92 0 0 1 6.5-4.5 19.718 19.718 0 0 1 8-1.6 18.463 18.463 0 0 1 7.8 1.6 18.677 18.677 0 0 1 6.2 4.5 20.927 20.927 0 0 1 4.1 6.8 23.2 23.2 0 0 1 1.5 8.4v2.3H372a13.822 13.822 0 0 0 4.6 8.4 13.6 13.6 0 0 0 9.1 3.3 15.553 15.553 0 0 0 5.7-1 12.858 12.858 0 0 0 4.6-2.6l5.1 5a25.983 25.983 0 0 1-7.4 4.1 24.69 24.69 0 0 1-8.4 1.3 21.306 21.306 0 0 1-8.4-1.6 22.763 22.763 0 0 1-6.8-4.4 20.788 20.788 0 0 1-4.5-6.7 23.2 23.2 0 0 1-1.5-8.4Zm20.2-14.2a11.527 11.527 0 0 0-8 3 13.046 13.046 0 0 0-4.2 7.8h24.2a13.091 13.091 0 0 0-4.2-7.8 11.106 11.106 0 0 0-7.8-3ZM443.1 63.2v-3.8a19.448 19.448 0 0 1-5.8 3.3 18.924 18.924 0 0 1-6.7 1.2 19.824 19.824 0 0 1-14.6-6.1 22.268 22.268 0 0 1-4.4-6.7 21.812 21.812 0 0 1 0-16.4A20.534 20.534 0 0 1 416 28a19.335 19.335 0 0 1 6.6-4.5 20.334 20.334 0 0 1 8.2-1.6 20.7 20.7 0 0 1 6.6 1 19.415 19.415 0 0 1 5.7 3V7.2l8-1.8v57.8Zm-25.2-20.4a13.718 13.718 0 0 0 4 10.1 13.45 13.45 0 0 0 9.8 4.1 14.956 14.956 0 0 0 6.4-1.3 15.954 15.954 0 0 0 4.9-3.6V33.6a14.988 14.988 0 0 0-4.9-3.5 15.271 15.271 0 0 0-6.4-1.3 13.423 13.423 0 0 0-9.9 4 13.806 13.806 0 0 0-3.9 10ZM478.1 63.2v-56h8.4v24h29.8v-24h8.4v56h-8.4V38.8h-29.8v24.4ZM547.2 64a16.483 16.483 0 0 1-10.8-3.5 11.037 11.037 0 0 1-4.2-8.9 10.375 10.375 0 0 1 4.7-9.2 20.76 20.76 0 0 1 11.8-3.2 27.841 27.841 0 0 1 5.8.6 27.374 27.374 0 0 1 5.3 1.6v-4.3a8.143 8.143 0 0 0-2.6-6.5 11.452 11.452 0 0 0-7.4-2.2 20.788 20.788 0 0 0-6 .9 34.616 34.616 0 0 0-6.6 2.6l-3-6a54.169 54.169 0 0 1 8.4-3.1 33.18 33.18 0 0 1 8.3-1.1c5.2 0 9.3 1.3 12.2 3.8s4.4 6.1 4.4 10.8v27h-7.8v-3.5a19.441 19.441 0 0 1-5.8 3.2 23.54 23.54 0 0 1-6.7 1Zm-7.3-12.6a5.646 5.646 0 0 0 2.6 4.8 11.193 11.193 0 0 0 6.6 1.8 16.256 16.256 0 0 0 5.9-1 14.449 14.449 0 0 0 4.9-2.9V47a19.778 19.778 0 0 0-4.8-1.8 24.933 24.933 0 0 0-5.7-.6 11.859 11.859 0 0 0-6.8 1.8 5.728 5.728 0 0 0-2.7 5ZM580.6 53.2v-24H572v-6.7h8.6V12.1l7.9-1.9v12.3h12v6.7h-12v22.1a5.94 5.94 0 0 0 1.4 4.4c.9.9 2.5 1.3 4.6 1.3a23.637 23.637 0 0 0 3-.2 10.857 10.857 0 0 0 2.8-.8v6.7a19.28 19.28 0 0 1-3.8.9 27.484 27.484 0 0 1-3.8.3c-3.9 0-7-.9-9-2.8-2-1.7-3.1-4.4-3.1-7.9Z"></path></g><path d="M127 90.2c12.5 0 30.6-2.6 30.6-17.5a12.678 12.678 0 0 0-.3-3.4L149.8 37c-1.7-7.1-3.2-10.3-15.7-16.6-9.7-5-30.8-13.1-37.1-13.1-5.8 0-7.5 7.5-14.4 7.5-6.7 0-11.6-5.6-17.9-5.6-6 0-9.9 4.1-12.9 12.5 0 0-8.4 23.7-9.5 27.2a4.216 4.216 0 0 0-.3 1.9c0 9.2 36.3 39.4 85 39.4Zm32.5-11.4c1.7 8.2 1.7 9.1 1.7 10.1 0 14-15.7 21.8-36.4 21.8-46.8 0-87.7-27.4-87.7-45.5a17.535 17.535 0 0 1 1.5-7.3C21.8 58.8 0 61.8 0 81c0 31.5 74.6 70.3 133.7 70.3 45.3 0 56.7-20.5 56.7-36.6-.1-12.8-11-27.3-30.9-35.9Z" fill="#e00"></path><path d="M159.5 78.8c1.7 8.2 1.7 9.1 1.7 10.1 0 14-15.7 21.8-36.4 21.8-46.8 0-87.7-27.4-87.7-45.5a17.535 17.535 0 0 1 1.5-7.3l3.7-9.1a4.877 4.877 0 0 0-.3 2c0 9.2 36.3 39.4 85 39.4 12.5 0 30.6-2.6 30.6-17.5a12.678 12.678 0 0 0-.3-3.4Z"></path><path d="M253.5 158.7a2.22 2.22 0 0 1-2.2-2.2V2.2a2.2 2.2 0 0 1 4.4 0v154.2a2.242 2.242 0 0 1-2.2 2.3Z" fill="#111"></path><text data-name="Demo Platform" transform="translate(1186 149)" fill="#111" font-size="82" font-family="'RedHatDisplay', 'Overpass', overpass, helvetica, arial, sans-serif" font-weight="700"><tspan x="-877.892" y="0">Demo Platform</tspan></text></svg></div></div>
+</footer>
+<script src="../../_/js/vendor/clipboard.js"></script>
+<script src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>

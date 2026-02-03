@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>OpenID Connect (OIDC) Authentication with Red Hat SSO :: OpenShift Days - Ops Track</title>
+    <link rel="canonical" href="http://localhost:8080/openshift-days-ops-track/main/oidc-authentication.html">
+    <link rel="prev" href="installation.html">
+    <link rel="next" href="ldap-groupsync.html">
+    <meta name="generator" content="Antora 3.1.14">
+    <link rel="stylesheet" href="../../_/css/site.css">
+<link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://demo.redhat.com" target="_blank" style="margin-left: 5%;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1508.5 178.739" style="width: 278px;"><g fill="#fff"><path d="M316.6 63.2v-56H342a21.279 21.279 0 0 1 7.8 1.3 18.111 18.111 0 0 1 5.9 3.5 15.577 15.577 0 0 1 5 11.8 15.051 15.051 0 0 1-3.1 9.5 16.836 16.836 0 0 1-8.4 5.8l12.5 24.1h-9.3l-11.6-23H325v23Zm24.7-48.6H325v18.7h16.3q5.25 0 8.1-2.7a8.7 8.7 0 0 0 2.8-6.6 8.7 8.7 0 0 0-2.8-6.6c-1.8-1.9-4.5-2.8-8.1-2.8ZM364.1 42.8a20.674 20.674 0 0 1 1.6-8.2 20.288 20.288 0 0 1 4.3-6.7 19.92 19.92 0 0 1 6.5-4.5 19.718 19.718 0 0 1 8-1.6 18.463 18.463 0 0 1 7.8 1.6 18.677 18.677 0 0 1 6.2 4.5 20.927 20.927 0 0 1 4.1 6.8 23.2 23.2 0 0 1 1.5 8.4v2.3H372a13.822 13.822 0 0 0 4.6 8.4 13.6 13.6 0 0 0 9.1 3.3 15.553 15.553 0 0 0 5.7-1 12.858 12.858 0 0 0 4.6-2.6l5.1 5a25.983 25.983 0 0 1-7.4 4.1 24.69 24.69 0 0 1-8.4 1.3 21.306 21.306 0 0 1-8.4-1.6 22.763 22.763 0 0 1-6.8-4.4 20.788 20.788 0 0 1-4.5-6.7 23.2 23.2 0 0 1-1.5-8.4Zm20.2-14.2a11.527 11.527 0 0 0-8 3 13.046 13.046 0 0 0-4.2 7.8h24.2a13.091 13.091 0 0 0-4.2-7.8 11.106 11.106 0 0 0-7.8-3ZM443.1 63.2v-3.8a19.448 19.448 0 0 1-5.8 3.3 18.924 18.924 0 0 1-6.7 1.2 19.824 19.824 0 0 1-14.6-6.1 22.268 22.268 0 0 1-4.4-6.7 21.812 21.812 0 0 1 0-16.4A20.534 20.534 0 0 1 416 28a19.335 19.335 0 0 1 6.6-4.5 20.334 20.334 0 0 1 8.2-1.6 20.7 20.7 0 0 1 6.6 1 19.415 19.415 0 0 1 5.7 3V7.2l8-1.8v57.8Zm-25.2-20.4a13.718 13.718 0 0 0 4 10.1 13.45 13.45 0 0 0 9.8 4.1 14.956 14.956 0 0 0 6.4-1.3 15.954 15.954 0 0 0 4.9-3.6V33.6a14.988 14.988 0 0 0-4.9-3.5 15.271 15.271 0 0 0-6.4-1.3 13.423 13.423 0 0 0-9.9 4 13.806 13.806 0 0 0-3.9 10ZM478.1 63.2v-56h8.4v24h29.8v-24h8.4v56h-8.4V38.8h-29.8v24.4ZM547.2 64a16.483 16.483 0 0 1-10.8-3.5 11.037 11.037 0 0 1-4.2-8.9 10.375 10.375 0 0 1 4.7-9.2 20.76 20.76 0 0 1 11.8-3.2 27.841 27.841 0 0 1 5.8.6 27.374 27.374 0 0 1 5.3 1.6v-4.3a8.143 8.143 0 0 0-2.6-6.5 11.452 11.452 0 0 0-7.4-2.2 20.788 20.788 0 0 0-6 .9 34.616 34.616 0 0 0-6.6 2.6l-3-6a54.169 54.169 0 0 1 8.4-3.1 33.18 33.18 0 0 1 8.3-1.1c5.2 0 9.3 1.3 12.2 3.8s4.4 6.1 4.4 10.8v27h-7.8v-3.5a19.441 19.441 0 0 1-5.8 3.2 23.54 23.54 0 0 1-6.7 1Zm-7.3-12.6a5.646 5.646 0 0 0 2.6 4.8 11.193 11.193 0 0 0 6.6 1.8 16.256 16.256 0 0 0 5.9-1 14.449 14.449 0 0 0 4.9-2.9V47a19.778 19.778 0 0 0-4.8-1.8 24.933 24.933 0 0 0-5.7-.6 11.859 11.859 0 0 0-6.8 1.8 5.728 5.728 0 0 0-2.7 5ZM580.6 53.2v-24H572v-6.7h8.6V12.1l7.9-1.9v12.3h12v6.7h-12v22.1a5.94 5.94 0 0 0 1.4 4.4c.9.9 2.5 1.3 4.6 1.3a23.637 23.637 0 0 0 3-.2 10.857 10.857 0 0 0 2.8-.8v6.7a19.28 19.28 0 0 1-3.8.9 27.484 27.484 0 0 1-3.8.3c-3.9 0-7-.9-9-2.8-2-1.7-3.1-4.4-3.1-7.9Z"></path></g><path d="M127 90.2c12.5 0 30.6-2.6 30.6-17.5a12.678 12.678 0 0 0-.3-3.4L149.8 37c-1.7-7.1-3.2-10.3-15.7-16.6-9.7-5-30.8-13.1-37.1-13.1-5.8 0-7.5 7.5-14.4 7.5-6.7 0-11.6-5.6-17.9-5.6-6 0-9.9 4.1-12.9 12.5 0 0-8.4 23.7-9.5 27.2a4.216 4.216 0 0 0-.3 1.9c0 9.2 36.3 39.4 85 39.4Zm32.5-11.4c1.7 8.2 1.7 9.1 1.7 10.1 0 14-15.7 21.8-36.4 21.8-46.8 0-87.7-27.4-87.7-45.5a17.535 17.535 0 0 1 1.5-7.3C21.8 58.8 0 61.8 0 81c0 31.5 74.6 70.3 133.7 70.3 45.3 0 56.7-20.5 56.7-36.6-.1-12.8-11-27.3-30.9-35.9Z" fill="#e00"></path><path d="M159.5 78.8c1.7 8.2 1.7 9.1 1.7 10.1 0 14-15.7 21.8-36.4 21.8-46.8 0-87.7-27.4-87.7-45.5a17.535 17.535 0 0 1 1.5-7.3l3.7-9.1a4.877 4.877 0 0 0-.3 2c0 9.2 36.3 39.4 85 39.4 12.5 0 30.6-2.6 30.6-17.5a12.678 12.678 0 0 0-.3-3.4Z"></path><path d="M253.5 158.7a2.22 2.22 0 0 1-2.2-2.2V2.2a2.2 2.2 0 0 1 4.4 0v154.2a2.242 2.242 0 0 1-2.2 2.3Z" fill="#fff"></path><text data-name="Demo Platform" transform="translate(1186 149)" fill="#fff" font-size="82" font-family="'RedHatDisplay', 'Overpass', overpass, helvetica, arial, sans-serif" font-weight="700"><tspan x="-877.892" y="0">Demo Platform</tspan></text></svg>
+      </a>
+      <a class="navbar-item site-title" target="__blank" style="color: #fff !important;" href="http://localhost:8080">OpenShift Days - Ops Track</a>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="openshift-days-ops-track" data-version="main">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="index.html" class=" query-params-link">OpenShift Days - Ops Track</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="index.html">Environment Setup</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Phase 1: Platform Foundation</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="ocp-concepts.html">OpenShift Platform Overview</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="installation.html">Installation &amp; Verification</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="oidc-authentication.html">Identity &amp; Users - OIDC</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="ldap-groupsync.html">Identity &amp; Users - LDAP</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="app-mgmt-basics.html">Application Management Basics</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Phase 2: Networking</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="networking.html">Networking &amp; Ingress</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Phase 3: Day 2 Operations</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="observability.html">Observability</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="debugging-troubleshooting.html">Debugging &amp; Troubleshooting</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="performance-tuning.html">Performance Tuning</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="backup-restore.html">Backup &amp; Restore - OADP</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="openshift-lightspeed.html">OpenShift Lightspeed</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Phase 4: Workloads &amp; Architecture</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="virtualization.html">Virtualization</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="acm-multicluster.html">ACM - Multi-Cluster Management</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="hosted-control-planes.html">Advanced Architecture - HCP</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Phase 5: Security</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="security.html">Security - Secrets, Certs &amp; ACS</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Phase 6: Platform Engineering</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="cloud-infrastructure.html">Cloud Integration &amp; Infrastructure</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="developer-hub.html">Developer Hub</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <span class="title">OpenShift Days - Ops Track</span>
+      <ul class="versions">
+        <li class="version is-current">
+          <a href="index.html">main</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">OpenShift Days - Ops Track</a></li>
+    <li>Phase 1: Platform Foundation</li>
+    <li><a href="oidc-authentication.html">Identity &amp; Users - OIDC</a></li>
+  </ul>
+</nav>
+</div>
+  <div class="content">
+<article class="doc">
+<h1 class="page">OpenID Connect (OIDC) Authentication with Red Hat SSO</h1>
+<div class="sect1">
+<h2 id="_module_overview"><a class="anchor" href="#_module_overview"></a>Module Overview</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>Duration:</strong> 25 minutes<br>
+<strong>Format:</strong> Hands-on OIDC identity provider configuration<br>
+<strong>Audience:</strong> Platform Engineers, Operations Teams, Security Administrators</p>
+</div>
+<div class="paragraph">
+<p><strong>Narrative Context:</strong></p>
+</div>
+<div class="paragraph">
+<p>Modern organizations use OpenID Connect (OIDC) for single sign-on across applications. In this hands-on lab, you&#8217;ll deploy <strong>Red Hat Single Sign-On (based on Keycloak)</strong> in your OpenShift cluster and integrate it with OpenShift authentication.</p>
+</div>
+<div class="paragraph">
+<p>This demonstrates how to integrate OpenShift with enterprise OIDC providers - the same concepts apply to Azure AD, Okta, Google Workspace, and other OIDC providers.</p>
+</div>
+<div class="paragraph">
+<p>As an operations team, you will:
+- Deploy Red Hat SSO using OpenShift Operators
+- Configure OIDC realms, clients, users, and groups
+- Integrate OpenShift OAuth with Red Hat SSO
+- Experience automatic group synchronization (vs manual LDAP sync)
+- Configure RBAC with OIDC groups</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_learning_objectives"><a class="anchor" href="#_learning_objectives"></a>Learning Objectives</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>By the end of this module, you will be able to:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Deploy Red Hat Single Sign-On using OpenShift Operators</p>
+</li>
+<li>
+<p>Configure OIDC realms and clients for OpenShift integration</p>
+</li>
+<li>
+<p>Understand OIDC authentication flows and token claims</p>
+</li>
+<li>
+<p>Configure automatic group synchronization from OIDC to OpenShift</p>
+</li>
+<li>
+<p>Compare OIDC vs LDAP authentication approaches</p>
+</li>
+<li>
+<p>Implement role-based access control with OIDC groups</p>
+</li>
+<li>
+<p>Troubleshoot OIDC integration issues</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_understanding_openid_connect_oidc"><a class="anchor" href="#_understanding_openid_connect_oidc"></a>Understanding OpenID Connect (OIDC)</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>What is OIDC?</strong></p>
+</div>
+<div class="paragraph">
+<p>OpenID Connect is an identity layer built on top of OAuth 2.0. It allows applications to verify user identity and obtain profile information through standardized protocols.</p>
+</div>
+<div class="paragraph">
+<p><strong>OIDC vs LDAP Comparison:</strong></p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Feature</th>
+<th class="tableblock halign-left valign-top">OIDC</th>
+<th class="tableblock halign-left valign-top">LDAP (previous module)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Protocol</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">HTTP/REST with JSON</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LDAP protocol (port 389/636)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authentication</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Token-based (JWT)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Bind with username/password</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Group sync</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Automatic</strong> via token claims</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Manual</strong> <code>oc adm groups sync</code> required</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Multi-factor auth</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Native IdP support</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Requires additional integration</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Best for</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cloud-native, SaaS, multi-app SSO</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Traditional enterprise, on-premises</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Setup</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Client registration in provider</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Certificates, bind DN configuration</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p><strong>Key OIDC Advantage:</strong> Groups automatically sync from ID token claims without manual commands!</p>
+</div>
+<div class="paragraph">
+<p><strong>When to use OIDC:</strong>
+- Azure Active Directory (Microsoft 365, Azure)
+- Okta (Enterprise SSO platform)
+- Google Workspace
+- Red Hat Single Sign-On (self-hosted)
+- Modern authentication requirements (MFA, passwordless)</p>
+</div>
+<div class="paragraph">
+<p>For complete OIDC details, see <a href="https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/authentication_and_authorization/configuring-oidc-identity-provider">Configuring an OpenID Connect identity provider</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_step_1_install_red_hat_sso_operator"><a class="anchor" href="#_step_1_install_red_hat_sso_operator"></a>Step 1: Install Red Hat SSO Operator</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The Red Hat SSO Operator manages Keycloak instances in OpenShift.</p>
+</div>
+<div class="paragraph">
+<p><strong>Create namespace for Red Hat SSO:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc create namespace rhsso</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Install the operator:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cat &lt;&lt;EOF | oc apply -f -
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: rhsso-operator-group
+  namespace: rhsso
+spec:
+  targetNamespaces:
+  - rhsso
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: rhsso-operator
+  namespace: rhsso
+spec:
+  channel: stable
+  installPlanApproval: Automatic
+  name: rhsso-operator
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
+EOF</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Wait for operator installation:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get csv -n rhsso -w</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Wait until you see <code>Succeeded</code> in the PHASE column (press Ctrl+C to exit).</p>
+</div>
+<div class="paragraph">
+<p><strong>Verify operator is running:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -n rhsso</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You should see the <code>rhsso-operator</code> pod running.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_step_2_deploy_keycloak_instance"><a class="anchor" href="#_step_2_deploy_keycloak_instance"></a>Step 2: Deploy Keycloak Instance</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Now deploy a Keycloak instance using the operator.</p>
+</div>
+<div class="paragraph">
+<p><strong>Create Keycloak instance:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cat &lt;&lt;EOF | oc apply -f -
+apiVersion: keycloak.org/v1alpha1
+kind: Keycloak
+metadata:
+  name: rhsso
+  namespace: rhsso
+  labels:
+    app: sso
+spec:
+  instances: 1
+  externalAccess:
+    enabled: true
+EOF</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Monitor deployment:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -n rhsso -w</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Wait for <code>keycloak-0</code> pod to show <code>1/1 Running</code> (this takes 2-3 minutes). Press Ctrl+C to exit.</p>
+</div>
+<div class="paragraph">
+<p><strong>Verify Keycloak is running:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -n rhsso
+oc get routes -n rhsso</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You should see <code>keycloak-0</code> in Running state and a route URL.</p>
+</div>
+<div class="paragraph">
+<p><strong>Get the Keycloak admin credentials:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get secret credential-rhsso -n rhsso -o jsonpath='{.data.ADMIN_USERNAME}' | base64 -d &amp;&amp; echo
+oc get secret credential-rhsso -n rhsso -o jsonpath='{.data.ADMIN_PASSWORD}' | base64 -d &amp;&amp; echo</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note these credentials - you&#8217;ll use them to access the Keycloak admin console.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_step_3_configure_keycloak_for_openshift_oidc"><a class="anchor" href="#_step_3_configure_keycloak_for_openshift_oidc"></a>Step 3: Configure Keycloak for OpenShift OIDC</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Run the setup script to configure Keycloak with users, groups, and the OIDC client:</p>
+</div>
+<div class="paragraph">
+<p><strong>Option A: Automated setup script (recommended for lab environment):</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">bash /showroom/repo/.workshop/setup-keycloak-oidc.sh</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This script creates:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>OpenShift realm in Keycloak</p>
+</li>
+<li>
+<p>Three users: admin1, developer1, viewer1 (password: <code>OpenShift123!</code>)</p>
+</li>
+<li>
+<p>Three groups: ocp-admins, ocp-developers, ocp-viewers</p>
+</li>
+<li>
+<p>OIDC client with groups protocol mapper</p>
+</li>
+<li>
+<p>User-to-group assignments</p>
+</li>
+</ul>
+</div>
+<details>
+<summary class="title">Option B: Manual setup via Keycloak admin console (click to expand)</summary>
+<div class="content">
+<div class="paragraph">
+<p>If you prefer to use the web console instead of the script:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Get the admin credentials:</p>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get secret credential-rhsso -n rhsso -o jsonpath='{.data.ADMIN_USERNAME}' | base64 -d &amp;&amp; echo
+oc get secret credential-rhsso -n rhsso -o jsonpath='{.data.ADMIN_PASSWORD}' | base64 -d &amp;&amp; echo</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Get the Keycloak URL:</p>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get route keycloak -n rhsso -o jsonpath='{.spec.host}' &amp;&amp; echo</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Open browser to: <code><a href="https://&lt;keycloak-route&gt;/auth/admin" class="bare">https://&lt;keycloak-route&gt;/auth/admin</a></code></p>
+</li>
+<li>
+<p>Login with admin credentials</p>
+</li>
+<li>
+<p>Create the <strong>openshift</strong> realm</p>
+</li>
+<li>
+<p>Create users: admin1, developer1, viewer1</p>
+</li>
+<li>
+<p>Create groups: ocp-admins, ocp-developers, ocp-viewers</p>
+</li>
+<li>
+<p>Assign users to their respective groups</p>
+</li>
+<li>
+<p>Create OIDC client <code>openshift-cluster</code> with groups protocol mapper</p>
+</li>
+</ol>
+</div>
+</div>
+</details>
+<div class="paragraph">
+<p><strong>Production Note:</strong> In production environments, you would integrate Keycloak with your organization&#8217;s existing LDAP/Active Directory rather than creating users manually.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_step_4_configure_openshift_oauth_with_oidc"><a class="anchor" href="#_step_4_configure_openshift_oauth_with_oidc"></a>Step 4: Configure OpenShift OAuth with OIDC</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>Create secret with OIDC client credentials:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc create secret generic rhsso-client-secret \
+  --from-literal=clientSecret='openshift-client-secret' \
+  -n openshift-config</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Configure OAuth to use Red Hat SSO:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">KEYCLOAK_URL=$(oc get route keycloak -n rhsso -o jsonpath='{.spec.host}')
+
+cat &lt;&lt;EOF | oc apply -f -
+apiVersion: config.openshift.io/v1
+kind: OAuth
+metadata:
+  name: cluster
+spec:
+  identityProviders:
+  - name: rhsso
+    mappingMethod: claim
+    type: OpenID
+    openID:
+      clientID: openshift-cluster
+      clientSecret:
+        name: rhsso-client-secret
+      issuer: https://${KEYCLOAK_URL}/auth/realms/openshift
+      claims:
+        preferredUsername:
+        - preferred_username
+        name:
+        - name
+        email:
+        - email
+        groups:
+        - groups
+      extraScopes:
+      - email
+      - profile
+EOF</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Key configuration:</strong>
+- <code>claims.groups: [groups]</code> - Maps the <code>groups</code> claim from Keycloak to OpenShift groups
+- <code>mappingMethod: claim</code> - First login wins the username
+- <code>issuer</code> - Keycloak realm endpoint</p>
+</div>
+<div class="paragraph">
+<p><strong>Monitor OAuth operator rollout:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc rollout status deployment/oauth-openshift -n openshift-authentication</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Wait for: <code>deployment "oauth-openshift" successfully rolled out</code></p>
+</div>
+<div class="paragraph">
+<p><strong>Verify OAuth pods restarted:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -n openshift-authentication</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>All oauth-openshift pods should be <code>Running</code> and <code>Ready 1/1</code>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_step_5_test_oidc_authentication"><a class="anchor" href="#_step_5_test_oidc_authentication"></a>Step 5: Test OIDC Authentication</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>OIDC uses the <strong>authorization code flow</strong> which requires a web browser for authentication. Unlike LDAP, you cannot use <code>oc login -u username -p password</code> directly with OIDC.</p>
+</div>
+<div class="paragraph">
+<p><strong>Understanding OIDC Login Flow:</strong></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>User initiates login to OpenShift</p>
+</li>
+<li>
+<p>OpenShift redirects to Keycloak login page</p>
+</li>
+<li>
+<p>User authenticates with Keycloak</p>
+</li>
+<li>
+<p>Keycloak redirects back to OpenShift with authorization code</p>
+</li>
+<li>
+<p>OpenShift exchanges code for access token</p>
+</li>
+<li>
+<p>User is logged in with groups from ID token claims</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><strong>Test OIDC authentication via web console (recommended):</strong></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Get the console URL:</p>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc whoami --show-console</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Open the URL in a web browser</p>
+</li>
+<li>
+<p>If you&#8217;re already logged in from previous modules, click on your username in the top-right corner and select <strong>Log out</strong></p>
+</li>
+<li>
+<p>You&#8217;ll see two login options:</p>
+<div class="imageblock">
+<div class="content">
+<img src="_images/oidc-login-options.png" alt="OpenShift login page showing kube:admin and rhsso options">
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>kube:admin</strong> (local admin account)</p>
+</li>
+<li>
+<p><strong>rhsso</strong> (OIDC provider)</p>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Click <strong>rhsso</strong></p>
+</li>
+<li>
+<p>You&#8217;ll be redirected to Keycloak</p>
+</li>
+<li>
+<p>Log in with: <code>developer1</code> / <code>OpenShift123!</code></p>
+</li>
+<li>
+<p>You&#8217;ll be redirected back to OpenShift console</p>
+</li>
+<li>
+<p>You&#8217;re now logged in via OIDC!</p>
+<div class="imageblock">
+<div class="content">
+<img src="_images/oidc-logged-in-console.png" alt="OpenShift console after OIDC login">
+</div>
+</div>
+</li>
+</ol>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+If you want to use the CLI with your OIDC login, click your username in the top-right corner and select "Copy login command" to get a token.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><strong>Verify OIDC users from admin perspective:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get users</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You should see the OIDC users who have logged in:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-none hljs">NAME         UID                                    FULL NAME         IDENTITIES
+developer1   &lt;uuid&gt;                                 Developer User    rhsso:&lt;uuid&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Check user details:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get user developer1 -o yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Notice the identity provider is <code>rhsso</code>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_step_6_verify_automatic_group_synchronization"><a class="anchor" href="#_step_6_verify_automatic_group_synchronization"></a>Step 6: Verify Automatic Group Synchronization</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This is where OIDC shines - groups automatically sync from token claims without manual commands!</p>
+</div>
+<div class="paragraph">
+<p><strong>View automatically created groups:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get groups</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You should see at least:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-none hljs">NAME             USERS
+ocp-developers   developer1</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>OIDC groups are created <strong>on first login</strong>. Since you only logged in as <code>developer1</code>, you&#8217;ll only see <code>ocp-developers</code>. If you log in as <code>admin1</code> or <code>viewer1</code>, those groups will appear automatically.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><strong>The group was created automatically</strong> when the user logged in! Compare this to LDAP:</p>
+</div>
+<div class="paragraph">
+<p><strong>LDAP (Manual Sync):</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Required manual command:
+oc adm groups sync --sync-config=groupsync.yaml --confirm</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>OIDC (Automatic):</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-none hljs">Groups sync automatically from ID token on every login
+No manual sync required!</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Examine a group:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get group ocp-developers -o yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Notice:
+- No LDAP metadata (this came from OIDC)
+- Users automatically added based on token claims
+- Group was created automatically</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_step_7_configure_rbac_with_oidc_groups"><a class="anchor" href="#_step_7_configure_rbac_with_oidc_groups"></a>Step 7: Configure RBAC with OIDC Groups</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>Grant cluster-admin to ocp-admins group:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc adm policy add-cluster-role-to-group cluster-admin ocp-admins</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Grant cluster-reader to ocp-viewers group:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc adm policy add-cluster-role-to-group cluster-reader ocp-viewers</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Create projects for developers:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc adm new-project app-development --display-name="Application Development"
+oc adm new-project app-staging --display-name="Application Staging"
+oc adm new-project app-production --display-name="Application Production"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Grant developers edit access to dev and staging:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc adm policy add-role-to-group edit ocp-developers -n app-development
+oc adm policy add-role-to-group edit ocp-developers -n app-staging</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Grant developers view access to production:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc adm policy add-role-to-group view ocp-developers -n app-production</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_step_8_test_oidc_based_rbac"><a class="anchor" href="#_step_8_test_oidc_based_rbac"></a>Step 8: Test OIDC-Based RBAC</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Test that RBAC works with OIDC groups by logging in as <code>developer1</code>:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Get the console URL:</p>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc whoami --show-console</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Open the URL in your browser</p>
+</li>
+<li>
+<p>Click <strong>rhsso</strong> and log in as <code>developer1</code> / <code>OpenShift123!</code></p>
+</li>
+<li>
+<p>Click your username (top-right) → <strong>Copy login command</strong> → <strong>Display Token</strong></p>
+</li>
+<li>
+<p>Copy and paste the <code>oc login --token=&#8230;&#8203;</code> command into your terminal</p>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If prompted to accept the certificate, type <code>y</code> and press Enter.
+</td>
+</tr>
+</table>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><strong>Verify developer1 can edit in development:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc auth can-i create deployment -n app-development</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Returns: <code>yes</code> (edit role from ocp-developers group)</p>
+</div>
+<div class="paragraph">
+<p><strong>Verify developer1 is view-only in production:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc auth can-i create deployment -n app-production</code></pre>
+</div>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc auth can-i get pods -n app-production</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>First returns: <code>no</code>, second returns: <code>yes</code> (view role)</p>
+</div>
+<div class="paragraph">
+<p><strong>OIDC groups automatically control RBAC</strong> - developer1&#8217;s membership in <code>ocp-developers</code> grants the configured permissions.</p>
+</div>
+<div class="paragraph">
+<p><strong>Restore cluster admin access:</strong></p>
+</div>
+<div class="paragraph">
+<p>Log back in using the terminal&#8217;s service account token:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc login --token=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token) --server=https://kubernetes.default.svc --insecure-skip-tls-verify</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This restores cluster-admin permissions via the terminal&#8217;s service account.</p>
+</div>
+<hr>
+<details>
+<summary class="title"><strong>Optional: Test Group Updates</strong> (click to expand)</summary>
+<div class="content">
+<div class="paragraph">
+<p>This demonstrates how OIDC groups update automatically when membership changes in Keycloak.</p>
+</div>
+<div class="paragraph">
+<p><strong>Add developer1 to ocp-admins group via Keycloak API:</strong></p>
+</div>
+<div class="listingblock copypaste">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">KEYCLOAK_URL=$(oc get route keycloak -n rhsso -o jsonpath='{.spec.host}')
+ADMIN_USER=$(oc get secret credential-rhsso -n rhsso -o jsonpath='{.data.ADMIN_USERNAME}' | base64 -d)
+ADMIN_PASS=$(oc get secret credential-rhsso -n rhsso -o jsonpath='{.data.ADMIN_PASSWORD}' | base64 -d)
+
+TOKEN=$(curl -sk -X POST "https://${KEYCLOAK_URL}/auth/realms/master/protocol/openid-connect/token" \
+  -d "username=$ADMIN_USER" -d "password=$ADMIN_PASS" \
+  -d 'grant_type=password' -d 'client_id=admin-cli' | python3 -c "import sys, json; print(json.load(sys.stdin)['access_token'])")
+
+ADMINS_ID=$(curl -sk "https://${KEYCLOAK_URL}/auth/admin/realms/openshift/groups" \
+  -H "Authorization: Bearer $TOKEN" | python3 -c "import sys, json; print([g['id'] for g in json.load(sys.stdin) if g['name']=='ocp-admins'][0])")
+
+DEV1_ID=$(curl -sk "https://${KEYCLOAK_URL}/auth/admin/realms/openshift/users?username=developer1" \
+  -H "Authorization: Bearer $TOKEN" | python3 -c "import sys, json; print(json.load(sys.stdin)[0]['id'])")
+
+curl -sk -X PUT "https://${KEYCLOAK_URL}/auth/admin/realms/openshift/users/${DEV1_ID}/groups/${ADMINS_ID}" \
+  -H "Authorization: Bearer $TOKEN"
+
+echo "developer1 added to ocp-admins group"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Verify the change:</strong></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Log out and back in as <code>developer1</code> via web console</p>
+</li>
+<li>
+<p>Copy new login command and run: <code>oc auth can-i '<strong>' '</strong>'</code></p>
+</li>
+<li>
+<p>Output: <code>yes</code> (inherited cluster-admin from ocp-admins group)</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>This demonstrates automatic group sync - no manual <code>oc adm groups sync</code> command required!</p>
+</div>
+</div>
+</details>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_production_considerations"><a class="anchor" href="#_production_considerations"></a>Production Considerations</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>For production OIDC integration:</strong></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Use external identity provider:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Azure AD (Microsoft Entra ID)</p>
+</li>
+<li>
+<p>Okta</p>
+</li>
+<li>
+<p>Google Workspace</p>
+</li>
+<li>
+<p>Enterprise Keycloak cluster</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Enable high availability:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Deploy Keycloak with multiple replicas</p>
+</li>
+<li>
+<p>Use external database (PostgreSQL)</p>
+</li>
+<li>
+<p>Configure session replication</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Security best practices:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Enable MFA in identity provider</p>
+</li>
+<li>
+<p>Configure token expiration policies</p>
+</li>
+<li>
+<p>Use certificate validation (not <code>insecure: true</code>)</p>
+</li>
+<li>
+<p>Rotate client secrets regularly</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Monitoring:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Monitor OAuth pod health</p>
+</li>
+<li>
+<p>Track authentication failures</p>
+</li>
+<li>
+<p>Alert on provider availability issues</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Group management:</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Use consistent group naming conventions</p>
+</li>
+<li>
+<p>Document group-to-role mappings</p>
+</li>
+<li>
+<p>Regular access reviews in identity provider</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<hr>
+<details>
+<summary class="title"><strong>Troubleshooting</strong> (click to expand)</summary>
+<div class="content">
+<div class="paragraph">
+<p><strong>Issue: Users not appearing in groups</strong></p>
+</div>
+<div class="paragraph">
+<p>Check if groups claim is in the ID token:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get user developer1 -o yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Verify the Keycloak client has the groups protocol mapper configured (setup script in Step 3).</p>
+</div>
+<div class="paragraph">
+<p><strong>Issue: Redirect loop when logging in</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get oauth cluster -o yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Verify:
+- <code>issuer</code> URL matches Keycloak route
+- <code>clientID</code> matches <code>openshift-cluster</code>
+- Redirect URI in Keycloak client matches OpenShift OAuth callback</p>
+</div>
+<div class="paragraph">
+<p><strong>Issue: OAuth pods not restarting</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get clusteroperator authentication
+oc describe clusteroperator authentication</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Force rollout if needed:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc rollout restart deployment/oauth-openshift -n openshift-authentication</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Issue: Keycloak not accessible</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -n rhsso
+oc logs -n rhsso -l app=keycloak
+oc get routes -n rhsso</code></pre>
+</div>
+</div>
+</div>
+</details>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_summary"><a class="anchor" href="#_summary"></a>Summary</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>What you configured:</strong></p>
+</div>
+<div class="paragraph">
+<p>✅ <strong>Red Hat SSO Deployment</strong> - Installed and configured Keycloak using Operators<br>
+✅ <strong>OIDC Realm &amp; Client</strong> - Created OpenShift integration with group claims<br>
+✅ <strong>Automatic Group Sync</strong> - Groups sync from ID token without manual commands<br>
+✅ <strong>RBAC with OIDC</strong> - Configured cluster and project-level permissions<br>
+✅ <strong>Web Console SSO</strong> - Tested browser-based OIDC authentication<br>
+✅ <strong>Dynamic Updates</strong> - Demonstrated real-time group membership changes</p>
+</div>
+<div class="paragraph">
+<p><strong>Key takeaways:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>OIDC groups sync automatically</strong> - No <code>oc adm groups sync</code> required (unlike LDAP)</p>
+</li>
+<li>
+<p><strong>Token-based authentication</strong> - Modern, cloud-native approach</p>
+</li>
+<li>
+<p><strong>Red Hat SSO (Keycloak)</strong> - Official Red Hat product for enterprise SSO</p>
+</li>
+<li>
+<p><strong>Operator-based deployment</strong> - Kubernetes-native management</p>
+</li>
+<li>
+<p><strong>Real-time updates</strong> - Group membership changes take effect on next login</p>
+</li>
+<li>
+<p><strong>Production-ready</strong> - Same approach for Azure AD, Okta, Google Workspace</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>OIDC vs LDAP:</strong>
+- <strong>OIDC:</strong> Automatic group sync, modern auth, cloud-native, better for SaaS/cloud environments
+- <strong>LDAP:</strong> Manual group sync, traditional auth, on-premises, better for existing AD infrastructure</p>
+</div>
+<div class="paragraph">
+<p>Both methods are valid - choose based on your organization&#8217;s existing identity infrastructure.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_additional_resources"><a class="anchor" href="#_additional_resources"></a>Additional Resources</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><strong>OpenID Connect Configuration:</strong> <a href="https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/authentication_and_authorization/configuring-oidc-identity-provider">Configuring an OpenID Connect identity provider</a></p>
+</li>
+<li>
+<p><strong>Red Hat SSO:</strong> <a href="https://access.redhat.com/documentation/en-us/red_hat_single_sign-on/">Red Hat Single Sign-On Documentation</a></p>
+</li>
+<li>
+<p><strong>Keycloak Operator:</strong> <a href="https://access.redhat.com/documentation/en-us/red_hat_single_sign-on/7.6/html/server_installation_and_configuration_guide/operator">Red Hat SSO Operator Guide</a></p>
+</li>
+<li>
+<p><strong>RBAC Documentation:</strong> <a href="https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/authentication_and_authorization/using-rbac">Using RBAC</a></p>
+</li>
+<li>
+<p><strong>Identity Providers Overview:</strong> <a href="https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/authentication_and_authorization/understanding-identity-provider">Understanding identity providers</a></p>
+</li>
+</ul>
+</div>
+<hr>
+<div class="paragraph">
+<p><strong>Next Module:</strong> Continue with <a href="app-mgmt-basics.html" class="xref page">Application Management Basics</a> to learn about deploying applications.</p>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="installation.html" class="query-params-link">Installation &amp; Verification</a></span>
+  <span class="next"><a href="ldap-groupsync.html" class="query-params-link">Identity &amp; Users - LDAP</a></span>
+</nav>
+</article>
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>  </div>
+</main>
+</div>
+<footer class="footer">
+  <a href="https://demo.redhat.com" target="_blank" class="poweredBy"><p>Powered by</p><div class="labInfo_poweredBy" style="display: block; width: 260px;"><svg class="labInfo_poweredByLogo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1508.5 178.739"><g fill="#111"><path d="M316.6 63.2v-56H342a21.279 21.279 0 0 1 7.8 1.3 18.111 18.111 0 0 1 5.9 3.5 15.577 15.577 0 0 1 5 11.8 15.051 15.051 0 0 1-3.1 9.5 16.836 16.836 0 0 1-8.4 5.8l12.5 24.1h-9.3l-11.6-23H325v23Zm24.7-48.6H325v18.7h16.3q5.25 0 8.1-2.7a8.7 8.7 0 0 0 2.8-6.6 8.7 8.7 0 0 0-2.8-6.6c-1.8-1.9-4.5-2.8-8.1-2.8ZM364.1 42.8a20.674 20.674 0 0 1 1.6-8.2 20.288 20.288 0 0 1 4.3-6.7 19.92 19.92 0 0 1 6.5-4.5 19.718 19.718 0 0 1 8-1.6 18.463 18.463 0 0 1 7.8 1.6 18.677 18.677 0 0 1 6.2 4.5 20.927 20.927 0 0 1 4.1 6.8 23.2 23.2 0 0 1 1.5 8.4v2.3H372a13.822 13.822 0 0 0 4.6 8.4 13.6 13.6 0 0 0 9.1 3.3 15.553 15.553 0 0 0 5.7-1 12.858 12.858 0 0 0 4.6-2.6l5.1 5a25.983 25.983 0 0 1-7.4 4.1 24.69 24.69 0 0 1-8.4 1.3 21.306 21.306 0 0 1-8.4-1.6 22.763 22.763 0 0 1-6.8-4.4 20.788 20.788 0 0 1-4.5-6.7 23.2 23.2 0 0 1-1.5-8.4Zm20.2-14.2a11.527 11.527 0 0 0-8 3 13.046 13.046 0 0 0-4.2 7.8h24.2a13.091 13.091 0 0 0-4.2-7.8 11.106 11.106 0 0 0-7.8-3ZM443.1 63.2v-3.8a19.448 19.448 0 0 1-5.8 3.3 18.924 18.924 0 0 1-6.7 1.2 19.824 19.824 0 0 1-14.6-6.1 22.268 22.268 0 0 1-4.4-6.7 21.812 21.812 0 0 1 0-16.4A20.534 20.534 0 0 1 416 28a19.335 19.335 0 0 1 6.6-4.5 20.334 20.334 0 0 1 8.2-1.6 20.7 20.7 0 0 1 6.6 1 19.415 19.415 0 0 1 5.7 3V7.2l8-1.8v57.8Zm-25.2-20.4a13.718 13.718 0 0 0 4 10.1 13.45 13.45 0 0 0 9.8 4.1 14.956 14.956 0 0 0 6.4-1.3 15.954 15.954 0 0 0 4.9-3.6V33.6a14.988 14.988 0 0 0-4.9-3.5 15.271 15.271 0 0 0-6.4-1.3 13.423 13.423 0 0 0-9.9 4 13.806 13.806 0 0 0-3.9 10ZM478.1 63.2v-56h8.4v24h29.8v-24h8.4v56h-8.4V38.8h-29.8v24.4ZM547.2 64a16.483 16.483 0 0 1-10.8-3.5 11.037 11.037 0 0 1-4.2-8.9 10.375 10.375 0 0 1 4.7-9.2 20.76 20.76 0 0 1 11.8-3.2 27.841 27.841 0 0 1 5.8.6 27.374 27.374 0 0 1 5.3 1.6v-4.3a8.143 8.143 0 0 0-2.6-6.5 11.452 11.452 0 0 0-7.4-2.2 20.788 20.788 0 0 0-6 .9 34.616 34.616 0 0 0-6.6 2.6l-3-6a54.169 54.169 0 0 1 8.4-3.1 33.18 33.18 0 0 1 8.3-1.1c5.2 0 9.3 1.3 12.2 3.8s4.4 6.1 4.4 10.8v27h-7.8v-3.5a19.441 19.441 0 0 1-5.8 3.2 23.54 23.54 0 0 1-6.7 1Zm-7.3-12.6a5.646 5.646 0 0 0 2.6 4.8 11.193 11.193 0 0 0 6.6 1.8 16.256 16.256 0 0 0 5.9-1 14.449 14.449 0 0 0 4.9-2.9V47a19.778 19.778 0 0 0-4.8-1.8 24.933 24.933 0 0 0-5.7-.6 11.859 11.859 0 0 0-6.8 1.8 5.728 5.728 0 0 0-2.7 5ZM580.6 53.2v-24H572v-6.7h8.6V12.1l7.9-1.9v12.3h12v6.7h-12v22.1a5.94 5.94 0 0 0 1.4 4.4c.9.9 2.5 1.3 4.6 1.3a23.637 23.637 0 0 0 3-.2 10.857 10.857 0 0 0 2.8-.8v6.7a19.28 19.28 0 0 1-3.8.9 27.484 27.484 0 0 1-3.8.3c-3.9 0-7-.9-9-2.8-2-1.7-3.1-4.4-3.1-7.9Z"></path></g><path d="M127 90.2c12.5 0 30.6-2.6 30.6-17.5a12.678 12.678 0 0 0-.3-3.4L149.8 37c-1.7-7.1-3.2-10.3-15.7-16.6-9.7-5-30.8-13.1-37.1-13.1-5.8 0-7.5 7.5-14.4 7.5-6.7 0-11.6-5.6-17.9-5.6-6 0-9.9 4.1-12.9 12.5 0 0-8.4 23.7-9.5 27.2a4.216 4.216 0 0 0-.3 1.9c0 9.2 36.3 39.4 85 39.4Zm32.5-11.4c1.7 8.2 1.7 9.1 1.7 10.1 0 14-15.7 21.8-36.4 21.8-46.8 0-87.7-27.4-87.7-45.5a17.535 17.535 0 0 1 1.5-7.3C21.8 58.8 0 61.8 0 81c0 31.5 74.6 70.3 133.7 70.3 45.3 0 56.7-20.5 56.7-36.6-.1-12.8-11-27.3-30.9-35.9Z" fill="#e00"></path><path d="M159.5 78.8c1.7 8.2 1.7 9.1 1.7 10.1 0 14-15.7 21.8-36.4 21.8-46.8 0-87.7-27.4-87.7-45.5a17.535 17.535 0 0 1 1.5-7.3l3.7-9.1a4.877 4.877 0 0 0-.3 2c0 9.2 36.3 39.4 85 39.4 12.5 0 30.6-2.6 30.6-17.5a12.678 12.678 0 0 0-.3-3.4Z"></path><path d="M253.5 158.7a2.22 2.22 0 0 1-2.2-2.2V2.2a2.2 2.2 0 0 1 4.4 0v154.2a2.242 2.242 0 0 1-2.2 2.3Z" fill="#111"></path><text data-name="Demo Platform" transform="translate(1186 149)" fill="#111" font-size="82" font-family="'RedHatDisplay', 'Overpass', overpass, helvetica, arial, sans-serif" font-weight="700"><tspan x="-877.892" y="0">Demo Platform</tspan></text></svg></div></div>
+</footer>
+<script src="../../_/js/vendor/clipboard.js"></script>
+<script src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>

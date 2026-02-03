@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Architecture - Hosted Control Planes (HCP) :: OpenShift Days - Ops Track</title>
+    <link rel="canonical" href="http://localhost:8080/openshift-days-ops-track/main/hosted-control-planes.html">
+    <link rel="prev" href="acm-multicluster.html">
+    <link rel="next" href="security.html">
+    <meta name="generator" content="Antora 3.1.14">
+    <link rel="stylesheet" href="../../_/css/site.css">
+<link rel="icon" href="../../_/img/favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://demo.redhat.com" target="_blank" style="margin-left: 5%;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1508.5 178.739" style="width: 278px;"><g fill="#fff"><path d="M316.6 63.2v-56H342a21.279 21.279 0 0 1 7.8 1.3 18.111 18.111 0 0 1 5.9 3.5 15.577 15.577 0 0 1 5 11.8 15.051 15.051 0 0 1-3.1 9.5 16.836 16.836 0 0 1-8.4 5.8l12.5 24.1h-9.3l-11.6-23H325v23Zm24.7-48.6H325v18.7h16.3q5.25 0 8.1-2.7a8.7 8.7 0 0 0 2.8-6.6 8.7 8.7 0 0 0-2.8-6.6c-1.8-1.9-4.5-2.8-8.1-2.8ZM364.1 42.8a20.674 20.674 0 0 1 1.6-8.2 20.288 20.288 0 0 1 4.3-6.7 19.92 19.92 0 0 1 6.5-4.5 19.718 19.718 0 0 1 8-1.6 18.463 18.463 0 0 1 7.8 1.6 18.677 18.677 0 0 1 6.2 4.5 20.927 20.927 0 0 1 4.1 6.8 23.2 23.2 0 0 1 1.5 8.4v2.3H372a13.822 13.822 0 0 0 4.6 8.4 13.6 13.6 0 0 0 9.1 3.3 15.553 15.553 0 0 0 5.7-1 12.858 12.858 0 0 0 4.6-2.6l5.1 5a25.983 25.983 0 0 1-7.4 4.1 24.69 24.69 0 0 1-8.4 1.3 21.306 21.306 0 0 1-8.4-1.6 22.763 22.763 0 0 1-6.8-4.4 20.788 20.788 0 0 1-4.5-6.7 23.2 23.2 0 0 1-1.5-8.4Zm20.2-14.2a11.527 11.527 0 0 0-8 3 13.046 13.046 0 0 0-4.2 7.8h24.2a13.091 13.091 0 0 0-4.2-7.8 11.106 11.106 0 0 0-7.8-3ZM443.1 63.2v-3.8a19.448 19.448 0 0 1-5.8 3.3 18.924 18.924 0 0 1-6.7 1.2 19.824 19.824 0 0 1-14.6-6.1 22.268 22.268 0 0 1-4.4-6.7 21.812 21.812 0 0 1 0-16.4A20.534 20.534 0 0 1 416 28a19.335 19.335 0 0 1 6.6-4.5 20.334 20.334 0 0 1 8.2-1.6 20.7 20.7 0 0 1 6.6 1 19.415 19.415 0 0 1 5.7 3V7.2l8-1.8v57.8Zm-25.2-20.4a13.718 13.718 0 0 0 4 10.1 13.45 13.45 0 0 0 9.8 4.1 14.956 14.956 0 0 0 6.4-1.3 15.954 15.954 0 0 0 4.9-3.6V33.6a14.988 14.988 0 0 0-4.9-3.5 15.271 15.271 0 0 0-6.4-1.3 13.423 13.423 0 0 0-9.9 4 13.806 13.806 0 0 0-3.9 10ZM478.1 63.2v-56h8.4v24h29.8v-24h8.4v56h-8.4V38.8h-29.8v24.4ZM547.2 64a16.483 16.483 0 0 1-10.8-3.5 11.037 11.037 0 0 1-4.2-8.9 10.375 10.375 0 0 1 4.7-9.2 20.76 20.76 0 0 1 11.8-3.2 27.841 27.841 0 0 1 5.8.6 27.374 27.374 0 0 1 5.3 1.6v-4.3a8.143 8.143 0 0 0-2.6-6.5 11.452 11.452 0 0 0-7.4-2.2 20.788 20.788 0 0 0-6 .9 34.616 34.616 0 0 0-6.6 2.6l-3-6a54.169 54.169 0 0 1 8.4-3.1 33.18 33.18 0 0 1 8.3-1.1c5.2 0 9.3 1.3 12.2 3.8s4.4 6.1 4.4 10.8v27h-7.8v-3.5a19.441 19.441 0 0 1-5.8 3.2 23.54 23.54 0 0 1-6.7 1Zm-7.3-12.6a5.646 5.646 0 0 0 2.6 4.8 11.193 11.193 0 0 0 6.6 1.8 16.256 16.256 0 0 0 5.9-1 14.449 14.449 0 0 0 4.9-2.9V47a19.778 19.778 0 0 0-4.8-1.8 24.933 24.933 0 0 0-5.7-.6 11.859 11.859 0 0 0-6.8 1.8 5.728 5.728 0 0 0-2.7 5ZM580.6 53.2v-24H572v-6.7h8.6V12.1l7.9-1.9v12.3h12v6.7h-12v22.1a5.94 5.94 0 0 0 1.4 4.4c.9.9 2.5 1.3 4.6 1.3a23.637 23.637 0 0 0 3-.2 10.857 10.857 0 0 0 2.8-.8v6.7a19.28 19.28 0 0 1-3.8.9 27.484 27.484 0 0 1-3.8.3c-3.9 0-7-.9-9-2.8-2-1.7-3.1-4.4-3.1-7.9Z"></path></g><path d="M127 90.2c12.5 0 30.6-2.6 30.6-17.5a12.678 12.678 0 0 0-.3-3.4L149.8 37c-1.7-7.1-3.2-10.3-15.7-16.6-9.7-5-30.8-13.1-37.1-13.1-5.8 0-7.5 7.5-14.4 7.5-6.7 0-11.6-5.6-17.9-5.6-6 0-9.9 4.1-12.9 12.5 0 0-8.4 23.7-9.5 27.2a4.216 4.216 0 0 0-.3 1.9c0 9.2 36.3 39.4 85 39.4Zm32.5-11.4c1.7 8.2 1.7 9.1 1.7 10.1 0 14-15.7 21.8-36.4 21.8-46.8 0-87.7-27.4-87.7-45.5a17.535 17.535 0 0 1 1.5-7.3C21.8 58.8 0 61.8 0 81c0 31.5 74.6 70.3 133.7 70.3 45.3 0 56.7-20.5 56.7-36.6-.1-12.8-11-27.3-30.9-35.9Z" fill="#e00"></path><path d="M159.5 78.8c1.7 8.2 1.7 9.1 1.7 10.1 0 14-15.7 21.8-36.4 21.8-46.8 0-87.7-27.4-87.7-45.5a17.535 17.535 0 0 1 1.5-7.3l3.7-9.1a4.877 4.877 0 0 0-.3 2c0 9.2 36.3 39.4 85 39.4 12.5 0 30.6-2.6 30.6-17.5a12.678 12.678 0 0 0-.3-3.4Z"></path><path d="M253.5 158.7a2.22 2.22 0 0 1-2.2-2.2V2.2a2.2 2.2 0 0 1 4.4 0v154.2a2.242 2.242 0 0 1-2.2 2.3Z" fill="#fff"></path><text data-name="Demo Platform" transform="translate(1186 149)" fill="#fff" font-size="82" font-family="'RedHatDisplay', 'Overpass', overpass, helvetica, arial, sans-serif" font-weight="700"><tspan x="-877.892" y="0">Demo Platform</tspan></text></svg>
+      </a>
+      <a class="navbar-item site-title" target="__blank" style="color: #fff !important;" href="http://localhost:8080">OpenShift Days - Ops Track</a>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="openshift-days-ops-track" data-version="main">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="index.html" class=" query-params-link">OpenShift Days - Ops Track</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="index.html">Environment Setup</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Phase 1: Platform Foundation</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="ocp-concepts.html">OpenShift Platform Overview</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="installation.html">Installation &amp; Verification</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="oidc-authentication.html">Identity &amp; Users - OIDC</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="ldap-groupsync.html">Identity &amp; Users - LDAP</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="app-mgmt-basics.html">Application Management Basics</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Phase 2: Networking</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="networking.html">Networking &amp; Ingress</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Phase 3: Day 2 Operations</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="observability.html">Observability</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="debugging-troubleshooting.html">Debugging &amp; Troubleshooting</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="performance-tuning.html">Performance Tuning</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="backup-restore.html">Backup &amp; Restore - OADP</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="openshift-lightspeed.html">OpenShift Lightspeed</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Phase 4: Workloads &amp; Architecture</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="virtualization.html">Virtualization</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="acm-multicluster.html">ACM - Multi-Cluster Management</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="hosted-control-planes.html">Advanced Architecture - HCP</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Phase 5: Security</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="security.html">Security - Secrets, Certs &amp; ACS</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Phase 6: Platform Engineering</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="cloud-infrastructure.html">Cloud Integration &amp; Infrastructure</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="developer-hub.html">Developer Hub</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <span class="title">OpenShift Days - Ops Track</span>
+      <ul class="versions">
+        <li class="version is-current">
+          <a href="index.html">main</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">OpenShift Days - Ops Track</a></li>
+    <li>Phase 4: Workloads &amp; Architecture</li>
+    <li><a href="hosted-control-planes.html">Advanced Architecture - HCP</a></li>
+  </ul>
+</nav>
+</div>
+  <div class="content">
+<article class="doc">
+<h1 class="page">Architecture - Hosted Control Planes (HCP)</h1>
+<div class="sect1">
+<h2 id="_module_overview"><a class="anchor" href="#_module_overview"></a>Module Overview</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>Duration:</strong> 35 minutes<br>
+<strong>Format:</strong> Architecture presentation + Demo + Operations<br>
+<strong>Audience:</strong> Infrastructure Architects, IT Operations, Cloud Platform Teams</p>
+</div>
+<div class="paragraph">
+<p><strong>Workshop Narrative Context:</strong></p>
+</div>
+<div class="paragraph">
+<p>We&#8217;ve learned how to:
+- Deploy and manage applications on OpenShift
+- Troubleshoot operational issues
+- Enable developer self-service</p>
+</div>
+<div class="paragraph">
+<p><strong>Now:</strong> Let&#8217;s understand the <strong>future architecture</strong> of OpenShift - how Hosted Control Planes changes the game.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_learning_objectives"><a class="anchor" href="#_learning_objectives"></a>Learning Objectives</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>By the end of this module, you will be able to:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Understand traditional OpenShift cluster architecture</p>
+</li>
+<li>
+<p>Explain what Hosted Control Planes (HCP) is and how it differs</p>
+</li>
+<li>
+<p>Identify the cost and operational benefits of HCP</p>
+</li>
+<li>
+<p>See the impact on multi-cluster management</p>
+</li>
+<li>
+<p>Understand the migration path to HCP</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_traditional_openshift_architecture_quick_review"><a class="anchor" href="#_traditional_openshift_architecture_quick_review"></a>Traditional OpenShift Architecture (Quick Review)</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In a standard OpenShift cluster:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>3 dedicated control plane nodes</strong> per cluster (API server, etcd, scheduler, controllers)</p>
+</li>
+<li>
+<p><strong>N worker nodes</strong> for application workloads</p>
+</li>
+<li>
+<p>Each cluster = separate control plane infrastructure</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>View this cluster&#8217;s nodes:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get nodes</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Output shows 3 control-plane/master nodes + 3 worker nodes.</p>
+</div>
+<div class="paragraph">
+<p><strong>The scale problem:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>20 clusters = 60 control plane nodes (20 × 3)</p>
+</li>
+<li>
+<p>Each control plane node = 8 vCPU, 32GB RAM (typical)</p>
+</li>
+<li>
+<p>Cost: ~$9,036/year per cluster × 20 = <strong>$180,720/year</strong> just for control planes</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Operations challenges: 60 nodes to patch, 20 etcd databases to backup, 20 API endpoints to manage.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_what_is_hosted_control_planes_hcp"><a class="anchor" href="#_what_is_hosted_control_planes_hcp"></a>What is Hosted Control Planes (HCP)?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>HCP runs control planes as <strong>pods</strong> on a shared management cluster instead of dedicated nodes.</p>
+</div>
+<div class="paragraph">
+<p><strong>How it works:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>1 management cluster hosts multiple control plane pods</p>
+</li>
+<li>
+<p>Each hosted cluster = 1 set of control plane pods (API server, etcd, scheduler, controllers)</p>
+</li>
+<li>
+<p>Hosted clusters have worker nodes only</p>
+</li>
+<li>
+<p>Workers connect to their control plane pods via LoadBalancer</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Example:</strong> 20 clusters using just 3 control plane nodes (on the management cluster) instead of 60.</p>
+</div>
+<div class="listingblock copypaste">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># On management cluster, view hosted control plane PVCs
+oc get pvc -A | grep etcd</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Example output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>NAMESPACE                 NAME                   STATUS   VOLUME       CAPACITY
+clusters-prod-app         etcd-0                 Bound    pvc-xxxxx    10Gi
+clusters-dev-test         etcd-0                 Bound    pvc-yyyyy    10Gi
+clusters-staging          etcd-0                 Bound    pvc-zzzzz    10Gi</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Backup strategy:</strong> Backup management cluster storage = backup all hosted etcd databases.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_why_hcp_matters_for_operations"><a class="anchor" href="#_why_hcp_matters_for_operations"></a>Why HCP Matters for Operations</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>HCP changes three operational metrics:</p>
+</div>
+<div class="paragraph">
+<p><strong>1. Cost</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Traditional: 20 clusters = 60 control plane nodes = $180,720/year</p>
+</li>
+<li>
+<p>HCP: 20 clusters = 3 control plane nodes (on management cluster) = ~$9,000/year</p>
+</li>
+<li>
+<p>Savings scale with cluster count</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>2. Speed</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Traditional cluster provisioning: 45-60 minutes</p>
+</li>
+<li>
+<p>HCP cluster provisioning: 3-5 minutes (you&#8217;ll see this live)</p>
+</li>
+<li>
+<p>Faster means more dev/test agility</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>3. Operations</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Traditional: Patch 60 nodes, backup 20 etcd databases, upgrade 20 clusters individually</p>
+</li>
+<li>
+<p>HCP: Patch 3 nodes, backup 1 cluster, upgrade control planes as pods</p>
+</li>
+<li>
+<p>Centralized management reduces operational complexity</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_managing_hcp_at_scale"><a class="anchor" href="#_managing_hcp_at_scale"></a>Managing HCP at Scale</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>Red Hat Advanced Cluster Management (ACM)</strong> is the primary tool for operating HCP in production.</p>
+</div>
+<div class="paragraph">
+<p><strong>What ACM provides:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Cluster lifecycle</strong> - Create, upgrade, delete hosted clusters from one console</p>
+</li>
+<li>
+<p><strong>Centralized monitoring</strong> - View health of all hosted clusters in one dashboard</p>
+</li>
+<li>
+<p><strong>Policy enforcement</strong> - Apply security and configuration policies across all clusters</p>
+</li>
+<li>
+<p><strong>GitOps integration</strong> - Manage cluster configurations as code</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Platforms supported:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>AWS, Azure (Tech Preview), bare metal/edge (Agent platform)</p>
+</li>
+<li>
+<p>On-prem virtualization (KubeVirt)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In production, you&#8217;d use ACM to manage dozens or hundreds of hosted clusters. This demo shows the underlying HCP mechanics without ACM.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_when_to_use_hcp"><a class="anchor" href="#_when_to_use_hcp"></a>When To Use HCP</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>Common scenario:</strong> Platform team supporting 20 internal dev teams.</p>
+</div>
+<div class="paragraph">
+<p><strong>Traditional:</strong>
+* 20 clusters = 60 control plane nodes
+* 45-60 minutes to provision each cluster
+* Patch/upgrade each cluster individually</p>
+</div>
+<div class="paragraph">
+<p><strong>HCP:</strong>
+* 20 hosted clusters = 3 control plane nodes (on management cluster)
+* 3-5 minutes to provision each cluster
+* Upgrade control planes as pods, centralized backup</p>
+</div>
+<div class="paragraph">
+<p><strong>Other scenarios:</strong> Edge computing (control planes centralized, workers remote), dev/test environments (fast create/destroy), multi-region deployments.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_hands_on_creating_your_first_hosted_cluster"><a class="anchor" href="#_hands_on_creating_your_first_hosted_cluster"></a>Hands-On: Creating Your First Hosted Cluster</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>This lab environment has all the HCP prerequisites installed.</strong> Now YOU will create a hosted cluster and see the speed difference firsthand!</p>
+</div>
+<div class="sect2">
+<h3 id="_step_1_verify_prerequisites"><a class="anchor" href="#_step_1_verify_prerequisites"></a>Step 1: Verify Prerequisites</h3>
+<div class="paragraph">
+<p>First, confirm the HCP infrastructure is ready:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Check MultiClusterEngine is available
+oc get multiclusterengine -o jsonpath='{.items[0].status.phase}'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Expected output: <code>Available</code></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Check HyperShift operator is running
+oc get pods -n hypershift | grep operator</code></pre>
+</div>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Check MetalLB IP pool (needed for LoadBalancer)
+oc get ipaddresspool -n metallb-system</code></pre>
+</div>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Check KubeVirt credentials exist
+oc get secret kubevirt-secret -n open-cluster-management</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>All prerequisites are in place!</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_2_check_current_state_no_hosted_clusters_yet"><a class="anchor" href="#_step_2_check_current_state_no_hosted_clusters_yet"></a>Step 2: Check Current State (No Hosted Clusters Yet)</h3>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># List hosted clusters - should be empty
+oc get hostedclusters -A</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Expected output: <code>No resources found</code></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Check for etcd PVCs - should be empty
+oc get pvc -A | grep etcd</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Expected output: (nothing)</p>
+</div>
+<div class="paragraph">
+<p><strong>This is our baseline.</strong> We have zero hosted clusters. Now let&#8217;s create one!</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_3_create_your_first_hosted_cluster"><a class="anchor" href="#_step_3_create_your_first_hosted_cluster"></a>Step 3: Create Your First Hosted Cluster</h3>
+<div class="paragraph">
+<p><strong>Start the timer!</strong> Traditional cluster creation takes 45-60 minutes. Let&#8217;s see how fast HCP is.</p>
+</div>
+<div class="paragraph">
+<p>First, create the namespace and required secrets:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Create the clusters namespace
+oc create namespace clusters 2&gt;/dev/null || true
+
+# Copy pull secret from openshift-config
+oc get secret pull-secret -n openshift-config -o jsonpath='{.data.\.dockerconfigjson}' | base64 -d &gt; /tmp/pull-secret.json
+oc create secret generic pullsecret-cluster-demo-hcp -n clusters --from-file=.dockerconfigjson=/tmp/pull-secret.json --type=kubernetes.io/dockerconfigjson 2&gt;/dev/null || true
+
+# Create SSH key secret (empty for demo)
+oc create secret generic sshkey-cluster-demo-hcp -n clusters --from-literal=id_rsa.pub="" 2&gt;/dev/null || true</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now create the HostedCluster:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Create the HostedCluster - this takes about 3-5 minutes
+oc apply -f - &lt;&lt;EOF
+apiVersion: hypershift.openshift.io/v1beta1
+kind: HostedCluster
+metadata:
+  name: demo-hcp
+  namespace: clusters
+spec:
+  release:
+    image: quay.io/openshift-release-dev/ocp-release:4.17.0-multi
+  pullSecret:
+    name: pullsecret-cluster-demo-hcp
+  sshKey:
+    name: sshkey-cluster-demo-hcp
+  networking:
+    clusterNetwork:
+      - cidr: 10.132.0.0/14
+    serviceNetwork:
+      - cidr: 172.31.0.0/16
+  platform:
+    type: KubeVirt
+    kubevirt:
+      baseDomainPassthrough: true
+  infraID: demo-hcp
+  dns:
+    baseDomain: demo.local
+  services:
+    - service: APIServer
+      servicePublishingStrategy:
+        type: LoadBalancer
+    - service: OAuthServer
+      servicePublishingStrategy:
+        type: Route
+    - service: Konnectivity
+      servicePublishingStrategy:
+        type: Route
+    - service: Ignition
+      servicePublishingStrategy:
+        type: Route
+  etcd:
+    managed:
+      storage:
+        persistentVolume:
+          size: 8Gi
+        type: PersistentVolume
+    managementType: Managed
+  controllerAvailabilityPolicy: SingleReplica
+  infrastructureAvailabilityPolicy: SingleReplica
+EOF</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_4_watch_the_magic_happen"><a class="anchor" href="#_step_4_watch_the_magic_happen"></a>Step 4: Watch the Magic Happen</h3>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Watch the hosted cluster status - refresh every 5 seconds
+watch -n 5 "oc get hostedcluster demo-hcp -n clusters 2&gt;/dev/null || echo 'Waiting for cluster...'"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Press <code>Ctrl+C</code> when you see <code>AVAILABLE: True</code></p>
+</div>
+<div class="paragraph">
+<p>While waiting, let&#8217;s check what&#8217;s being created:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Watch pods spinning up in the hosted cluster namespace
+oc get pods -n clusters-demo-hcp -w</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>You&#8217;ll see control plane pods appearing:</strong> kube-apiserver, etcd, kube-controller-manager, etc.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_5_verify_creation_complete"><a class="anchor" href="#_step_5_verify_creation_complete"></a>Step 5: Verify Creation Complete</h3>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Check hosted cluster status
+oc get hostedclusters -A</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You should see:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>NAMESPACE   NAME       VERSION   KUBECONFIG                  PROGRESS   AVAILABLE
+clusters    demo-hcp             demo-hcp-admin-kubeconfig   Partial    True</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>What this shows:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>AVAILABLE: True</code> - The control plane is running and ready</p>
+</li>
+<li>
+<p><code>PROGRESS: Partial</code> - No worker nodes yet (expected for this demo)</p>
+</li>
+<li>
+<p><code>KUBECONFIG</code> - Secret containing credentials to access this cluster</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Check the time!</strong> From <code>oc apply</code> to <code>AVAILABLE: True</code> should be <strong>3-5 minutes</strong>. Traditional cluster: 45-60 minutes!</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_6_explore_control_plane_running_as_pods"><a class="anchor" href="#_step_6_explore_control_plane_running_as_pods"></a>Step 6: Explore Control Plane Running as Pods</h3>
+<div class="paragraph">
+<p>Now let&#8217;s explore what was created. View the hosted control plane pods:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -n clusters-demo-hcp</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You&#8217;ll see <strong>35+ pods running</strong>, including:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>NAME                                                  READY   STATUS
+kube-apiserver-5577c7675-6hg5d                       4/4     Running
+kube-controller-manager-77bb6f5d76-57khz             1/1     Running
+kube-scheduler-75b46d7cf4-6k5d2                      1/1     Running
+etcd-0                                               3/3     Running
+openshift-apiserver-66d95c9694-nbl9d                 3/3     Running
+openshift-controller-manager-75cb799f97-g5t4k        1/1     Running
+cluster-version-operator-57fcdd95c6-w2jwd            1/1     Running
+...</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Key observation:</strong> These are the <strong>same components</strong> that run on dedicated control plane nodes in traditional clusters - but now they&#8217;re <strong>containerized pods</strong>!</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_3_check_where_these_pods_are_running"><a class="anchor" href="#_step_3_check_where_these_pods_are_running"></a>Step 3: Check Where These Pods Are Running</h3>
+<div class="paragraph">
+<p>See which nodes host the control plane pods:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -n clusters-demo-hcp -o wide | grep kube-apiserver | head -3</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You&#8217;ll see they run on <strong>worker nodes</strong> of the management cluster:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>kube-apiserver-xxx   4/4   Running   0   10m   10.129.x.x   ip-10-0-54-39.us-east-2.compute.internal</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Compare this to the management cluster&#8217;s nodes:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get nodes</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Notice:</strong> The control plane pods run on <strong>regular worker nodes</strong>, not dedicated masters!</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_4_view_etcd_storage"><a class="anchor" href="#_step_4_view_etcd_storage"></a>Step 4: View etcd Storage</h3>
+<div class="paragraph">
+<p>Check the persistent storage for the hosted cluster&#8217;s etcd:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pvc -A | grep etcd</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>NAMESPACE             NAME           STATUS   VOLUME       CAPACITY   STORAGE CLASS
+clusters-demo-hcp     data-etcd-0    Bound    pvc-xxxxx    8Gi        gp3-csi</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Key insight:</strong> Each hosted cluster&#8217;s etcd gets a PVC on the management cluster. This is how state is persisted.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_5_access_the_hosted_cluster_api"><a class="anchor" href="#_step_5_access_the_hosted_cluster_api"></a>Step 5: Access the Hosted Cluster API</h3>
+<div class="paragraph">
+<p>Extract the kubeconfig for the hosted cluster:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get secret -n clusters demo-hcp-admin-kubeconfig -o jsonpath='{.data.kubeconfig}' | base64 -d &gt; demo-hcp.kubeconfig</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>View the API server endpoint:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">cat demo-hcp.kubeconfig | grep server:</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You&#8217;ll see a LoadBalancer URL:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>server: https://ac1bcccf2dfcd4bb5aa0377ed2069d2f-xxx.us-east-2.elb.amazonaws.com:6443</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>This is the hosted cluster&#8217;s API server</strong>, accessible via LoadBalancer!</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_6_connect_to_the_hosted_cluster"><a class="anchor" href="#_step_6_connect_to_the_hosted_cluster"></a>Step 6: Connect to the Hosted Cluster</h3>
+<div class="paragraph">
+<p>Switch context to the hosted cluster:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">export KUBECONFIG=demo-hcp.kubeconfig
+oc cluster-info</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Output:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Kubernetes control plane is running at https://ac1bcccf...elb.amazonaws.com:6443</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now check for nodes:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get nodes</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Result:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>No resources found</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Why no nodes?</strong> This hosted cluster has <strong>no worker nodes yet</strong>. The control plane is running (on the management cluster as pods), but we haven&#8217;t added workers.</p>
+</div>
+<div class="paragraph">
+<p>Switch back to the management cluster:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">unset KUBECONFIG
+oc get nodes</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now you see the management cluster nodes again!</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_7_compare_architecture"><a class="anchor" href="#_step_7_compare_architecture"></a>Step 7: Compare Architecture</h3>
+<div class="paragraph">
+<p><strong>Traditional Cluster:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get nodes --show-labels | grep "node-role.kubernetes.io/master"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You&#8217;ll see 3 dedicated control plane nodes:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>ip-10-0-17-107...   Ready   control-plane,master   2h   v1.33.5
+ip-10-0-63-246...   Ready   control-plane,master   2h   v1.33.5
+ip-10-0-66-152...   Ready   control-plane,master   2h   v1.33.5</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Hosted Cluster:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -n clusters-demo-hcp -l app=etcd</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Just pods:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>NAME     READY   STATUS    RESTARTS   AGE
+etcd-0   3/3     Running   0          15m</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>The difference:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Traditional: 3 dedicated nodes (expensive)</p>
+</li>
+<li>
+<p>HCP: 1 StatefulSet pod (cost-effective)</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_8_resource_consumption"><a class="anchor" href="#_step_8_resource_consumption"></a>Step 8: Resource Consumption</h3>
+<div class="paragraph">
+<p>Check how much the hosted control plane is using:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc adm top pods -n clusters-demo-hcp</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You&#8217;ll see resource usage for each pod:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>NAME                                    CPU   MEMORY
+kube-apiserver-xxx                      50m   500Mi
+etcd-0                                  30m   300Mi
+openshift-apiserver-xxx                 25m   250Mi
+...</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Visual estimate:</strong> Add up the CPU column (in millicores) and Memory column. You&#8217;ll see:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Total CPU:</strong> ~300-400m (0.3-0.4 CPU cores)</p>
+</li>
+<li>
+<p><strong>Total Memory:</strong> ~7-8GB</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>That&#8217;s the entire control plane!</strong></p>
+</div>
+<div class="paragraph">
+<p>Compare to traditional:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>3 nodes × 8 vCPU = 24 vCPUs reserved</p>
+</li>
+<li>
+<p>3 nodes × 32GB RAM = 96GB reserved</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>HCP is ~50x more efficient!</strong></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_9_the_big_demo_multi_tenancy_in_real_time"><a class="anchor" href="#_step_9_the_big_demo_multi_tenancy_in_real_time"></a>Step 9: THE BIG DEMO - Multi-Tenancy in Real-Time</h3>
+<div class="paragraph">
+<p>Now let&#8217;s prove HCP&#8217;s real value. We&#8217;ll create a <strong>SECOND</strong> hosted cluster while you watch.</p>
+</div>
+<div class="paragraph">
+<p><strong>What this proves:</strong>
+- Speed: How fast can you provision?
+- Cost: Does adding clusters cost more infrastructure?
+- Multi-tenancy: Can teams get isolated clusters?</p>
+</div>
+<div class="paragraph">
+<p>First, check current state:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># How many hosted clusters now?
+oc get hostedclusters -A
+
+# Current node resource usage
+oc adm top nodes</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now create a second cluster (same approach as the first):</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Create secrets for second cluster
+oc create secret generic pullsecret-cluster-prod-frontend -n clusters --from-file=.dockerconfigjson=/tmp/pull-secret.json --type=kubernetes.io/dockerconfigjson 2&gt;/dev/null || true
+oc create secret generic sshkey-cluster-prod-frontend -n clusters --from-literal=id_rsa.pub="" 2&gt;/dev/null || true
+
+# Create the second HostedCluster - start your timer!
+time oc apply -f - &lt;&lt;EOF
+apiVersion: hypershift.openshift.io/v1beta1
+kind: HostedCluster
+metadata:
+  name: prod-frontend
+  namespace: clusters
+spec:
+  release:
+    image: quay.io/openshift-release-dev/ocp-release:4.17.0-multi
+  pullSecret:
+    name: pullsecret-cluster-prod-frontend
+  sshKey:
+    name: sshkey-cluster-prod-frontend
+  networking:
+    clusterNetwork:
+      - cidr: 10.136.0.0/14
+    serviceNetwork:
+      - cidr: 172.32.0.0/16
+  platform:
+    type: KubeVirt
+    kubevirt:
+      baseDomainPassthrough: true
+  infraID: prod-frontend
+  dns:
+    baseDomain: demo.local
+  services:
+    - service: APIServer
+      servicePublishingStrategy:
+        type: LoadBalancer
+    - service: OAuthServer
+      servicePublishingStrategy:
+        type: Route
+    - service: Konnectivity
+      servicePublishingStrategy:
+        type: Route
+    - service: Ignition
+      servicePublishingStrategy:
+        type: Route
+  etcd:
+    managed:
+      storage:
+        persistentVolume:
+          size: 8Gi
+        type: PersistentVolume
+    managementType: Managed
+  controllerAvailabilityPolicy: SingleReplica
+  infrastructureAvailabilityPolicy: SingleReplica
+EOF</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>While it provisions, let&#8217;s discuss:</strong></p>
+</div>
+<div class="paragraph">
+<p>Traditional approach to create "prod-frontend" cluster:
+1. Provision 3 new control plane nodes (VMs)
+2. Provision N worker nodes
+3. Bootstrap etcd cluster
+4. Install OpenShift
+5. <strong>Total time: 45-60 minutes</strong>
+6. <strong>Cost: 3 × m5a.2xlarge = $276/month</strong></p>
+</div>
+<div class="paragraph">
+<p>HCP approach:
+1. Create HostedCluster resource
+2. Pods deploy on existing infrastructure
+3. <strong>Total time: 3-5 minutes</strong> ← Watch the timer!
+4. <strong>Cost: Minimal (just pods)</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>After 3 minutes:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Check - now we have TWO hosted clusters!
+oc get hostedclusters -A</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You should see:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>NAMESPACE   NAME            AVAILABLE
+clusters    demo-hcp        True
+clusters    prod-frontend   True      ← NEW!</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Check pods for the new cluster:</strong></p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc get pods -n clusters-prod-frontend | grep Running | wc -l</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Result: ~35 pods running (full control plane!)</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_10_resource_overhead_before_vs_after"><a class="anchor" href="#_step_10_resource_overhead_before_vs_after"></a>Step 10: Resource Overhead - Before vs After</h3>
+<div class="paragraph">
+<p>Check if adding a cluster increased node resource usage:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc adm top nodes</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>What you&#8217;ll see:</strong></p>
+</div>
+<div class="paragraph">
+<p>Before 2nd cluster:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>NAME                      CPU    MEMORY
+worker-1                  15%    40%
+worker-2                  12%    35%</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>After 2nd cluster:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>NAME                      CPU    MEMORY
+worker-1                  18%    45%    ← Minimal increase!
+worker-2                  15%    40%</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>The impact:</strong>
+- Added entire control plane (36 pods)
+- CPU increased: ~3% per node
+- Memory increased: ~5% per node</p>
+</div>
+<div class="paragraph">
+<p><strong>Compare to traditional:</strong>
+- Would need 3 NEW nodes (m5a.2xlarge each)
+- 100% CPU/memory on those nodes reserved</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_11_real_cost_calculation"><a class="anchor" href="#_step_11_real_cost_calculation"></a>Step 11: Real Cost Calculation</h3>
+<div class="paragraph">
+<p>Let&#8217;s calculate actual cost using the metrics we just saw.</p>
+</div>
+<div class="paragraph">
+<p><strong>Traditional Architecture (2 clusters):</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Cluster 1: 3 control plane nodes
+Cluster 2: 3 control plane nodes
+Total: 6 × m5a.2xlarge instances
+
+AWS Pricing:
+- m5a.2xlarge: $0.344/hour
+- 6 nodes × $0.344 = $2.064/hour
+- Monthly: $2.064 × 730 hours = $1,507/month
+- Annual: $18,084/year</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>HCP Architecture (2 clusters):</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>Management cluster: 3 control plane + 2 workers (already exists)
+Hosted cluster 1 (demo-hcp): Just pods
+Hosted cluster 2 (prod-frontend): Just pods
+
+Additional cost for hosted clusters: $0
+(Runs on existing worker nodes)
+
+Monthly: $0 additional
+Annual: $0 additional</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Savings: $18,084/year for just 2 clusters!</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>Extrapolate to 50 clusters:</strong>
+- Traditional: 150 control plane nodes = $75,420/year
+- HCP: Same management cluster = $0 additional
+- <strong>Savings: $75,420/year</strong></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_12_speed_comparison_the_numbers"><a class="anchor" href="#_step_12_speed_comparison_the_numbers"></a>Step 12: Speed Comparison - The Numbers</h3>
+<div class="paragraph">
+<p><strong>What we just witnessed:</strong></p>
+</div>
+<div class="paragraph">
+<p>Traditional cluster creation:
+1. Infrastructure provisioning: 15-20 min
+2. Bootstrap: 10-15 min
+3. Install OpenShift: 15-20 min
+4. Operators become ready: 5-10 min
+5. <strong>Total: 45-60 minutes</strong></p>
+</div>
+<div class="paragraph">
+<p>HCP cluster creation (prod-frontend):
+1. Create HostedCluster CR: 5 seconds
+2. Control plane pods deploy: 2-3 minutes
+3. API server ready: 3-4 minutes
+4. <strong>Total: 3-5 minutes</strong> ✅</p>
+</div>
+<div class="paragraph">
+<p><strong>Speed improvement: 10-15x faster!</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>Business Impact:</strong>
+- Dev team needs test cluster → Wait 3 min vs 60 min
+- Can create/destroy clusters rapidly
+- Test environment per PR? Easy!
+- Ephemeral clusters for demos? No problem!</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_13_access_both_clusters"><a class="anchor" href="#_step_13_access_both_clusters"></a>Step 13: Access Both Clusters</h3>
+<div class="paragraph">
+<p>Show complete isolation between clusters:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Access first cluster
+oc get secret demo-hcp-admin-kubeconfig -n clusters \
+  -o jsonpath='{.data.kubeconfig}' | base64 -d &gt; /tmp/demo-hcp.kubeconfig
+
+# Access second cluster
+oc get secret prod-frontend-admin-kubeconfig -n clusters \
+  -o jsonpath='{.data.kubeconfig}' | base64 -d &gt; /tmp/prod-frontend.kubeconfig</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Test isolation:</p>
+</div>
+<div class="listingblock execute">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Cluster 1
+export KUBECONFIG=/tmp/demo-hcp.kubeconfig
+oc whoami --show-server
+
+# Cluster 2
+export KUBECONFIG=/tmp/prod-frontend.kubeconfig
+oc whoami --show-server
+
+# Back to management cluster
+unset KUBECONFIG</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Each cluster has:
+- ✅ Separate API endpoint (LoadBalancer)
+- ✅ Separate authentication
+- ✅ Complete isolation
+- ✅ Different namespaces on management cluster</p>
+</div>
+<div class="paragraph">
+<p><strong>This is true multi-tenancy!</strong></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_demo_summary_what_did_we_just_prove"><a class="anchor" href="#_demo_summary_what_did_we_just_prove"></a>Demo Summary: What Did We Just Prove?</h3>
+<div class="paragraph">
+<p>Let&#8217;s recap what the hands-on demo <strong>actually proved</strong>:</p>
+</div>
+<div class="paragraph">
+<p>✅ <strong>SPEED: 10-15x faster provisioning</strong>
+- Traditional: 45-60 minutes
+- HCP: 3-5 minutes (you watched it happen!)
+- Created prod-frontend cluster while discussing architecture</p>
+</div>
+<div class="paragraph">
+<p>✅ <strong>COST: $75,000+/year savings at scale</strong>
+- 2 clusters: $18,084/year saved
+- 50 clusters: $75,420/year saved
+- No additional infrastructure needed</p>
+</div>
+<div class="paragraph">
+<p>✅ <strong>EFFICIENCY: Minimal resource overhead</strong>
+- Added full control plane (36 pods)
+- Node CPU increased: ~3%
+- Node memory increased: ~5%
+- Traditional would need 3 new nodes (100% dedicated)</p>
+</div>
+<div class="paragraph">
+<p>✅ <strong>MULTI-TENANCY: True isolation</strong>
+- 2 separate clusters on same infrastructure
+- Each has own API endpoint
+- Complete namespace isolation
+- Different teams, different versions possible</p>
+</div>
+<div class="paragraph">
+<p>✅ <strong>SCALABILITY: Proven path to 100+ clusters</strong>
+- If 2 clusters = minimal overhead
+- Could run 50, 100, 200 clusters
+- Same management cluster infrastructure</p>
+</div>
+<div class="paragraph">
+<p><strong>Key Takeaway:</strong> HCP isn&#8217;t just a different architecture - it&#8217;s a <strong>cost and speed multiplier</strong> for multi-cluster scenarios. You just watched us save $18,084/year in 3 minutes!</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_operations_101_day_2_tasks"><a class="anchor" href="#_operations_101_day_2_tasks"></a>Operations 101: Day 2 Tasks</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Now that you&#8217;ve seen HCP in action, here are common operational tasks.</p>
+</div>
+<div class="sect2">
+<h3 id="_backup_and_restore"><a class="anchor" href="#_backup_and_restore"></a>Backup and Restore</h3>
+<div class="paragraph">
+<p><strong>Backup strategy:</strong></p>
+</div>
+<div class="paragraph">
+<p>Each hosted cluster&#8217;s etcd is stored as a PVC on the management cluster:</p>
+</div>
+<div class="listingblock copypaste">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># View all hosted cluster etcd storage
+oc get pvc -A | grep etcd</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>To backup hosted clusters: Backup the management cluster&#8217;s storage (snapshots, Velero, etc.). This backs up all hosted control planes.</p>
+</div>
+<div class="paragraph">
+<p><strong>Recovery:</strong> Restore management cluster storage. Hosted clusters' control planes recover automatically when their etcd PVCs are restored.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_upgrading_hosted_clusters"><a class="anchor" href="#_upgrading_hosted_clusters"></a>Upgrading Hosted Clusters</h3>
+<div class="paragraph">
+<p><strong>Upgrade a hosted cluster&#8217;s OpenShift version:</strong></p>
+</div>
+<div class="listingblock copypaste">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Check current version
+oc get hostedcluster demo-hcp -n clusters -o jsonpath='{.spec.release.image}'
+
+# Upgrade to new version
+oc patch hostedcluster demo-hcp -n clusters --type=merge \
+  -p '{"spec":{"release":{"image":"quay.io/openshift-release-dev/ocp-release:4.20.0-multi"}}}'
+
+# Monitor upgrade progress
+oc get hostedcluster demo-hcp -n clusters -w</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Control plane pods roll out the new version. No infrastructure changes needed.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_monitoring_and_troubleshooting"><a class="anchor" href="#_monitoring_and_troubleshooting"></a>Monitoring and Troubleshooting</h3>
+<div class="paragraph">
+<p><strong>View all hosted clusters status:</strong></p>
+</div>
+<div class="listingblock copypaste">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># List all hosted clusters
+oc get hostedclusters -A
+
+# Watch for status changes
+oc get hostedclusters -A -w</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Troubleshoot a degraded hosted cluster:</strong></p>
+</div>
+<div class="listingblock copypaste">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Check conditions
+oc describe hostedcluster demo-hcp -n clusters
+
+# View control plane pods
+oc get pods -n clusters-demo-hcp
+
+# Check operator logs
+oc logs -n hypershift deployment/operator --tail=50</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Common issues:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>etcd pod Pending</strong> - Check PVC status, storage class availability</p>
+</li>
+<li>
+<p><strong>API server CrashLoopBackOff</strong> - Check for resource limits, certificate issues</p>
+</li>
+<li>
+<p><strong>Cluster shows Degraded</strong> - Review conditions in <code>oc describe hostedcluster</code></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_access_control"><a class="anchor" href="#_access_control"></a>Access Control</h3>
+<div class="paragraph">
+<p><strong>Grant team access to their hosted cluster only:</strong></p>
+</div>
+<div class="listingblock copypaste">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Extract kubeconfig for specific team
+oc get secret prod-frontend-admin-kubeconfig -n clusters \
+  -o jsonpath='{.data.kubeconfig}' | base64 -d &gt; team-a.kubeconfig
+
+# Provide to Team A - they can only access their cluster</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Teams can&#8217;t access the management cluster or other hosted clusters. Complete isolation.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_deleting_hosted_clusters"><a class="anchor" href="#_deleting_hosted_clusters"></a>Deleting Hosted Clusters</h3>
+<div class="paragraph">
+<p>Deletion takes 2-4 minutes as it cleans up all resources. You can run in background:</p>
+</div>
+<div class="listingblock copypaste">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># Delete hosted cluster (runs in background)
+oc delete hostedcluster demo-hcp -n clusters &amp;
+
+# Watch cleanup progress
+watch -n 5 "oc get hostedcluster -A; echo '---'; oc get pods -n clusters-demo-hcp 2&gt;/dev/null | wc -l"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>What happens during deletion:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Control plane pods terminated (30-60 seconds)</p>
+</li>
+<li>
+<p>etcd PVC deleted (30-60 seconds)</p>
+</li>
+<li>
+<p>LoadBalancer cleaned up (60-90 seconds)</p>
+</li>
+<li>
+<p>Namespace removed (30 seconds)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The <code>&amp;</code> runs deletion in background so you can continue working.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_migration_considerations"><a class="anchor" href="#_migration_considerations"></a>Migration Considerations</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>For existing OpenShift deployments:</strong></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Start with dev/test clusters</strong> - Lower risk, faster ROI</p>
+</li>
+<li>
+<p><strong>Deploy management cluster</strong> - Standard OpenShift + ACM + HyperShift operator</p>
+</li>
+<li>
+<p><strong>Migrate applications</strong> - Create hosted cluster, move workloads with Migration Toolkit</p>
+</li>
+<li>
+<p><strong>Decommission traditional clusters</strong> - After validation</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><strong>Not all clusters need to migrate.</strong> Production clusters with dedicated control plane requirements can remain traditional. HCP delivers value when you have multiple clusters (10+).</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_additional_resources"><a class="anchor" href="#_additional_resources"></a>Additional Resources</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><strong>HCP Documentation:</strong> <a href="https://docs.openshift.com/container-platform/4.20/hosted_control_planes/index.html" class="bare">https://docs.openshift.com/container-platform/4.20/hosted_control_planes/index.html</a></p>
+</li>
+<li>
+<p><strong>HyperShift Project:</strong> <a href="https://hypershift-docs.netlify.app/" class="bare">https://hypershift-docs.netlify.app/</a></p>
+</li>
+<li>
+<p><strong>ACM Documentation:</strong> <a href="https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/" class="bare">https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_summary"><a class="anchor" href="#_summary"></a>Summary</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You&#8217;ve seen HCP in action:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Control planes as pods on shared infrastructure</p>
+</li>
+<li>
+<p>3-5 minute cluster provisioning (vs 45-60 minutes traditional)</p>
+</li>
+<li>
+<p>Cost savings scale with cluster count ($9,036/year per additional cluster)</p>
+</li>
+<li>
+<p>Operational simplicity (centralized backup, upgrade, monitoring)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>HCP makes sense when you&#8217;re managing 10+ clusters. Single clusters or small-scale deployments may not justify the management cluster overhead.</p>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="acm-multicluster.html" class="query-params-link">ACM - Multi-Cluster Management</a></span>
+  <span class="next"><a href="security.html" class="query-params-link">Security - Secrets, Certs &amp; ACS</a></span>
+</nav>
+</article>
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>  </div>
+</main>
+</div>
+<footer class="footer">
+  <a href="https://demo.redhat.com" target="_blank" class="poweredBy"><p>Powered by</p><div class="labInfo_poweredBy" style="display: block; width: 260px;"><svg class="labInfo_poweredByLogo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1508.5 178.739"><g fill="#111"><path d="M316.6 63.2v-56H342a21.279 21.279 0 0 1 7.8 1.3 18.111 18.111 0 0 1 5.9 3.5 15.577 15.577 0 0 1 5 11.8 15.051 15.051 0 0 1-3.1 9.5 16.836 16.836 0 0 1-8.4 5.8l12.5 24.1h-9.3l-11.6-23H325v23Zm24.7-48.6H325v18.7h16.3q5.25 0 8.1-2.7a8.7 8.7 0 0 0 2.8-6.6 8.7 8.7 0 0 0-2.8-6.6c-1.8-1.9-4.5-2.8-8.1-2.8ZM364.1 42.8a20.674 20.674 0 0 1 1.6-8.2 20.288 20.288 0 0 1 4.3-6.7 19.92 19.92 0 0 1 6.5-4.5 19.718 19.718 0 0 1 8-1.6 18.463 18.463 0 0 1 7.8 1.6 18.677 18.677 0 0 1 6.2 4.5 20.927 20.927 0 0 1 4.1 6.8 23.2 23.2 0 0 1 1.5 8.4v2.3H372a13.822 13.822 0 0 0 4.6 8.4 13.6 13.6 0 0 0 9.1 3.3 15.553 15.553 0 0 0 5.7-1 12.858 12.858 0 0 0 4.6-2.6l5.1 5a25.983 25.983 0 0 1-7.4 4.1 24.69 24.69 0 0 1-8.4 1.3 21.306 21.306 0 0 1-8.4-1.6 22.763 22.763 0 0 1-6.8-4.4 20.788 20.788 0 0 1-4.5-6.7 23.2 23.2 0 0 1-1.5-8.4Zm20.2-14.2a11.527 11.527 0 0 0-8 3 13.046 13.046 0 0 0-4.2 7.8h24.2a13.091 13.091 0 0 0-4.2-7.8 11.106 11.106 0 0 0-7.8-3ZM443.1 63.2v-3.8a19.448 19.448 0 0 1-5.8 3.3 18.924 18.924 0 0 1-6.7 1.2 19.824 19.824 0 0 1-14.6-6.1 22.268 22.268 0 0 1-4.4-6.7 21.812 21.812 0 0 1 0-16.4A20.534 20.534 0 0 1 416 28a19.335 19.335 0 0 1 6.6-4.5 20.334 20.334 0 0 1 8.2-1.6 20.7 20.7 0 0 1 6.6 1 19.415 19.415 0 0 1 5.7 3V7.2l8-1.8v57.8Zm-25.2-20.4a13.718 13.718 0 0 0 4 10.1 13.45 13.45 0 0 0 9.8 4.1 14.956 14.956 0 0 0 6.4-1.3 15.954 15.954 0 0 0 4.9-3.6V33.6a14.988 14.988 0 0 0-4.9-3.5 15.271 15.271 0 0 0-6.4-1.3 13.423 13.423 0 0 0-9.9 4 13.806 13.806 0 0 0-3.9 10ZM478.1 63.2v-56h8.4v24h29.8v-24h8.4v56h-8.4V38.8h-29.8v24.4ZM547.2 64a16.483 16.483 0 0 1-10.8-3.5 11.037 11.037 0 0 1-4.2-8.9 10.375 10.375 0 0 1 4.7-9.2 20.76 20.76 0 0 1 11.8-3.2 27.841 27.841 0 0 1 5.8.6 27.374 27.374 0 0 1 5.3 1.6v-4.3a8.143 8.143 0 0 0-2.6-6.5 11.452 11.452 0 0 0-7.4-2.2 20.788 20.788 0 0 0-6 .9 34.616 34.616 0 0 0-6.6 2.6l-3-6a54.169 54.169 0 0 1 8.4-3.1 33.18 33.18 0 0 1 8.3-1.1c5.2 0 9.3 1.3 12.2 3.8s4.4 6.1 4.4 10.8v27h-7.8v-3.5a19.441 19.441 0 0 1-5.8 3.2 23.54 23.54 0 0 1-6.7 1Zm-7.3-12.6a5.646 5.646 0 0 0 2.6 4.8 11.193 11.193 0 0 0 6.6 1.8 16.256 16.256 0 0 0 5.9-1 14.449 14.449 0 0 0 4.9-2.9V47a19.778 19.778 0 0 0-4.8-1.8 24.933 24.933 0 0 0-5.7-.6 11.859 11.859 0 0 0-6.8 1.8 5.728 5.728 0 0 0-2.7 5ZM580.6 53.2v-24H572v-6.7h8.6V12.1l7.9-1.9v12.3h12v6.7h-12v22.1a5.94 5.94 0 0 0 1.4 4.4c.9.9 2.5 1.3 4.6 1.3a23.637 23.637 0 0 0 3-.2 10.857 10.857 0 0 0 2.8-.8v6.7a19.28 19.28 0 0 1-3.8.9 27.484 27.484 0 0 1-3.8.3c-3.9 0-7-.9-9-2.8-2-1.7-3.1-4.4-3.1-7.9Z"></path></g><path d="M127 90.2c12.5 0 30.6-2.6 30.6-17.5a12.678 12.678 0 0 0-.3-3.4L149.8 37c-1.7-7.1-3.2-10.3-15.7-16.6-9.7-5-30.8-13.1-37.1-13.1-5.8 0-7.5 7.5-14.4 7.5-6.7 0-11.6-5.6-17.9-5.6-6 0-9.9 4.1-12.9 12.5 0 0-8.4 23.7-9.5 27.2a4.216 4.216 0 0 0-.3 1.9c0 9.2 36.3 39.4 85 39.4Zm32.5-11.4c1.7 8.2 1.7 9.1 1.7 10.1 0 14-15.7 21.8-36.4 21.8-46.8 0-87.7-27.4-87.7-45.5a17.535 17.535 0 0 1 1.5-7.3C21.8 58.8 0 61.8 0 81c0 31.5 74.6 70.3 133.7 70.3 45.3 0 56.7-20.5 56.7-36.6-.1-12.8-11-27.3-30.9-35.9Z" fill="#e00"></path><path d="M159.5 78.8c1.7 8.2 1.7 9.1 1.7 10.1 0 14-15.7 21.8-36.4 21.8-46.8 0-87.7-27.4-87.7-45.5a17.535 17.535 0 0 1 1.5-7.3l3.7-9.1a4.877 4.877 0 0 0-.3 2c0 9.2 36.3 39.4 85 39.4 12.5 0 30.6-2.6 30.6-17.5a12.678 12.678 0 0 0-.3-3.4Z"></path><path d="M253.5 158.7a2.22 2.22 0 0 1-2.2-2.2V2.2a2.2 2.2 0 0 1 4.4 0v154.2a2.242 2.242 0 0 1-2.2 2.3Z" fill="#111"></path><text data-name="Demo Platform" transform="translate(1186 149)" fill="#111" font-size="82" font-family="'RedHatDisplay', 'Overpass', overpass, helvetica, arial, sans-serif" font-weight="700"><tspan x="-877.892" y="0">Demo Platform</tspan></text></svg></div></div>
+</footer>
+<script src="../../_/js/vendor/clipboard.js"></script>
+<script src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>

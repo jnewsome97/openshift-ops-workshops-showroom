@@ -52,6 +52,13 @@ The app requested **2Gi memory** and **500m CPU**. That's a lot of cluster capac
 
 === Check What It Actually Uses
 
+Wait for metrics to become available (~60 seconds after pod starts):
+
+[source,bash,role="execute"]
+----
+sleep 60
+----
+
 [source,bash,role="execute"]
 ----
 oc adm top pod -l app=memory-hog

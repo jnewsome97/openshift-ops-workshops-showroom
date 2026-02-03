@@ -1,0 +1,33 @@
+site:
+  title: OpenShift Days - Ops Track
+  url: http://localhost:8080
+  start_page: openshift-days-ops-track::index.adoc
+
+content:
+  sources:
+  - url: ./
+    start_path: content
+    branches: HEAD
+
+ui:
+  bundle:
+    url: /Users/jnewsome/Claude/rhdp_showroom_theme/build/ui-bundle.zip
+    snapshot: true
+
+output:
+  dir: ./public-test
+
+asciidoc:
+  attributes:
+    # Show all modules in GitHub Pages preview
+    module_virt: ''
+    module_acm: ''
+    module_oadp: ''
+    module_devhub: ''
+    module_ols: ''
+    module_security: ''
+    module_oidc: ''
+    module_ldap: ''
+    module_observability: ''
+    module_performance: ''
+    module_cloud_infra: ''
