@@ -830,8 +830,11 @@ Hello OpenShift!
 |`oc describe pod` → Events → Check readiness probe config
 |===
 
-== Additional Troubleshooting Scenarios
+'''
 
+.Additional Troubleshooting Scenarios (click to expand)
+[%collapsible]
+====
 === Scenario: Service Not Reachable
 
 **Symptom:** Can't access app via Route or Service.
@@ -931,6 +934,7 @@ oc set probe deployment/<name> --readiness \
   --initial-delay-seconds=30 \
   --timeout-seconds=5
 ----
+====
 
 == Debugging with oc debug
 
