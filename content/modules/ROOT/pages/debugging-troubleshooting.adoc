@@ -685,17 +685,14 @@ Pod is running! But test the route:
 
 [source,bash,role="execute"]
 ----
-curl -s http://$(oc get route weather-proxy -n ops-track-demo -o jsonpath='{.spec.host}') | head -5
+curl -s http://$(oc get route weather-proxy -n ops-track-demo -o jsonpath='{.spec.host}') | grep -i "application"
 ----
 
-Output (the OpenShift "Application is not available" error page):
+Output:
 
 ----
-<html>
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <style type="text/css">
+      <h1>Application is not available</h1>
+      <p>The application is currently not serving requests at this endpoint. It may not have been started or is still starting.</p>
 ----
 
 **Problem:** The app is running but can't be reached!
