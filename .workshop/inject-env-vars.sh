@@ -89,6 +89,9 @@ if [ "${MODULE_ENABLE_CLOUD_INFRA:-true}" = "true" ]; then
     ATTRS="${ATTRS}    module_cloud_infra: ''"$'\n'
 fi
 
+# TOC depth - only show main sections
+ATTRS="${ATTRS}    toclevels: 2"$'\n'
+
 # Also add standard workshop variables
 ATTRS="${ATTRS}    api_url: '${API_URL:-}'"$'\n'
 ATTRS="${ATTRS}    master_url: '${MASTER_URL:-}'"$'\n'

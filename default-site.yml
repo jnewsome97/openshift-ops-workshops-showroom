@@ -19,6 +19,8 @@ output:
 
 asciidoc:
   attributes:
+    # TOC depth - only show main sections (h2), not subsections
+    toclevels: 2
     # Show all modules in GitHub Pages preview
     module_virt: ''
     module_acm: ''
@@ -26,6 +28,7 @@ asciidoc:
     module_devhub: ''
     module_ols: ''
     module_security: ''
+    module_waf: ''
     module_oidc: ''
     module_ldap: ''
     module_observability: ''
