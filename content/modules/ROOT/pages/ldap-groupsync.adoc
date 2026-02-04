@@ -500,7 +500,7 @@ oc login -u normaluser1 -p 'Op#nSh1ft' $OCP_SERVER --insecure-skip-tls-verify
 oc get projects
 ----
 
-Result: `No resources found.` (Not in any project-specific groups)
+Result: You may see some system namespaces (like `openshift-virtualization-os-images`) but **no application projects** (app-dev, app-test, app-prod). This user is not in any project-specific groups.
 
 **Test as teamuser1 (ose-teamed-app member):**
 
