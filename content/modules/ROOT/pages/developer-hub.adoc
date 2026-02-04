@@ -101,16 +101,16 @@ image::rhdh-import-templates.png[Templates discovered]
 
 === Step 5: The Developer Experience
 
-Now click **Create** in the left sidebar.
+Scroll down on the Home page. You'll now see an **Explore Templates** section with template cards:
+
+* **Create Backend Plugin Template**
+* **Create a Python application in GitLab with a CI pipeline**
+* **Create a tekton CI Pipeline**
+* **Create a .NET Frontend application in Azure DevOps**
 
 **This is what developers see:** A menu of pre-approved application templates.
 
-* **Quarkus Backend** - Java microservice with CI pipeline
-* **Spring Boot Backend** - Java microservice
-* **Node.js Backend** - JavaScript/TypeScript service
-* **Go Backend** - Go microservice
-
-Click on **Quarkus Backend**. You'll see:
+Click on any template. You'll see:
 
 * Description, owner, tags
 * **Launch Template** button
