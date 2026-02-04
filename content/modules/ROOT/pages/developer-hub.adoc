@@ -150,7 +150,7 @@ The portal is empty because no software templates or catalog entries have been r
 4. Enter the following URL:
 
 ----
-https://github.com/redhat-developer/red-hat-developer-hub-software-templates/blob/main/templates.yaml
+https://github.com/redhat-developer/red-hat-developer-hub-software-templates/blob/48056c57dbfcdcf2a7075819745b0203d1a8a42e/templates.yaml
 ----
 
 5. Click **Analyze**
