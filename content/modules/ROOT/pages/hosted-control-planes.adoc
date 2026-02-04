@@ -297,8 +297,8 @@ oc get hostedclusters -A
 You should see:
 
 ----
-NAMESPACE   NAME       VERSION   KUBECONFIG                  PROGRESS   AVAILABLE
-clusters    demo-hcp             demo-hcp-admin-kubeconfig   Partial    True
+NAMESPACE   NAME       VERSION   KUBECONFIG                  PROGRESS   AVAILABLE   PROGRESSING   MESSAGE
+clusters    demo-hcp             demo-hcp-admin-kubeconfig   Partial    True        False         The hosted control plane is available
 ----
 
 **What this shows:**
