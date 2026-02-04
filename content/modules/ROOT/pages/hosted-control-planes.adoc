@@ -370,8 +370,8 @@ oc get pvc -A | grep etcd
 Output:
 
 ----
-NAMESPACE             NAME           STATUS   VOLUME       CAPACITY   STORAGE CLASS
-clusters-demo-hcp     data-etcd-0    Bound    pvc-xxxxx    8Gi        gp3-csi
+NAMESPACE             NAME           STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS                  AGE
+clusters-demo-hcp     data-etcd-0    Bound    pvc-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx   8Gi        RWO            ocs-storagecluster-ceph-rbd   7m
 ----
 
 **Key insight:** Each hosted cluster's etcd gets a PVC on the management cluster. This is how state is persisted.
