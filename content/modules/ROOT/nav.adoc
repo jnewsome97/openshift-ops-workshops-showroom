@@ -22,7 +22,8 @@ endif::[]
 * xref:app-mgmt-basics.adoc[Application Management Basics]
 
 .Phase 2: Networking
-* xref:networking.adoc[Networking & Ingress]
+* xref:ingress-loadbalancing.adoc[Ingress & Load Balancing]
+* xref:network-security.adoc[Network Security]
 
 .Phase 3: Day 2 Operations
 ifdef::module_observability[]

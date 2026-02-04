@@ -1,0 +1,573 @@
+= Ingress & Load Balancing
+
+== Module Overview
+
+**Duration:** 25 minutes +
+**Format:** Hands-on ingress configuration +
+**Audience:** Platform Engineers, Network Administrators, Operations Teams
+
+**Narrative Context:**
+
+Your cluster is running applications. Now you need to understand how external traffic reaches your applications and how to configure load balancing, TLS termination, and advanced protection features.
+
+== Learning Objectives
+
+By the end of this module, you will be able to:
+
+* Configure and troubleshoot the Ingress Controller
+* Create Routes with different TLS termination strategies
+* Configure rate limiting and IP-based access control
+* Understand load balancing options (Services, Ingress)
+* Integrate AWS WAF for advanced threat protection
+
+== Ingress Controller & Load Balancing
+
+The **Ingress Controller** (based on HAProxy) handles external traffic entering the cluster. It's how users reach your applications.
+
+=== View Ingress Controller Configuration
+
+[source,bash,role="execute"]
+----
+oc get ingresscontroller default -n openshift-ingress-operator -o yaml | head -60
+----
+
+Key configuration options:
+
+* `replicas` - Number of router pods (default: 2 for HA)
+* `routeAdmission.wildcardPolicy` - Whether wildcard routes are allowed
+* `defaultCertificate` - TLS certificate for *.apps domain
+
+=== View Router Pods
+
+[source,bash,role="execute"]
+----
+oc get pods -n openshift-ingress -o wide
+----
+
+Router pods run on worker nodes and handle incoming HTTP/HTTPS traffic.
+
+=== View Ingress Service
+
+[source,bash,role="execute"]
+----
+oc get svc -n openshift-ingress
+----
+
+The `router-default` service exposes the ingress controller:
+
+* On cloud platforms: `LoadBalancer` type with external IP
+* On bare metal: Typically `NodePort` or MetalLB `LoadBalancer`
+
+== Routes: OpenShift's Ingress Resource
+
+OpenShift **Routes** expose services externally. They're more feature-rich than Kubernetes Ingress.
+
+=== Use the Application from App Management
+
+In the previous module, you deployed the `weathernow` application. Let's examine its networking.
+
+[source,bash,role="execute"]
+----
+oc project app-management
+----
+
+[NOTE]
+====
+**Skipped the App Management module?**
+
+Check if the weathernow app exists:
+
+[source,bash,role="execute"]
+----
+oc get pods -n app-management -l deployment=weathernow
+----
+
+If no pods are found, deploy the app now:
+
+[source,bash,role="execute"]
+----
+oc new-project app-management 2>/dev/null || oc project app-management
+oc new-app --name=weathernow --image=quay.io/openshifttest/hello-openshift:1.2.0
+----
+
+Wait for the pod to be ready before continuing.
+
+**Create an Edge Route with TLS:**
+
+[source,bash,role="execute"]
+----
+oc create route edge weathernow --service=weathernow 2>/dev/null || echo "Route already exists"
+----
+====
+
+=== View the Route Configuration
+
+[source,bash,role="execute"]
+----
+oc get route weathernow -o yaml
+----
+
+Key route fields:
+
+* `spec.host` - The external hostname
+* `spec.to.name` - The backend Service
+* `spec.tls.termination` - TLS termination type (edge in this case)
+
+=== Test the Route
+
+Test with HTTPS (edge TLS):
+
+[source,bash,role="execute"]
+----
+curl -sk https://$(oc get route weathernow -o jsonpath='{.spec.host}') | head -5
+----
+
+This request flows: **Client -> Load Balancer -> Ingress Controller -> Service -> Pod**
+
+You should see the WeatherNow HTML page returned.
+
+== TLS Termination Strategies
+
+OpenShift Routes support three TLS termination types:
+
+[cols="1,2,2"]
+|===
+|Type |Description |Use Case
+
+|**edge**
+|TLS terminates at the router, traffic to pod is HTTP
+|Most common. Router handles certificates.
+
+|**passthrough**
+|TLS passes through to the pod unchanged
+|Application manages its own certificates
+
+|**reencrypt**
+|TLS terminates at router, new TLS to pod
+|End-to-end encryption with router certificate validation
+|===
+
+=== Examine TLS Configuration
+
+View the TLS settings on the edge route:
+
+[source,bash,role="execute"]
+----
+oc get route weathernow -o jsonpath='{.spec.tls}' | python3 -m json.tool
+----
+
+Edge termination means:
+
+* TLS terminates at the Ingress Controller (HAProxy)
+* Traffic from router to pod is unencrypted HTTP
+* The router uses the cluster's wildcard certificate
+
+== Route Annotations for Advanced Features
+
+Routes support annotations for rate limiting, timeouts, and more:
+
+Common annotations:
+
+* `haproxy.router.openshift.io/timeout` - Backend timeout
+* `haproxy.router.openshift.io/rate-limit-connections` - Connection rate limiting
+* `haproxy.router.openshift.io/ip-whitelist` - IP-based access control
+
+=== Apply Rate Limiting
+
+[source,bash,role="execute"]
+----
+oc annotate route weathernow -n app-management \
+  haproxy.router.openshift.io/rate-limit-connections=true \
+  haproxy.router.openshift.io/rate-limit-connections.concurrent-tcp=50 \
+  haproxy.router.openshift.io/rate-limit-connections.rate-http=100 \
+  --overwrite
+----
+
+Verify the annotations were applied:
+
+[source,bash,role="execute"]
+----
+oc get route weathernow -n app-management -o jsonpath='{.metadata.annotations}' | python3 -m json.tool | grep rate
+----
+
+=== View Existing Routes Across Cluster
+
+[source,bash,role="execute"]
+----
+oc get routes -A | head -20
+----
+
+Notice different termination types: `edge`, `passthrough`, `reencrypt`.
+
+== Services: Internal Load Balancing
+
+OpenShift Services provide internal load balancing and service discovery.
+
+=== Service Types
+
+[cols="1,2,2"]
+|===
+|Type |Description |Access
+
+|**ClusterIP**
+|Internal IP only
+|Inside cluster only
+
+|**NodePort**
+|Port on every node
+|External via node IP:port
+
+|**LoadBalancer**
+|Cloud/MetalLB external IP
+|External via dedicated IP
+|===
+
+=== View the Ingress LoadBalancer Service
+
+The ingress controller itself uses a LoadBalancer service:
+
+[source,bash,role="execute"]
+----
+oc get svc router-default -n openshift-ingress -o wide
+----
+
+On AWS, this is typically a Network Load Balancer (NLB). On bare metal, MetalLB can provide LoadBalancer functionality.
+
+== Ingress Controller Scaling
+
+=== Scale Ingress Controller
+
+[source,bash,role="execute"]
+----
+oc patch ingresscontroller default -n openshift-ingress-operator --type=merge -p '{"spec":{"replicas":3}}'
+----
+
+Watch the new router pod come up:
+
+[source,bash,role="execute"]
+----
+oc get pods -n openshift-ingress -w
+----
+
+Press Ctrl+C when you see 3 pods running.
+
+=== View Ingress Controller Status
+
+[source,bash,role="execute"]
+----
+oc get ingresscontroller default -n openshift-ingress-operator -o jsonpath='{.status.conditions}' | python3 -m json.tool
+----
+
+== AWS WAF Integration
+
+OpenShift on AWS can integrate with **AWS WAF** (Web Application Firewall) for advanced threat protection against OWASP Top 10 vulnerabilities including SQL injection, cross-site scripting (XSS), and other common attacks.
+
+**Architecture:** AWS WAF attaches to an Application Load Balancer (ALB), which sits in front of your OpenShift workloads:
+
+----
+Client -> AWS ALB + WAF -> OpenShift Service -> Pods
+----
+
+=== When to Use What
+
+[cols="1,2,2"]
+|===
+|Scenario |Solution |Notes
+
+|Basic rate limiting
+|Route annotations
+|Built-in, no extra cost
+
+|IP-based blocking
+|Route annotations or NetworkPolicy
+|Built-in
+
+|OWASP protection (SQLi, XSS)
+|AWS WAF + ALB
+|Requires ALB, extra cost
+
+|DDoS protection
+|AWS Shield + CloudFront
+|Enterprise feature
+
+|API security
+|3scale API Management
+|Full API gateway
+|===
+
+'''
+
+.Optional: Hands-on AWS WAF Integration (10-15 minutes)
+[%collapsible]
+======
+*Prerequisites:* AWS CLI is pre-configured in your terminal
+
+This exercise deploys a fully functional AWS WAF protecting an OpenShift application. You'll see WAF block SQL injection and XSS attacks in real-time.
+
+First, verify AWS CLI credentials are configured:
+
+[source,bash,role="execute"]
+----
+aws sts get-caller-identity
+----
+
+You should see your AWS account information.
+
+**Step 1: Install AWS Load Balancer Operator**
+
+[source,bash,role="execute"]
+----
+cat <<EOF | oc apply -f -
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: aws-load-balancer-operator
+  namespace: openshift-operators
+spec:
+  channel: stable-v1
+  installPlanApproval: Automatic
+  name: aws-load-balancer-operator
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
+EOF
+----
+
+Wait for the operator to install:
+
+[source,bash,role="execute"]
+----
+oc get csv -n openshift-operators -w | grep aws-load-balancer
+----
+
+Press Ctrl+C when you see `Succeeded`.
+
+**Step 2: Create AWS Load Balancer Controller**
+
+[source,bash,role="execute"]
+----
+cat <<EOF | oc apply -f -
+apiVersion: networking.olm.openshift.io/v1
+kind: AWSLoadBalancerController
+metadata:
+  name: cluster
+spec:
+  subnetTagging: Auto
+  additionalResourceTags:
+    - key: Environment
+      value: workshop
+  ingressClass: alb
+  config:
+    replicas: 1
+  enabledAddons:
+    - AWSWAFv2
+EOF
+----
+
+Wait for the controller pod:
+
+[source,bash,role="execute"]
+----
+oc get pods -n openshift-operators -l app.kubernetes.io/name=aws-load-balancer-operator -w
+----
+
+Press Ctrl+C when you see `Running`.
+
+**Step 3: Create ALB-backed Ingress**
+
+Make sure the weathernow service is NodePort (required for ALB instance target type):
+
+[source,bash,role="execute"]
+----
+oc patch svc weathernow -n app-management -p '{"spec":{"type":"NodePort"}}'
+----
+
+Create the Ingress:
+
+[source,bash,role="execute"]
+----
+cat <<EOF | oc apply -f -
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: weathernow-alb
+  namespace: app-management
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: instance
+spec:
+  ingressClassName: alb
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: weathernow
+            port:
+              number: 8080
+EOF
+----
+
+Wait for the ALB to provision (2-3 minutes):
+
+[source,bash,role="execute"]
+----
+oc get ingress weathernow-alb -n app-management -w
+----
+
+Press Ctrl+C when you see an ADDRESS.
+
+**Step 4: Create WAF WebACL**
+
+[source,bash,role="execute"]
+----
+aws wafv2 create-web-acl \
+  --name openshift-waf \
+  --scope REGIONAL \
+  --region us-east-2 \
+  --default-action Allow={} \
+  --visibility-config SampledRequestsEnabled=true,CloudWatchMetricsEnabled=true,MetricName=openshift-waf-metrics \
+  --rules '[
+    {
+      "Name": "AWS-AWSManagedRulesCommonRuleSet",
+      "Priority": 1,
+      "Statement": {
+        "ManagedRuleGroupStatement": {
+          "VendorName": "AWS",
+          "Name": "AWSManagedRulesCommonRuleSet"
+        }
+      },
+      "OverrideAction": {"None": {}},
+      "VisibilityConfig": {
+        "SampledRequestsEnabled": true,
+        "CloudWatchMetricsEnabled": true,
+        "MetricName": "CommonRuleSet"
+      }
+    },
+    {
+      "Name": "AWS-AWSManagedRulesSQLiRuleSet",
+      "Priority": 2,
+      "Statement": {
+        "ManagedRuleGroupStatement": {
+          "VendorName": "AWS",
+          "Name": "AWSManagedRulesSQLiRuleSet"
+        }
+      },
+      "OverrideAction": {"None": {}},
+      "VisibilityConfig": {
+        "SampledRequestsEnabled": true,
+        "CloudWatchMetricsEnabled": true,
+        "MetricName": "SQLiRuleSet"
+      }
+    }
+  ]'
+----
+
+**Step 5: Associate WAF with ALB**
+
+[source,bash,role="execute"]
+----
+WAF_ARN=$(aws wafv2 list-web-acls --scope REGIONAL --region us-east-2 --query "WebACLs[?Name=='openshift-waf'].ARN" --output text)
+echo "WAF ARN: $WAF_ARN"
+oc annotate ingress weathernow-alb -n app-management alb.ingress.kubernetes.io/wafv2-acl-arn="$WAF_ARN" --overwrite
+----
+
+**Step 6: Test WAF Protection**
+
+Get the ALB DNS name:
+
+[source,bash,role="execute"]
+----
+ALB_DNS=$(oc get ingress weathernow-alb -n app-management -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+echo "ALB URL: http://$ALB_DNS"
+----
+
+Test normal request (should succeed):
+
+[source,bash,role="execute"]
+----
+curl -s http://$ALB_DNS | head -5
+----
+
+Test SQL injection attack (should be blocked):
+
+[source,bash,role="execute"]
+----
+curl -s "http://$ALB_DNS/?id=1%20OR%201=1"
+----
+
+Expected: `403 Forbidden`
+
+Test XSS attack (should be blocked):
+
+[source,bash,role="execute"]
+----
+curl -s "http://$ALB_DNS/?search=<script>alert(1)</script>"
+----
+
+Expected: `403 Forbidden`
+
+**Congratulations!** You've successfully deployed AWS WAF protecting an OpenShift application.
+======
+
+== Cleanup
+
+[source,bash,role="execute"]
+----
+# Remove rate limiting annotations
+oc annotate route weathernow -n app-management \
+  haproxy.router.openshift.io/rate-limit-connections- \
+  haproxy.router.openshift.io/rate-limit-connections.concurrent-tcp- \
+  haproxy.router.openshift.io/rate-limit-connections.rate-http-
+
+# Scale ingress controller back to 2
+oc patch ingresscontroller default -n openshift-ingress-operator --type=merge -p '{"spec":{"replicas":2}}'
+
+# Delete ALB ingress if created
+oc delete ingress weathernow-alb -n app-management --ignore-not-found
+
+# Delete WAF if created
+WAF_ID=$(aws wafv2 list-web-acls --scope REGIONAL --region us-east-2 --query "WebACLs[?Name=='openshift-waf'].Id" --output text 2>/dev/null)
+if [ -n "$WAF_ID" ]; then
+  LOCK_TOKEN=$(aws wafv2 get-web-acl --name openshift-waf --scope REGIONAL --id $WAF_ID --region us-east-2 --query "LockToken" --output text)
+  aws wafv2 delete-web-acl --name openshift-waf --scope REGIONAL --id $WAF_ID --lock-token $LOCK_TOKEN --region us-east-2
+  echo "WAF WebACL deleted"
+fi
+
+echo "Cleanup complete"
+----
+
+== Summary
+
+**What you learned:**
+
+* The Ingress Controller (HAProxy) handles external traffic
+* Routes expose services with TLS termination options (edge, passthrough, reencrypt)
+* Route annotations provide rate limiting and IP-based access control
+* Services provide internal load balancing
+* AWS WAF can be integrated via ALB for advanced threat protection
+
+**Key operational commands:**
+
+[source,bash]
+----
+# Check ingress controller
+oc get ingresscontroller -n openshift-ingress-operator
+
+# View routes
+oc get routes -A
+
+# View ingress service
+oc get svc -n openshift-ingress
+----
+
+== Additional Resources
+
+* **Ingress Controller:** link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/networking/configuring-ingress-cluster-traffic[Configuring ingress cluster traffic]
+* **Route Annotations:** link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/networking/configuring-ingress-cluster-traffic#nw-route-specific-annotations_route-configuration[Route-specific annotations]
+* **AWS Load Balancer Operator:** link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/networking/aws-load-balancer-operator[AWS Load Balancer Operator]
+
+---
+
+**Next Module:** Continue with xref:network-security.adoc[Network Security] to learn about NetworkPolicy and EgressFirewall.
