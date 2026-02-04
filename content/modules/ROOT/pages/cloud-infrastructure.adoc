@@ -101,34 +101,20 @@ This workshop runs on **AWS**. Let's explore how OpenShift integrates with the u
 
 === Step 1: Identify the Cloud Platform
 
-Confirm what cloud platform this cluster is running on:
-
-[source,bash,role="execute"]
-----
-oc get infrastructure cluster -o yaml | grep -A5 "status:"
-----
-
-You'll see output showing:
-
-----
-status:
-  apiServerInternalURI: https://api-int.cluster-xxxxx...
-  apiServerURL: https://api.cluster-xxxxx...
-  infrastructureName: cluster-xxxxx-xxxxx
-  platform: AWS
-  platformStatus:
-    aws:
-      region: us-east-2
-----
-
-**Key insight:** The `platform: AWS` tells OpenShift which cloud provider APIs to use. On Azure, this would show `platform: Azure`. On VMware, `platform: VSphere`.
-
-Get just the platform:
+Get the cloud platform this cluster is running on:
 
 [source,bash,role="execute"]
 ----
 oc get infrastructure cluster -o jsonpath='{.status.platform}'
 ----
+
+Output:
+
+----
+AWS
+----
+
+**Key insight:** This tells OpenShift which cloud provider APIs to use. On Azure, this would show `Azure`. On VMware, `VSphere`.
 
 Get the AWS region:
 
