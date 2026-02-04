@@ -2,6 +2,10 @@
 
 == Module Overview
 
+**Duration:** 15 minutes +
+**Format:** Hands-on AI assistant exploration +
+**Audience:** Platform Engineers, Developers, Operations Teams
+
 OpenShift Lightspeed is an AI-powered assistant integrated into the OpenShift web console that combines the power of Large Language Models (LLMs) and official OpenShift documentation via Retrieval-Augmented Generation (RAG) to help administrators and developers with:
 
 * Understanding OpenShift concepts
