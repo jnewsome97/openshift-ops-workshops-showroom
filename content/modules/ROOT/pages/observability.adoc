@@ -80,7 +80,7 @@ a. In the OpenShift console, click `Ecosystem` -> `Software Catalog`
 b. Select namespace `openshift-operators-redhat` from the Project dropdown (create it first if needed: `oc create namespace openshift-operators-redhat`)
 c. Search for `Loki Operator` and select the one provided by Red Hat
 d. Click `Install`
-e. Select Update Channel `stable-6.2`
+e. Select Update Channel `stable-6.2` (or the latest `stable-6.x` available)
 f. Select `Enable Operator recommended cluster monitoring on this Namespace`
 g. Click `Install` and wait for completion
 
@@ -90,7 +90,7 @@ a. In the OpenShift console, click `Ecosystem` -> `Software Catalog`
 b. Select namespace `openshift-logging` from the Project dropdown (create it first if needed: `oc create namespace openshift-logging`)
 c. Search for `Red Hat OpenShift Logging`
 d. Click `Install`
-e. Select Update Channel `stable-6.2`
+e. Select Update Channel `stable-6.2` (or the latest `stable-6.x` available - must match Loki Operator version)
 f. Select `Enable Operator recommended cluster monitoring on this Namespace`
 g. Click `Install` and wait for completion
 
@@ -100,7 +100,7 @@ a. In the OpenShift console, click `Ecosystem` -> `Software Catalog`
 b. Select namespace `openshift-operators` from the Project dropdown
 c. Search for `Cluster Observability Operator` (provided by Red Hat)
 d. Click `Install`
-e. Select Update Channel `stable`
+e. Select Update Channel `stable` (or the latest stable channel available)
 f. Click `Install` and wait for completion
 
 === Option B: Install via CLI
@@ -114,7 +114,7 @@ oc create namespace openshift-logging
 oc create namespace openshift-operators-redhat
 ----
 
-Install the Loki Operator:
+Install the Loki Operator (adjust `channel` to the latest `stable-6.x` available if needed):
 
 [source,bash,role="execute"]
 ----
@@ -140,7 +140,7 @@ spec:
 EOF
 ----
 
-Install the Cluster Logging Operator:
+Install the Cluster Logging Operator (channel must match Loki Operator version):
 
 [source,bash,role="execute"]
 ----
@@ -168,7 +168,7 @@ spec:
 EOF
 ----
 
-Install the Cluster Observability Operator:
+Install the Cluster Observability Operator (adjust `channel` to the latest stable channel available if needed):
 
 [source,bash,role="execute"]
 ----
