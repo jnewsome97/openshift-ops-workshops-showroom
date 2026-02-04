@@ -392,13 +392,15 @@ View the API server endpoint:
 cat demo-hcp.kubeconfig | grep server:
 ----
 
-You'll see a LoadBalancer URL:
+You'll see the hosted cluster's API server endpoint:
 
 ----
-server: https://ac1bcccf2dfcd4bb5aa0377ed2069d2f-xxx.us-east-2.elb.amazonaws.com:6443
+server: https://<endpoint>:6443
 ----
 
-**This is the hosted cluster's API server**, accessible via LoadBalancer!
+NOTE: The endpoint could be an AWS LoadBalancer URL (e.g., `xxx.elb.amazonaws.com`) or an internal IP (e.g., `10.10.10.x`) depending on your infrastructure configuration.
+
+**This is the hosted cluster's API server** - a separate Kubernetes API running on the management cluster!
 
 === Step 6: Connect to the Hosted Cluster
 
