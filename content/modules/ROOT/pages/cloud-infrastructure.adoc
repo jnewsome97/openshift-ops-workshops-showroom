@@ -170,6 +170,8 @@ Capacity:
   ephemeral-storage:  209124332Ki
 ----
 
+NOTE: If OpenShift Virtualization is installed, you'll also see `devices.kubevirt.io/kvm`, `devices.kubevirt.io/tun`, and `devices.kubevirt.io/vhost-net` in the capacity output.
+
 **Key insight:** This worker has 32 CPUs and ~128GB RAM. The same command shows capacity whether you're on a cloud VM or a bare metal server.
 
 === Step 4: Explore Storage Classes
@@ -181,7 +183,7 @@ Storage classes define *how* storage is provisioned. OpenShift auto-configures s
 oc get storageclasses
 ----
 
-You'll see multiple storage classes:
+You'll see multiple storage classes (output includes additional columns like RECLAIMPOLICY, VOLUMEBINDINGMODE, etc.):
 
 ----
 NAME                                         PROVISIONER
@@ -191,6 +193,8 @@ ocs-storagecluster-ceph-rbd (default)        openshift-storage.rbd.csi.ceph.com
 ocs-storagecluster-cephfs                    openshift-storage.cephfs.csi.ceph.com
 openshift-storage.noobaa.io                  openshift-storage.noobaa.io/obc
 ----
+
+NOTE: You may also see `ocs-storagecluster-ceph-rbd-virtualization` if OpenShift Virtualization is installed.
 
 **What you're seeing:**
 
@@ -324,10 +328,11 @@ On IPI clusters, scale infrastructure with MachineSets:
 [source,bash,role="copypaste"]
 ----
 # View machine sets (IPI clusters only)
-oc get machinesets -n openshift-machine-api
+# Note: Use full API group if ACM is installed
+oc get machinesets.machine.openshift.io -n openshift-machine-api
 
 # Scale workers
-oc scale machineset <name> --replicas=4 -n openshift-machine-api
+oc scale machineset.machine.openshift.io <name> --replicas=4 -n openshift-machine-api
 ----
 
 When you scale a MachineSet on AWS, OpenShift:
