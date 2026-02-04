@@ -110,16 +110,26 @@ Scroll down on the Home page. You'll now see an **Explore Templates** section wi
 
 **This is what developers see:** A menu of pre-approved application templates.
 
-Click on any template. You'll see:
+Click on any template (e.g., **Create Backend Plugin Template**). You'll see the self-service wizard with three steps:
 
-* Description, owner, tags
-* **Launch Template** button
+**Step 1: Provide some information**
 
-If a developer clicks Launch Template, they fill in a simple form (app name, repo location, etc.) and the template creates everything automatically.
+* Plugin ID, Description, Owner
 
-**The key point:** Developers don't submit tickets to you. They self-serve. And everything they create follows your standards because it came from a template you approved.
+**Step 2: Choose a location**
 
-NOTE: You may see a warning about missing entities. This is expected for demo templates.
+* Host (e.g., github.com)
+* Owner (organization or user)
+* Repository name
+* Option to create new repo or submit PR to existing
+
+**Step 3: Review**
+
+* Confirms all selections before creating
+
+The developer clicks through, fills in a few fields, and the template creates everything—repo, code scaffold, CI pipeline—automatically.
+
+**The key point:** Developers don't submit tickets to you. They self-serve. Everything they create follows your standards because it came from a template you approved.
 
 == Part 3: How You Keep It Running
 
