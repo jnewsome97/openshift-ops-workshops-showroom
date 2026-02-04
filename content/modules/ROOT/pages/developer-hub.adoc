@@ -19,11 +19,10 @@ We've learned how to:
 
 By the end of this module, you will be able to:
 
-* Understand what Red Hat Developer Hub (RHDH) is and how it fits into platform operations
+* Understand what RHDH provides to developers (self-service templates)
+* See how RHDH reduces ticket-based requests and manual provisioning
 * Verify RHDH deployment health and status
-* Navigate RHDH resources in OpenShift console and CLI
-* Troubleshoot common RHDH issues
-* Understand how software templates reduce operational toil
+* Monitor and troubleshoot RHDH as part of your platform infrastructure
 
 == What is Red Hat Developer Hub?
 
@@ -138,59 +137,60 @@ You're now in the **Developer Hub Portal**.
 
 image::rhdh-home-page.png[Developer Hub home page]
 
-== Part 2: Populate the Catalog with Demo Templates
+== Part 2: See What Developers Get
 
-The portal is empty because no software templates or catalog entries have been registered. Let's import the **official Red Hat Developer Hub demo templates**.
+The portal is empty because no software templates have been registered yet. Let's import the **official Red Hat Developer Hub demo templates** so you can see what developers experience when using self-service.
 
 === Step 4: Register Official Templates
 
-1. In the Developer Hub portal, click **Create** in the left sidebar
-2. You'll see an empty "Golden Path Templates" page
-3. Click **Register Existing Component** (or the "+" icon)
-4. Enter the following URL:
+1. On the Home screen, you'll see the **Explore Your Software Catalog** section with a message: "No software catalog added yet"
+
+image::rhdh-register-component.png[Register a component button on home screen]
+
+2. Click **Register a component**
+3. Enter the following URL:
 
 ----
 https://github.com/redhat-developer/red-hat-developer-hub-software-templates/blob/48056c57dbfcdcf2a7075819745b0203d1a8a42e/templates.yaml
 ----
 
-5. Click **Analyze**
-6. You'll see it found multiple templates (Go, Node.js, Quarkus, Spring Boot, ArgoCD, Tekton, etc.)
-7. Click **Import**
+4. Click **Analyze**
+5. You'll see a list of entities to be added to the catalog (argocd-template, go-backend-template, nodejs-backend-template, quarkus-backend-template, spring-boot-backend-template, tekton-template, and more)
 
-image::rhdh-import-templates.png[Importing official Red Hat templates]
+image::rhdh-import-templates.png[Templates discovered after analyzing the URL]
+
+6. Click **Import**
 
 === Step 5: Explore the Templates
 
-After import, click **Create** again. You'll now see available templates:
+After import, click **Create** in the left sidebar. You'll now see available templates including:
 
-* **Quarkus Backend** - Java microservice with Quarkus
+* **Quarkus Backend** - Java microservice with Quarkus and CI pipeline
 * **Spring Boot Backend** - Java microservice with Spring
 * **Node.js Backend** - JavaScript/TypeScript service
 * **Go Backend** - Go microservice
 * **ArgoCD** - GitOps application setup
 * **Tekton** - CI/CD pipeline templates
 
-image::rhdh-templates-available.png[Available software templates]
+Click on the **Quarkus Backend** template. You'll see:
 
-Click on any template to see:
+* **Description:** "Create a starter Quarkus Backend application with a CI pipeline"
+* **Owner:** janus-authors
+* **Type:** service
+* **Tags:** quarkus, java, maven
+* **Actions:** View Source, View TechDocs, Launch Template
 
-* **Description** - What the template creates
-* **Input parameters** - What information is needed
-* **Actions** - What happens when executed (create repo, deploy to OpenShift, etc.)
+NOTE: You may see a warning: "This entity has relations to other entities, which can't be found in the catalog." This is expected - the demo templates reference owner groups that aren't configured in this cluster.
 
-=== Step 6: Walk Through a Template (Read-Only)
+Click **Launch Template** to see the input form (you can explore without executing).
 
-Click on the **Quarkus Backend** template to explore it:
+**Key insight for Ops:** These templates are YAML files stored in Git. You control what templates are available, what parameters are exposed, and what gets created. Developers just fill in the blanks.
 
-1. Review the input fields (name, description, owner, etc.)
-2. Notice how Ops has pre-defined the structure - developers just fill in blanks
-3. Click **Back** (don't execute - this is just exploration)
+== Part 3: What Ops Keeps Running
 
-**Key insight for Ops:** These templates are YAML files stored in Git. You control what templates are available, what parameters are exposed, and what gets created.
+Now that you've seen what developers get, here's how you monitor and maintain RHDH.
 
-== Part 3: Ops Management Tasks
-
-=== Step 7: View RHDH Resources in OpenShift
+=== Step 6: View RHDH Resources in OpenShift
 
 In the OpenShift console:
 
@@ -210,7 +210,7 @@ oc get pods -n backstage
 oc get deployment -n backstage
 ----
 
-=== Step 8: Check Configuration
+=== Step 7: Check Configuration
 
 RHDH configuration is stored in ConfigMaps:
 
@@ -226,7 +226,7 @@ View secrets (database credentials, OAuth tokens):
 oc get secrets -n backstage
 ----
 
-=== Step 9: View Logs and Health
+=== Step 8: View Logs and Health
 
 Check application logs:
 
@@ -244,7 +244,7 @@ curl -sk $(oc get route backstage-developer-hub -n backstage -o jsonpath='https:
 
 You should see `{"status":"ok"}`.
 
-=== Step 10: Resource Usage
+=== Step 9: Resource Usage
 
 [source,bash,role="execute"]
 ----
