@@ -45,8 +45,8 @@ Output shows 3 control-plane/master nodes + 3 worker nodes.
 **The scale problem:**
 
 * 20 clusters = 60 control plane nodes (20 × 3)
-* Each control plane node = 8 vCPU, 32GB RAM (typical)
-* Cost: ~$9,036/year per cluster × 20 = **$180,720/year** just for control planes
+* Each control plane node = dedicated compute resources
+* Significant infrastructure cost just for control planes
 
 Operations challenges: 60 nodes to patch, 20 etcd databases to backup, 20 API endpoints to manage.
 
@@ -415,7 +415,7 @@ oc cluster-info
 Output:
 
 ----
-Kubernetes control plane is running at https://ac1bcccf...elb.amazonaws.com:6443
+Kubernetes control plane is running at https://<your-endpoint>:6443
 ----
 
 Now check for nodes:
@@ -488,20 +488,24 @@ Check how much the hosted control plane is using:
 oc adm top pods -n clusters-demo-hcp
 ----
 
-You'll see resource usage for each pod:
+You'll see resource usage for all control plane pods:
 
 ----
-NAME                                    CPU   MEMORY
-kube-apiserver-xxx                      50m   500Mi
-etcd-0                                  30m   300Mi
-openshift-apiserver-xxx                 25m   250Mi
-...
+NAME                                                 CPU(cores)   MEMORY(bytes)
+etcd-0                                               46m          202Mi
+kube-apiserver-5c9fdc5f78-xxxxx                      63m          960Mi
+kube-controller-manager-6786cd98d5-xxxxx             16m          111Mi
+openshift-apiserver-5fbb786685-xxxxx                 17m          205Mi
+cluster-version-operator-5dd7f69bd-xxxxx             1m           107Mi
+... (30+ more pods)
 ----
 
-**Visual estimate:** Add up the CPU column (in millicores) and Memory column. You'll see:
+NOTE: You'll see 30-40 pods - this is the entire OpenShift control plane running as pods!
 
-* **Total CPU:** ~300-400m (0.3-0.4 CPU cores)
-* **Total Memory:** ~7-8GB
+**Add up the totals** (use `oc adm top pods -n clusters-demo-hcp --sum`):
+
+* **Total CPU:** ~250-350m (0.25-0.35 CPU cores)
+* **Total Memory:** ~3-4GB
 
 **That's the entire control plane!**
 
@@ -510,7 +514,7 @@ Compare to traditional:
 * 3 nodes × 8 vCPU = 24 vCPUs reserved
 * 3 nodes × 32GB RAM = 96GB reserved
 
-**HCP is ~50x more efficient!**
+**HCP uses a fraction of the resources!**
 
 === Step 9: THE BIG DEMO - Multi-Tenancy in Real-Time
 
@@ -629,7 +633,7 @@ clusters    prod-frontend   True      ← NEW!
 oc get pods -n clusters-prod-frontend | grep Running | wc -l
 ----
 
-Result: ~35 pods running (full control plane!)
+Result: ~35-40 pods running (full control plane!)
 
 === Step 10: Resource Overhead - Before vs After
 
@@ -640,67 +644,32 @@ Check if adding a cluster increased node resource usage:
 oc adm top nodes
 ----
 
-**What you'll see:**
+You'll see output like:
 
-Before 2nd cluster:
 ----
-NAME                      CPU    MEMORY
-worker-1                  15%    40%
-worker-2                  12%    35%
-----
-
-After 2nd cluster:
-----
-NAME                      CPU    MEMORY
-worker-1                  18%    45%    ← Minimal increase!
-worker-2                  15%    40%
+NAME                                        CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)
+ip-10-0-11-4.us-east-2.compute.internal     4196m        13%      23602Mi         18%
+ip-10-0-13-94.us-east-2.compute.internal    2627m        35%      19914Mi         65%
+ip-10-0-45-51.us-east-2.compute.internal    2014m        26%      15717Mi         51%
+...
 ----
 
-**The impact:**
-- Added entire control plane (36 pods)
-- CPU increased: ~3% per node
-- Memory increased: ~5% per node
+**The key insight:** Even with 2 hosted control planes running (~70+ pods total), node utilization remains reasonable. The control planes are distributed across your existing worker nodes.
 
 **Compare to traditional:**
-- Would need 3 NEW nodes (m5a.2xlarge each)
-- 100% CPU/memory on those nodes reserved
+- Would need 6 NEW dedicated nodes (3 per cluster)
+- 100% of those nodes reserved for control plane only
 
-=== Step 11: Real Cost Calculation
+**HCP advantage:** Control planes share existing infrastructure!
 
-Let's calculate actual cost using the metrics we just saw.
+=== Step 11: Cost Benefits
 
-**Traditional Architecture (2 clusters):**
-----
-Cluster 1: 3 control plane nodes
-Cluster 2: 3 control plane nodes
-Total: 6 × m5a.2xlarge instances
+**Why HCP reduces infrastructure costs:**
 
-AWS Pricing:
-- m5a.2xlarge: $0.344/hour
-- 6 nodes × $0.344 = $2.064/hour
-- Monthly: $2.064 × 730 hours = $1,507/month
-- Annual: $18,084/year
-----
+* **Traditional:** Each cluster requires 3 dedicated control plane nodes
+* **HCP:** Control planes run as pods on existing worker nodes
 
-**HCP Architecture (2 clusters):**
-----
-Management cluster: 3 control plane + 2 workers (already exists)
-Hosted cluster 1 (demo-hcp): Just pods
-Hosted cluster 2 (prod-frontend): Just pods
-
-Additional cost for hosted clusters: $0
-(Runs on existing worker nodes)
-
-Monthly: $0 additional
-Annual: $0 additional
-----
-
-**Savings: $18,084/year for just 2 clusters!**
-
-**Extrapolate to 50 clusters:**
-- Traditional: 150 control plane nodes = $75,420/year
-- HCP: Same management cluster = $0 additional
-- **Savings: $75,420/year**
+The more clusters you manage, the greater the savings - you're not provisioning new infrastructure for each cluster's control plane.
 
 === Step 12: Speed Comparison - The Numbers
 
@@ -758,8 +727,10 @@ oc whoami --show-server
 unset KUBECONFIG
 ----
 
+You'll see two different endpoints (e.g., `https://10.10.10.203:6443` and `https://10.10.10.204:6443`).
+
 Each cluster has:
-- ✅ Separate API endpoint (LoadBalancer)
+- ✅ Separate API endpoint
 - ✅ Separate authentication
 - ✅ Complete isolation
 - ✅ Different namespaces on management cluster
@@ -768,36 +739,27 @@ Each cluster has:
 
 === Demo Summary: What Did We Just Prove?
 
-Let's recap what the hands-on demo **actually proved**:
+Let's recap what the hands-on demo demonstrated:
 
-✅ **SPEED: 10-15x faster provisioning**
-- Traditional: 45-60 minutes
-- HCP: 3-5 minutes (you watched it happen!)
-- Created prod-frontend cluster while discussing architecture
+✅ **SPEED**
+- Traditional cluster creation: 45-60 minutes
+- HCP cluster creation: 3-5 minutes
 
-✅ **COST: $75,000+/year savings at scale**
-- 2 clusters: $18,084/year saved
-- 50 clusters: $75,420/year saved
-- No additional infrastructure needed
+✅ **EFFICIENCY**
+- Control planes run as pods on existing infrastructure
+- No dedicated nodes required per cluster
+- Minimal additional resource overhead
 
-✅ **EFFICIENCY: Minimal resource overhead**
-- Added full control plane (36 pods)
-- Node CPU increased: ~3%
-- Node memory increased: ~5%
-- Traditional would need 3 new nodes (100% dedicated)
+✅ **MULTI-TENANCY**
+- Multiple clusters sharing the same management infrastructure
+- Each cluster has its own API endpoint
+- Complete isolation between clusters
 
-✅ **MULTI-TENANCY: True isolation**
-- 2 separate clusters on same infrastructure
-- Each has own API endpoint
-- Complete namespace isolation
-- Different teams, different versions possible
+✅ **SCALABILITY**
+- Adding more hosted clusters doesn't require new infrastructure
+- Management cluster can host many control planes
 
-✅ **SCALABILITY: Proven path to 100+ clusters**
-- If 2 clusters = minimal overhead
-- Could run 50, 100, 200 clusters
-- Same management cluster infrastructure
-
-**Key Takeaway:** HCP isn't just a different architecture - it's a **cost and speed multiplier** for multi-cluster scenarios. You just watched us save $18,084/year in 3 minutes!
+**Key Takeaway:** HCP enables faster provisioning and more efficient resource usage for multi-cluster scenarios.
 
 == Operations 101: Day 2 Tasks
 
@@ -931,7 +893,7 @@ You've seen HCP in action:
 
 * Control planes as pods on shared infrastructure
 * 3-5 minute cluster provisioning (vs 45-60 minutes traditional)
-* Cost savings scale with cluster count ($9,036/year per additional cluster)
+* Cost savings that scale with cluster count
 * Operational simplicity (centralized backup, upgrade, monitoring)
 
-HCP makes sense when you're managing 10+ clusters. Single clusters or small-scale deployments may not justify the management cluster overhead.
+HCP makes sense when you're managing multiple clusters. The more clusters you have, the greater the efficiency gains.
