@@ -3,7 +3,7 @@
 // Module-based navigation using ifdef conditionals
 //
 // Modules with workloads (operator deployed):
-//   module_virt, module_oadp, module_acm, module_devhub, module_ols, module_security
+//   module_virt, module_oadp, module_acm, module_devhub, module_ols, module_security, module_waf
 //
 // Modules without workloads (content only):
 //   module_ldap, module_oidc, module_observability, module_performance, module_cloud_infra
@@ -24,6 +24,9 @@ endif::[]
 .Phase 2: Networking
 * xref:ingress-loadbalancing.adoc[Ingress & Load Balancing]
 * xref:network-security.adoc[Network Security]
+ifdef::module_waf[]
+* xref:aws-waf.adoc[AWS WAF Integration]
+endif::[]
 
 .Phase 3: Day 2 Operations
 ifdef::module_observability[]

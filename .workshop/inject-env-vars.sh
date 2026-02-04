@@ -27,6 +27,7 @@ echo "  MODULE_ENABLE_BACKUP=${MODULE_ENABLE_BACKUP:-true}"
 echo "  MODULE_ENABLE_DEVHUB=${MODULE_ENABLE_DEVHUB:-true}"
 echo "  MODULE_ENABLE_OLS=${MODULE_ENABLE_OLS:-true}"
 echo "  MODULE_ENABLE_SECURITY=${MODULE_ENABLE_SECURITY:-true}"
+echo "  MODULE_ENABLE_WAF=${MODULE_ENABLE_WAF:-true}"
 echo "Module settings (content only):"
 echo "  MODULE_ENABLE_LDAP=${MODULE_ENABLE_LDAP:-true}"
 echo "  MODULE_ENABLE_OIDC=${MODULE_ENABLE_OIDC:-true}"
@@ -61,6 +62,10 @@ fi
 
 if [ "${MODULE_ENABLE_SECURITY:-true}" = "true" ]; then
     ATTRS="${ATTRS}    module_security: ''"$'\n'
+fi
+
+if [ "${MODULE_ENABLE_WAF:-true}" = "true" ]; then
+    ATTRS="${ATTRS}    module_waf: ''"$'\n'
 fi
 
 # Modules without workloads (content only)
