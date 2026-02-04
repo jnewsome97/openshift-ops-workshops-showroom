@@ -69,31 +69,39 @@ We need to install three operators. You can do this via the GUI or CLI.
 If you prefer CLI installation, skip to Option B below.
 ====
 
+[IMPORTANT]
+====
+In OpenShift 4.20, the OperatorHub has moved to **Ecosystem → Software Catalog**. You must select a namespace before viewing available operators.
+====
+
 1. **Install the Loki Operator:**
 +
-a. In the OpenShift console, click `Operators` -> `OperatorHub`
-b. Search for `Loki Operator` and select the one provided by Red Hat
-c. Click `Install`
-d. Select Update Channel `stable-6.2`
-e. Select `Enable Operator recommended cluster monitoring on this Namespace`
-f. Click `Install` and wait for completion
+a. In the OpenShift console, click `Ecosystem` -> `Software Catalog`
+b. Select namespace `openshift-operators-redhat` from the Project dropdown (create it first if needed: `oc create namespace openshift-operators-redhat`)
+c. Search for `Loki Operator` and select the one provided by Red Hat
+d. Click `Install`
+e. Select Update Channel `stable-6.2`
+f. Select `Enable Operator recommended cluster monitoring on this Namespace`
+g. Click `Install` and wait for completion
 
 2. **Install the Cluster Logging Operator:**
 +
-a. In the OpenShift console, click `Operators` -> `OperatorHub`
-b. Search for `Red Hat OpenShift Logging`
-c. Click `Install`
-d. Select Update Channel `stable-6.2`
-e. Select `Enable Operator recommended cluster monitoring on this Namespace`
-f. Click `Install` and wait for completion
+a. In the OpenShift console, click `Ecosystem` -> `Software Catalog`
+b. Select namespace `openshift-logging` from the Project dropdown (create it first if needed: `oc create namespace openshift-logging`)
+c. Search for `Red Hat OpenShift Logging`
+d. Click `Install`
+e. Select Update Channel `stable-6.2`
+f. Select `Enable Operator recommended cluster monitoring on this Namespace`
+g. Click `Install` and wait for completion
 
 3. **Install the Cluster Observability Operator:**
 +
-a. In the OpenShift console, click `Operators` -> `OperatorHub`
-b. Search for `Cluster Observability Operator` (provided by Red Hat)
-c. Click `Install`
-d. Select Update Channel `stable`
-e. Click `Install` and wait for completion
+a. In the OpenShift console, click `Ecosystem` -> `Software Catalog`
+b. Select namespace `openshift-operators` from the Project dropdown
+c. Search for `Cluster Observability Operator` (provided by Red Hat)
+d. Click `Install`
+e. Select Update Channel `stable`
+f. Click `Install` and wait for completion
 
 === Option B: Install via CLI
 
