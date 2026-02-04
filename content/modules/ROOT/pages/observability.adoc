@@ -259,12 +259,7 @@ Remember your bucket name - you'll need it in the next step.
 
 == Create the LokiStack Secret
 
-The LokiStack needs credentials to access the S3 bucket. Create a secret with your AWS credentials:
-
-[IMPORTANT]
-====
-Replace the placeholder values below with your actual AWS credentials and bucket name.
-====
+The LokiStack needs credentials to access the S3 bucket. Your AWS credentials are already configured in the terminal.
 
 [TIP]
 ====
@@ -280,8 +275,8 @@ metadata:
   name: lokistack-dev-s3
   namespace: openshift-logging
 stringData:
-  access_key_id: <YOUR_AWS_ACCESS_KEY_ID>
-  access_key_secret: <YOUR_AWS_SECRET_ACCESS_KEY>
+  access_key_id: $(aws configure get aws_access_key_id)
+  access_key_secret: $(aws configure get aws_secret_access_key)
   bucketnames: ${GUID}-loki
   endpoint: https://s3.us-east-1.amazonaws.com
   region: us-east-1
