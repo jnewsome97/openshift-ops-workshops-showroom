@@ -676,7 +676,3 @@ Both methods are valid - choose based on your organization's existing identity i
 * **Keycloak Operator:** link:https://access.redhat.com/documentation/en-us/red_hat_single_sign-on/7.6/html/server_installation_and_configuration_guide/operator[Red Hat SSO Operator Guide]
 * **RBAC Documentation:** link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/authentication_and_authorization/using-rbac[Using RBAC]
 * **Identity Providers Overview:** link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/authentication_and_authorization/understanding-identity-provider[Understanding identity providers]
-
----
-
-**Next Module:** Continue with xref:app-mgmt-basics.adoc[Application Management Basics] to learn about deploying applications.

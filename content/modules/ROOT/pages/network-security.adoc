@@ -517,7 +517,3 @@ oc get dns cluster -o yaml
 * **NetworkPolicy:** link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/networking/network-policy[About network policy]
 * **EgressFirewall:** link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/networking/configuring-egress-firewall-ovn[Configuring an egress firewall for a project]
 * **EgressIP:** link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/networking/configuring-egress-ips-ovn[Configuring an egress IP address]
-
----
-
-**Next Module:** Continue with xref:governance.adoc[Governance] to learn about project quotas, limit ranges, and cluster policies.

@@ -302,7 +302,3 @@ oc get svc -n openshift-ingress
 
 * **Ingress Controller:** link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/networking/configuring-ingress-cluster-traffic[Configuring ingress cluster traffic]
 * **Route Annotations:** link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/networking/configuring-ingress-cluster-traffic#nw-route-specific-annotations_route-configuration[Route-specific annotations]
-
----
-
-**Next Module:** Continue with xref:network-security.adoc[Network Security] to learn about NetworkPolicy and EgressFirewall.

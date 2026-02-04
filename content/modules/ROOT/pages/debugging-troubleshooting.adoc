@@ -839,11 +839,3 @@ Hello OpenShift!
 ✅ **Common patterns** - Most issues fall into 5-10 categories +
 ✅ **Debug interactively** - Use `oc debug` when needed +
 ✅ **Always verify fixes** - Don't assume it's fixed, confirm with `oc get pods`
-
-== Next Module
-
-Continue to **Hosted Control Planes (HCP)** to learn about cloud-native OpenShift architecture.
-
----
-
-**Questions?** Discuss troubleshooting strategies with your instructor.

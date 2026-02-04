@@ -496,11 +496,3 @@ This module showed you **RHDH basics from an Ops perspective**.
 - TechDocs for documentation
 
 **Interested in a deep-dive?** Ask your instructor about the **Platform Engineering with RHDH Workshop**.
-
-== Next Module
-
-Continue to **Debugging & Troubleshooting** to learn how to diagnose and fix common OpenShift issues.
-
----
-
-**Questions?** Discuss platform engineering strategies with your instructor.

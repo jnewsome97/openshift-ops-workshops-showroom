@@ -377,7 +377,3 @@ echo "Cleanup complete"
 * **AWS Load Balancer Operator:** link:https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/networking/aws-load-balancer-operator[AWS Load Balancer Operator]
 * **AWS WAF Developer Guide:** link:https://docs.aws.amazon.com/waf/latest/developerguide/[AWS WAF Documentation]
 * **AWS Managed Rules:** link:https://docs.aws.amazon.com/waf/latest/developerguide/aws-managed-rule-groups-list.html[AWS Managed Rule Groups]
-
----
-
-**Next Module:** Continue with xref:network-security.adoc[Network Security] to learn about NetworkPolicy and EgressFirewall.

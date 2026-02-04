@@ -742,5 +742,3 @@ Check for degraded conditions and follow remediation steps.
 ----
 oc login --token=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token) --server=https://kubernetes.default.svc --insecure-skip-tls-verify
 ----
-
-**Next Module:** You'll learn application management basics including deployments, services, and routes.

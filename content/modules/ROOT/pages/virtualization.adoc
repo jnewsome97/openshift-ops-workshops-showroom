@@ -386,7 +386,3 @@ oc delete project vm-demo
 | **virtctl** | VM-specific operations (start, stop, console) |
 
 **The value:** Run legacy VMs and modern containers side-by-side. One platform, one set of tools, gradual migration path.
-
-== Next Module
-
-Continue to **Multi-Cluster Management with ACM** to manage multiple OpenShift clusters.

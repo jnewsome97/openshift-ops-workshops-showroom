@@ -264,7 +264,3 @@ oc delete project performance-demo
 |===
 
 **The pattern:** Don't guess resources → Use VPA to measure → Apply recommendations → Use HPA for load variation
-
-== Next Module
-
-Continue to **Virtualization** to learn about running VMs on OpenShift.

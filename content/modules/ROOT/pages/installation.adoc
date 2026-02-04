@@ -493,7 +493,3 @@ The console is the fastest way to get a visual health overview of your cluster.
 * **Installing OpenShift:** link:https://docs.openshift.com/container-platform/4.20/installing/index.html[Installation Documentation]
 * **Verifying Cluster Status:** link:https://docs.openshift.com/container-platform/4.20/support/troubleshooting/verifying-cluster-status.html[Troubleshooting Guide]
 * **ClusterOperators Reference:** link:https://docs.openshift.com/container-platform/4.20/operators/operator-reference.html[Operator Reference]
-
----
-
-**Next Module:** Configure LDAP authentication to integrate enterprise user identities.
