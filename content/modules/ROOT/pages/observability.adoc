@@ -74,6 +74,8 @@ If you prefer CLI installation, skip to Option B below.
 In OpenShift 4.20, the OperatorHub has moved to **Ecosystem → Software Catalog**. You must select a namespace before viewing available operators.
 ====
 
+image::software-catalog-navigation.png[Software Catalog in OpenShift 4.20]
+
 1. **Install the Loki Operator:**
 +
 a. In the OpenShift console, click `Ecosystem` -> `Software Catalog`
