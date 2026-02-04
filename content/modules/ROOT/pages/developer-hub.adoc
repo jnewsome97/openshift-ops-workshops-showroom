@@ -6,73 +6,45 @@
 **Format:** Dashboard exploration + Demo +
 **Audience:** IT Operations, Platform Engineers, Infrastructure Architects
 
-**Workshop Narrative Context:**
+== The Problem: Manual Provisioning Doesn't Scale
 
-We've learned how to:
-- Secure workloads with RHACS
-- Enforce governance policies
-- Monitor compliance
+Sound familiar?
 
-**Now:** How do we **enable developer self-service** while maintaining operational control? How do we reduce repetitive requests and tickets?
+1. Developer submits ticket: "I need a new microservice with CI/CD"
+2. You manually create: namespace, RBAC, quotas, git repo, pipeline
+3. Developer waits days (or weeks)
+4. Repeat 50 times per quarter
+5. Configurations drift, documentation gets stale
+
+**This is unsustainable.** Every manual provisioning request is time you're not spending on real infrastructure work.
+
+== The Solution: Developer Self-Service
+
+**Red Hat Developer Hub (RHDH)** is an internal developer portal that lets developers provision their own apps—using templates YOU define.
+
+**How it works:**
+
+1. You (Ops) create **golden path templates** with your standards baked in
+2. Developers browse templates in a portal and click "Create"
+3. Template automatically provisions: namespace, RBAC, quotas, pipeline, git repo
+4. Developer starts coding in minutes, not days
+5. Everything follows your standards because it came from your template
+
+**The result:** Developers get self-service. You get consistency and fewer tickets.
 
 == Learning Objectives
 
-By the end of this module, you will be able to:
+By the end of this module, you will:
 
-* Understand what RHDH provides to developers (self-service templates)
-* See how RHDH reduces ticket-based requests and manual provisioning
-* Verify RHDH deployment health and status
-* Monitor and troubleshoot RHDH as part of your platform infrastructure
+* See what developers experience with self-service templates
+* Understand how this reduces your provisioning workload
+* Know how to monitor RHDH health and troubleshoot issues
 
-== What is Red Hat Developer Hub?
+== Part 1: Check That RHDH Is Running
 
-**Red Hat Developer Hub (RHDH)** is an **enterprise-grade Internal Developer Platform** based on Backstage.
-
-Think of it as: **Your organization's developer self-service portal**
-
-=== The Operations Problem It Solves
-
-**Before RHDH:**
-
-* Developers submit tickets: "Create me a new app with CI/CD"
-* Ops manually provisions: namespace, RBAC, quotas, pipeline, git repo
-* Process takes days or weeks
-* Inconsistent configurations
-* Documentation scattered everywhere
-
-**With RHDH:**
-
-* Developer clicks "Create New App" in portal
-* Template automatically provisions: namespace, RBAC, quotas, pipeline, git repo
-* Process takes minutes
-* **Ops-defined golden paths** ensure consistency
-* Self-service with governance built-in
-
-=== Key Capabilities
-
-* **Software Catalog** - Unified view of all services, APIs, libraries
-* **Software Templates** - Self-service app creation with Ops-approved patterns
-* **TechDocs** - Documentation integrated with code
-* **Plugins** - Integrate with tools (ArgoCD, Tekton, Jira, etc.)
-* **RBAC** - Fine-grained access control
-* **API Integration** - Connect to existing systems
-
-== RHDH Architecture (Quick Overview)
-
-RHDH on OpenShift consists of:
-
-* **Backstage Frontend** - Web portal UI
-* **Backstage Backend** - API and orchestration layer
-* **PostgreSQL Database** - Stores catalog and configuration
-* **Plugins** - Extend functionality (Kubernetes, Tekton, ArgoCD, etc.)
-
-All of this was deployed via the **Red Hat Developer Hub Operator** from OperatorHub.
-
-== Part 1: Verify RHDH Deployment
+First, verify the platform is healthy.
 
 === Step 1: Check RHDH Pods
-
-Verify the RHDH pods are running:
 
 [source,bash,role="execute"]
 ----
@@ -87,155 +59,75 @@ backstage-developer-hub-xxxxx              1/1     Running
 backstage-psql-developer-hub-0             1/1     Running
 ----
 
-Check the deployment details:
-
-[source,bash,role="execute"]
-----
-oc get deployment -n backstage
-----
-
-View the Backstage container resources:
-
-[source,bash,role="execute"]
-----
-oc get deployment backstage-developer-hub -n backstage -o jsonpath='{.spec.template.spec.containers[0].resources}' | python3 -m json.tool
-----
-
-=== Step 2: Get the Developer Hub URL
-
-Get the Developer Hub portal URL:
+=== Step 2: Get the Portal URL
 
 [source,bash,role="execute"]
 ----
 oc get route backstage-developer-hub -n backstage -o jsonpath='https://{.spec.host}'
 ----
 
-Output:
-
-----
-https://backstage-developer-hub-backstage.apps.cluster-GUID.example.com
-----
-
-View all routes in the backstage namespace:
-
-[source,bash,role="execute"]
-----
-oc get routes -n backstage
-----
-
 === Step 3: Access the Portal
 
-1. **Open the Developer Hub URL** in a new browser tab
-2. You'll see the **Red Hat Developer Hub** login page
-3. Select **Guest** to enter without authentication
-
-image::rhdh-login-page.png[Developer Hub login page]
-
-Click **Enter** under Guest to access the portal.
-
-You're now in the **Developer Hub Portal**.
+1. Open the URL in a new browser tab
+2. Select **Guest** to enter
+3. Click **Enter**
 
 image::rhdh-home-page.png[Developer Hub home page]
 
+You're now in the Developer Hub portal that developers use.
+
 == Part 2: See What Developers Get
 
-The portal is empty because no software templates have been registered yet. Let's import the **official Red Hat Developer Hub demo templates** so you can see what developers experience when using self-service.
+The portal is empty because no templates are registered. Let's import demo templates so you can see the developer experience.
 
-=== Step 4: Register Official Templates
+=== Step 4: Import Templates
 
-1. On the Home screen, you'll see the **Explore Your Software Catalog** section with a message: "No software catalog added yet"
+1. On the Home screen, find the **Explore Your Software Catalog** section showing "No software catalog added yet"
 
-image::rhdh-register-component.png[Register a component button on home screen]
+image::rhdh-register-component.png[Register a component button]
 
 2. Click **Register a component**
-3. Enter the following URL:
+3. Enter this URL:
 
 ----
 https://github.com/redhat-developer/red-hat-developer-hub-software-templates/blob/48056c57dbfcdcf2a7075819745b0203d1a8a42e/templates.yaml
 ----
 
 4. Click **Analyze**
-5. You'll see a list of entities to be added to the catalog (argocd-template, go-backend-template, nodejs-backend-template, quarkus-backend-template, spring-boot-backend-template, tekton-template, and more)
 
-image::rhdh-import-templates.png[Templates discovered after analyzing the URL]
+image::rhdh-import-templates.png[Templates discovered]
 
-6. Click **Import**
+5. Click **Import**
 
-=== Step 5: Explore the Templates
+=== Step 5: The Developer Experience
 
-After import, click **Create** in the left sidebar. You'll now see available templates including:
+Now click **Create** in the left sidebar.
 
-* **Quarkus Backend** - Java microservice with Quarkus and CI pipeline
-* **Spring Boot Backend** - Java microservice with Spring
+**This is what developers see:** A menu of pre-approved application templates.
+
+* **Quarkus Backend** - Java microservice with CI pipeline
+* **Spring Boot Backend** - Java microservice
 * **Node.js Backend** - JavaScript/TypeScript service
 * **Go Backend** - Go microservice
-* **ArgoCD** - GitOps application setup
-* **Tekton** - CI/CD pipeline templates
 
-Click on the **Quarkus Backend** template. You'll see:
+Click on **Quarkus Backend**. You'll see:
 
-* **Description:** "Create a starter Quarkus Backend application with a CI pipeline"
-* **Owner:** janus-authors
-* **Type:** service
-* **Tags:** quarkus, java, maven
-* **Actions:** View Source, View TechDocs, Launch Template
+* Description, owner, tags
+* **Launch Template** button
 
-NOTE: You may see a warning: "This entity has relations to other entities, which can't be found in the catalog." This is expected - the demo templates reference owner groups that aren't configured in this cluster.
+If a developer clicks Launch Template, they fill in a simple form (app name, repo location, etc.) and the template creates everything automatically.
 
-Click **Launch Template** to see the input form (you can explore without executing).
+**The key point:** Developers don't submit tickets to you. They self-serve. And everything they create follows your standards because it came from a template you approved.
 
-**Key insight for Ops:** These templates are YAML files stored in Git. You control what templates are available, what parameters are exposed, and what gets created. Developers just fill in the blanks.
+NOTE: You may see a warning about missing entities. This is expected for demo templates.
 
-== Part 3: What Ops Keeps Running
+== Part 3: How You Keep It Running
 
-Now that you've seen what developers get, here's how you monitor and maintain RHDH.
+Your job is to keep this platform healthy so developers can self-serve.
 
-=== Step 6: View RHDH Resources in OpenShift
+=== Step 6: Monitor Health
 
-In the OpenShift console:
-
-1. Go to **Workloads** -> **Pods**
-2. Select the **backstage** project
-3. You'll see `backstage-developer-hub` and `backstage-psql-developer-hub` pods
-
-View via CLI:
-
-[source,bash,role="execute"]
-----
-oc get pods -n backstage
-----
-
-[source,bash,role="execute"]
-----
-oc get deployment -n backstage
-----
-
-=== Step 7: Check Configuration
-
-RHDH configuration is stored in ConfigMaps:
-
-[source,bash,role="execute"]
-----
-oc get configmaps -n backstage
-----
-
-View secrets (database credentials, OAuth tokens):
-
-[source,bash,role="execute"]
-----
-oc get secrets -n backstage
-----
-
-=== Step 8: View Logs and Health
-
-Check application logs:
-
-[source,bash,role="execute"]
-----
-oc logs -n backstage -l rhdh.redhat.com/app=backstage-developer-hub --tail=30
-----
-
-Check health endpoint:
+Check the health endpoint:
 
 [source,bash,role="execute"]
 ----
@@ -244,82 +136,80 @@ curl -sk $(oc get route backstage-developer-hub -n backstage -o jsonpath='https:
 
 You should see `{"status":"ok"}`.
 
-=== Step 9: Resource Usage
+=== Step 7: Check Logs
+
+When developers report issues, check the logs:
+
+[source,bash,role="execute"]
+----
+oc logs -n backstage -l rhdh.redhat.com/app=backstage-developer-hub --tail=30
+----
+
+=== Step 8: Check Resource Usage
 
 [source,bash,role="execute"]
 ----
 oc adm top pods -n backstage
 ----
 
-== Summary: How RHDH Fits into Ops Workflow
+=== Step 9: View Configuration
+
+RHDH configuration is stored in ConfigMaps and Secrets:
+
+[source,bash,role="execute"]
+----
+oc get configmaps -n backstage
+----
+
+[source,bash,role="execute"]
+----
+oc get secrets -n backstage
+----
+
+== The Value For You
 
 [cols="1,2"]
 |===
-|Ops Activity |How RHDH Helps
+|Before RHDH |After RHDH
 
-|**Developer requests new app**
-|Self-service via templates, no manual provisioning
+|Developer submits ticket
+|Developer self-serves
 
-|**Onboarding new team**
-|Portal provides discoverability, no scattered docs
+|You manually provision namespace, RBAC, quotas
+|Template does it automatically
 
-|**Enforcing standards**
-|Templates bake in security, quotas, monitoring
+|Days or weeks of waiting
+|Minutes
 
-|**Tracking all services**
-|Catalog provides single source of truth
+|Inconsistent configurations
+|Everything follows your golden path
 
-|**Compliance auditing**
-|See which apps follow which patterns
-
-|**Reducing toil**
-|Automation via templates and plugins
+|50+ provisioning tickets per quarter
+|Near zero
 |===
 
-**Key operational commands:**
+**Every time this portal works, that's a ticket you didn't have to process.**
+
+== Quick Reference
 
 [source,bash]
 ----
-# View RHDH pods
+# Check pods
 oc get pods -n backstage
 
-# Check Backstage CR status
-oc get backstage -n backstage
-
-# View application logs
-oc logs -n backstage -l rhdh.redhat.com/app=backstage-developer-hub --tail=50
-
-# Check health endpoint
+# Check health
 curl -sk $(oc get route backstage-developer-hub -n backstage -o jsonpath='https://{.spec.host}')/.backstage/health/v1/readiness
 
-# View configuration
-oc get configmaps -n backstage
+# View logs
+oc logs -n backstage -l rhdh.redhat.com/app=backstage-developer-hub --tail=50
 
-# Restart after config changes
+# Restart after issues
 oc rollout restart deployment/backstage-developer-hub -n backstage
 ----
 
 == Key Takeaways
 
-* **Self-Service** - Developers provision apps without tickets
-* **Governance** - Ops defines templates with security baked in
-* **Standardization** - Golden paths ensure consistency
-* **Visibility** - Catalog shows everything in one place
-* **Reduced Toil** - Automation eliminates manual provisioning
-* **Operator-Managed** - RHDH Operator handles deployment lifecycle
-
-== Going Further: Platform Engineering
-
-This module showed you **RHDH basics from an Ops perspective**.
-
-**A full RHDH implementation includes:**
-
-- Software templates with multi-step workflows
-- Git integration (GitHub, GitLab)
-- CI/CD integration (Tekton, ArgoCD)
-- SSO authentication (OIDC, SAML)
-- Custom plugins for your organization
-- Populated software catalog
-- TechDocs for documentation
-
-**Interested in a deep-dive?** Ask your instructor about the **Platform Engineering with RHDH Workshop**.
+* **RHDH enables developer self-service** - They provision apps without tickets
+* **You define the standards** - Templates bake in your security, quotas, and patterns
+* **Your job is platform health** - Keep RHDH running, developers do the rest
+* **Fewer tickets = more time for real work** - This is how you scale operations
