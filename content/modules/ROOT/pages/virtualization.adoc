@@ -168,6 +168,8 @@ image::virt-rhel9-vm-details.png[rhel9-vm details page]
 
 image::virt-rhel9-vm-console.png[rhel9-vm web console]
 
+NOTE: You cannot copy and paste into the web console. You will need to type the credentials manually.
+
 5. Login with: `cloud-user` / `redhat`
 
 image::virt-rhel9-vm-logged-in.png[Successfully logged into rhel9-vm]
@@ -200,7 +202,9 @@ Use virtctl for console access:
 virtctl console rhel9-vm
 ----
 
-Login with `cloud-user` / `redhat`. Type `exit` or press `Ctrl+]` to disconnect.
+Login with `cloud-user` / `redhat`.
+
+IMPORTANT: To disconnect and return to the dashboard terminal, press `Ctrl+]`. Typing `exit` only logs you out of the VM but keeps you in the console.
 
 == Part 3: VM Operations
 
@@ -258,7 +262,7 @@ oc get events --field-selector involvedObject.name=rhel9-vm
 
 === Web Console Metrics
 
-Navigate to **Virtualization → VirtualMachines → rhel9-vm → Metrics** to see:
+Navigate to **Virtualization → VirtualMachines**, select the **vm-demo** project from the Project dropdown, then click on **rhel9-vm → Metrics** to see:
 - CPU usage over time
 - Memory consumption
 - Network I/O
@@ -377,12 +381,24 @@ oc delete project vm-demo
 
 == Key Takeaways
 
-| Feature | Benefit |
-|---------|---------|
-| **Container Disks** | Spin up VMs in seconds from registry images |
-| **Same CLI** | Use `oc` for VMs just like pods |
-| **Snapshots** | Quick backup before changes |
-| **Unified Platform** | VMs and containers share storage, networking, monitoring |
-| **virtctl** | VM-specific operations (start, stop, console) |
+[cols="1,2",options="header"]
+|===
+| Feature | Benefit
 
-**The value:** Run legacy VMs and modern containers side-by-side. One platform, one set of tools, gradual migration path.
+| Container Disks
+| Spin up VMs in seconds from registry images
+
+| Same CLI
+| Use `oc` for VMs just like pods
+
+| Snapshots
+| Quick backup before changes
+
+| Unified Platform
+| VMs and containers share storage, networking, monitoring
+
+| virtctl
+| VM-specific operations (start, stop, console)
+|===
+
+*The value:* Run legacy VMs and modern containers side-by-side. One platform, one set of tools, gradual migration path.
